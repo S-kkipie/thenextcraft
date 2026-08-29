@@ -203,17 +203,53 @@ export const viewer = query({
 
 // Onboarding: pick builder/startup (identity from the session, never the client).
 export const setRole = mutation({
-  args: { role: userRoleValidator, companyName: v.optional(v.string()) },
+  args: {
+    role: userRoleValidator,
+    companyName: v.optional(v.string()),
+    linkedinUrl: v.optional(v.string()),
+  },
   returns: v.null(),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("No autenticado");
+    // Startups may attach their LinkedIn page; validated/normalized here.
+    const linkedinUrl =
+      args.role === "startup"
+        ? (cleanHttpUrl(args.linkedinUrl, "linkedinUrl") ?? undefined)
+        : undefined;
     await ctx.db.patch("users", userId, {
       role: args.role,
-      companyName: args.companyName,
+      companyName: args.role === "startup" ? args.companyName : undefined,
+      linkedinUrl,
       onboarded: true,
       updatedAt: Date.now(),
     });
     return null;
+  },
+});
+
+// Public company context for the submission copilot: safe fields only (no email).
+// Given a challenge's `startupId`, returns who posted it so the agent can scrape
+// and reason about the company. null when the id isn't a startup / doesn't exist.
+export const publicCompany = query({
+  args: { userId: v.id("users") },
+  returns: v.union(
+    v.object({
+      name: v.string(),
+      companyName: v.optional(v.string()),
+      linkedinUrl: v.optional(v.string()),
+      sector: v.optional(v.string()),
+    }),
+    v.null(),
+  ),
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get("users", args.userId);
+    if (!user) return null;
+    return {
+      name: user.name,
+      companyName: user.companyName,
+      linkedinUrl: user.linkedinUrl,
+      sector: user.sector,
+    };
   },
 });

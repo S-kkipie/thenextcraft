@@ -16,6 +16,22 @@ export const onboardingInput = z.object({
 });
 export type OnboardingInput = z.infer<typeof onboardingInput>;
 
+/**
+ * Startup onboarding profile. `companyName` lets the submission copilot know the
+ * company; `linkedinUrl` is optional — if empty, the copilot asks the builder
+ * which company the challenge is from before scraping context.
+ */
+export const startupProfileInput = z.object({
+  companyName: z.string().trim().min(2, "Escribe el nombre de tu empresa"),
+  linkedinUrl: z
+    .union([
+      z.url("URL inválida").regex(/linkedin\.com/i, "Debe ser una URL de LinkedIn"),
+      z.literal(""),
+    ])
+    .optional(),
+});
+export type StartupProfileInput = z.infer<typeof startupProfileInput>;
+
 /** Copy for the two selectable role cards. */
 export const ROLE_META = [
   {

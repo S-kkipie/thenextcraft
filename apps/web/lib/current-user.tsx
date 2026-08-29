@@ -16,7 +16,11 @@ type CurrentUser = {
   /** authed but hasn't picked builder/startup yet. */
   needsOnboarding: boolean;
   signInGithub: () => Promise<void>;
-  setRole: (role: Role, companyName?: string) => Promise<void>;
+  setRole: (
+    role: Role,
+    companyName?: string,
+    linkedinUrl?: string,
+  ) => Promise<void>;
   logout: () => void;
 };
 
@@ -45,8 +49,8 @@ export function CurrentUserProvider({ children }: { children: ReactNode }) {
         signInGithub: async () => {
           await signIn("github");
         },
-        setRole: async (role, companyName) => {
-          await setRoleMut({ role, companyName });
+        setRole: async (role, companyName, linkedinUrl) => {
+          await setRoleMut({ role, companyName, linkedinUrl });
         },
         logout: () => {
           void signOut();

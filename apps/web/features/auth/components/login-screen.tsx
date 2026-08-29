@@ -9,21 +9,25 @@ import { Input } from "@/components/ui/input";
 import { useCurrentUser } from "@/lib/current-user";
 import { GithubMark } from "@/features/auth/components/github-mark";
 import { RoleCard } from "@/features/auth/components/role-card";
-import { ROLE_META } from "@/features/auth/schema";
+import { ROLE_META, startupProfileInput } from "@/features/auth/schema";
 
 /** /login — GitHub OAuth, then a one-time builder/startup pick (onboarding). */
 export function LoginScreen() {
   const router = useRouter();
-  const { userId, authReady, needsOnboarding, signInGithub, setRole } =
+  const { user, userId, authReady, needsOnboarding, signInGithub, setRole } =
     useCurrentUser();
   const [role, setRoleSel] = useState<"builder" | "startup">("builder");
   const [company, setCompany] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  // Signed in AND onboarded → skip login.
+  // Signed in AND onboarded → skip login, landing per role.
   useEffect(() => {
-    if (authReady && userId && !needsOnboarding) router.replace("/home");
-  }, [authReady, userId, needsOnboarding, router]);
+    if (authReady && userId && !needsOnboarding) {
+      router.replace(user?.role === "startup" ? "/startup" : "/home");
+    }
+  }, [authReady, userId, needsOnboarding, user?.role, router]);
 
   const onSignIn = async () => {
     setBusy(true);
@@ -35,11 +39,26 @@ export function LoginScreen() {
   };
 
   const onFinish = async () => {
+    setError(null);
+    // Startups: validate name (required) + LinkedIn URL (optional) with zod.
+    let linkedinUrl: string | undefined;
+    if (role === "startup") {
+      const parsed = startupProfileInput.safeParse({
+        companyName: company.trim(),
+        linkedinUrl: linkedin.trim(),
+      });
+      if (!parsed.success) {
+        setError(parsed.error.issues[0]?.message ?? "Revisa los datos");
+        return;
+      }
+      linkedinUrl = parsed.data.linkedinUrl || undefined;
+    }
     setBusy(true);
     try {
       await setRole(
         role,
         role === "startup" ? company.trim() || undefined : undefined,
+        linkedinUrl,
       );
       router.replace("/home");
     } finally {
@@ -87,12 +106,29 @@ export function LoginScreen() {
                 ))}
               </div>
               {role === "startup" && (
-                <Input
-                  placeholder="Nombre de tu startup"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  className="h-11 rounded-xl"
-                />
+                <div className="grid gap-2">
+                  <Input
+                    placeholder="Nombre de tu startup"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    className="h-11 rounded-xl"
+                  />
+                  <Input
+                    placeholder="URL de LinkedIn (opcional)"
+                    value={linkedin}
+                    onChange={(e) => setLinkedin(e.target.value)}
+                    className="h-11 rounded-xl"
+                  />
+                  <p className="text-xs text-faint">
+                    Con tu LinkedIn, el copiloto entiende el contexto de tu
+                    empresa. Si lo dejas vacío, te preguntará cuál es.
+                  </p>
+                </div>
+              )}
+              {error && (
+                <p className="text-sm text-red-400" role="alert">
+                  {error}
+                </p>
               )}
               <Button
                 variant="craft"
