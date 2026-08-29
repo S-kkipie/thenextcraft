@@ -22,6 +22,30 @@ export const get = query({
     await ctx.db.get("challenges", args.challengeId),
 });
 
+// The Next Ship — challenges domain (retos de negocio de startups).
+// list / get devuelven el reto enriquecido con el nombre + sector de la startup
+// (un solo db.get por reto) para que la UI no tenga que hacer un fetch aparte.
+
+type ChallengeWithStartup = Doc<"challenges"> & {
+  company: string;
+  sector: string | null;
+};
+
+// Adjunta company/sector leyendo el user (startup) dueño del reto.
+async function withStartup(
+  ctx: QueryCtx,
+  challenge: Doc<"challenges">,
+): Promise<ChallengeWithStartup> {
+  const startup = await ctx.db.get(challenge.startupId);
+  return {
+    ...challenge,
+    company: startup?.companyName ?? startup?.name ?? "Startup",
+    sector: startup?.sector ?? null,
+  };
+}
+
+// Retos abiertos para el tablero de /challenges. Índice by_status (no table scan).
+// .take(100): colección acotada por guideline; el MVP no lista miles de retos.
 export const list = query({
   args: {
     paginationOpts: paginationOptsValidator,
@@ -73,14 +97,19 @@ export const listByStartup = query({
   },
 });
 
+// Publicar un reto. `args` con `v` espeja el zod `challengeInput`
+// (features/challenge/schema.ts): mismos campos, misma opcionalidad.
 export const create = mutation({
   args: {
+    // DEV STUB (identity-bootstrap, NO authz). El cliente pasa su propio userId
+    // igual que users.createOrGet; NO es una comprobación de propiedad. La
+    // propiedad real vendrá de ctx.auth.getUserIdentity() cuando entre el OAuth.
     startupId: v.id("users"),
     title: v.string(),
     businessProblem: v.string(),
     successCriteria: v.array(v.string()),
     reward: v.optional(v.string()),
-    deadline: v.optional(v.number()),
+    tech: v.optional(v.array(v.string())),
   },
   returns: v.id("challenges"),
   handler: async (ctx, args) => {
