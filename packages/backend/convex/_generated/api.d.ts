@@ -8,11 +8,13 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
 import type * as badges from "../badges.js";
 import type * as challenges from "../challenges.js";
 import type * as domain from "../domain.js";
 import type * as evaluations from "../evaluations.js";
 import type * as feed from "../feed.js";
+import type * as http from "../http.js";
 import type * as leaderboard from "../leaderboard.js";
 import type * as opportunities from "../opportunities.js";
 import type * as rankings from "../rankings.js";
@@ -30,11 +32,13 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
   badges: typeof badges;
   challenges: typeof challenges;
   domain: typeof domain;
   evaluations: typeof evaluations;
   feed: typeof feed;
+  http: typeof http;
   leaderboard: typeof leaderboard;
   opportunities: typeof opportunities;
   rankings: typeof rankings;

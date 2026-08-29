@@ -20,21 +20,21 @@ function isPublic(path: string): boolean {
   );
 }
 
-/** Redirects unauthenticated users on private routes to /login. */
+/** Sends unauthenticated / not-yet-onboarded users on private routes to /login. */
 export function AuthGuard({ children }: { children: ReactNode }) {
-  const { userId, authReady } = useCurrentUser();
+  const { userId, authReady, needsOnboarding } = useCurrentUser();
   const pathname = usePathname();
   const router = useRouter();
   const pub = isPublic(pathname);
+  const blocked = !userId || needsOnboarding;
 
   useEffect(() => {
-    if (authReady && !userId && !pub) {
+    if (authReady && !pub && blocked) {
       router.replace("/login");
     }
-  }, [authReady, userId, pub, router]);
+  }, [authReady, pub, blocked, router]);
 
-  // Private route while resolving auth or logged out → hold (no flash of private UI).
-  if (!pub && (!authReady || !userId)) {
+  if (!pub && (!authReady || blocked)) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <span className="text-muted-foreground text-sm">Cargando…</span>

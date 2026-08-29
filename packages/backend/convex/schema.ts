@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 // The Next Ship — schema MVP. Ver README raíz + docs/design-foundation.md.
 // Regla: streak/level/xp = capa de engagement sobre señales reales; la
@@ -47,6 +48,8 @@ export const badgeTypeValidator = v.union(
 );
 
 export const schema = defineSchema({
+  // Convex Auth tables (authAccounts/authSessions/…); our `users` overrides its minimal one.
+  ...authTables,
   users: defineTable({
     role: userRoleValidator,
     name: v.string(),
@@ -61,6 +64,8 @@ export const schema = defineSchema({
     companyName: v.optional(v.string()),
     sector: v.optional(v.string()),
     updatedAt: v.number(),
+    email: v.optional(v.string()),
+    onboarded: v.optional(v.boolean()),
   })
     .index("by_githubHandle", ["githubHandle"])
     .index("by_role_and_updatedAt", ["role", "updatedAt"])

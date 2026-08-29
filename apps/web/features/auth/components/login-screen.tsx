@@ -5,20 +5,49 @@ import { useRouter } from "next/navigation";
 
 import { LiquidShader, BrandMark } from "@/components/craft";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useCurrentUser } from "@/lib/current-user";
 import { GithubMark } from "@/features/auth/components/github-mark";
-import { OnboardingForm } from "@/features/auth/forms/onboarding-form";
+import { RoleCard } from "@/features/auth/components/role-card";
+import { ROLE_META } from "@/features/auth/schema";
 
-/** /login — liquid-shader hero, centered auth card. Intro → onboarding step. */
+/** /login — GitHub OAuth, then a one-time builder/startup pick (onboarding). */
 export function LoginScreen() {
   const router = useRouter();
-  const { userId } = useCurrentUser();
-  const [step, setStep] = useState<"intro" | "onboarding">("intro");
+  const { userId, authReady, needsOnboarding, signInGithub, setRole } =
+    useCurrentUser();
+  const [role, setRoleSel] = useState<"builder" | "startup">("builder");
+  const [company, setCompany] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  // Already signed in → skip login.
+  // Signed in AND onboarded → skip login.
   useEffect(() => {
-    if (userId) router.replace("/home");
-  }, [userId, router]);
+    if (authReady && userId && !needsOnboarding) router.replace("/home");
+  }, [authReady, userId, needsOnboarding, router]);
+
+  const onSignIn = async () => {
+    setBusy(true);
+    try {
+      await signInGithub();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onFinish = async () => {
+    setBusy(true);
+    try {
+      await setRole(
+        role,
+        role === "startup" ? company.trim() || undefined : undefined,
+      );
+      router.replace("/home");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const showOnboarding = authReady && userId && needsOnboarding;
 
   return (
     <main className="relative flex min-h-screen flex-1 flex-col items-center justify-center overflow-hidden px-6 py-10">
@@ -40,21 +69,55 @@ export function LoginScreen() {
         </div>
 
         <div className="mt-7">
-          {step === "intro" ? (
+          {showOnboarding ? (
+            <div className="grid gap-4">
+              <p className="text-center text-sm text-muted-foreground">
+                Una cosa más — ¿cómo quieres entrar?
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                {ROLE_META.map((r) => (
+                  <RoleCard
+                    key={r.value}
+                    emoji={r.emoji}
+                    title={r.title}
+                    desc={r.desc}
+                    selected={role === r.value}
+                    onSelect={() => setRoleSel(r.value)}
+                  />
+                ))}
+              </div>
+              {role === "startup" && (
+                <Input
+                  placeholder="Nombre de tu startup"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  className="h-11 rounded-xl"
+                />
+              )}
+              <Button
+                variant="craft"
+                className="h-12 w-full text-base"
+                onClick={onFinish}
+                disabled={busy}
+              >
+                {busy ? "Entrando…" : "Entrar a The Next Ship"}
+              </Button>
+            </div>
+          ) : (
             <div className="grid gap-4">
               <Button
                 variant="craft"
                 className="h-12 w-full text-base"
-                onClick={() => setStep("onboarding")}
+                onClick={onSignIn}
+                disabled={busy}
               >
-                <GithubMark className="size-5" /> Continuar con GitHub
+                <GithubMark className="size-5" />{" "}
+                {busy ? "Redirigiendo…" : "Continuar con GitHub"}
               </Button>
               <p className="text-center text-xs text-faint">
                 Proof-of-work hiring · nunca corremos tu código
               </p>
             </div>
-          ) : (
-            <OnboardingForm onBack={() => setStep("intro")} />
           )}
         </div>
       </div>

@@ -16,8 +16,11 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.51",
+    "@auth/core": "^0.41.3",
+    "@convex-dev/auth": "^0.0.95",
     "ai": "^7.0.84",
     "convex": "^1.45.0",
+    "jose": "^6.2.10",
     "zod": "^4.4.3"
   },
   "devDependencies": {

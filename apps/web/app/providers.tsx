@@ -1,6 +1,7 @@
 "use client";
 
-import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { ConvexReactClient } from "convex/react";
+import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ReactNode } from "react";
 import { CurrentUserProvider } from "@/lib/current-user";
 
@@ -11,8 +12,8 @@ export function Providers({ children }: { children: ReactNode }) {
   // Sin deployment aún (corre `npx convex dev`) → render sin provider.
   if (!convex) return <>{children}</>;
   return (
-    <ConvexProvider client={convex}>
+    <ConvexAuthProvider client={convex}>
       <CurrentUserProvider>{children}</CurrentUserProvider>
-    </ConvexProvider>
+    </ConvexAuthProvider>
   );
 }

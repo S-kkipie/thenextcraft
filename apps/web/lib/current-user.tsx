@@ -1,13 +1,8 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
-import { useMutation, useQuery } from "convex/react";
+import { createContext, useContext, type ReactNode } from "react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "@thenextcraft/backend/api";
 import type { Doc, Id } from "@thenextcraft/backend/dataModel";
 
@@ -16,54 +11,47 @@ type Role = "builder" | "startup";
 type CurrentUser = {
   userId: Id<"users"> | null;
   user: Doc<"users"> | null;
-  /** true once localStorage is read AND (if a uid exists) the user query resolved. */
+  /** true once auth resolved AND (if authed) the viewer query returned. */
   authReady: boolean;
-  login: (name: string, role: Role, githubHandle?: string) => Promise<void>;
+  /** authed but hasn't picked builder/startup yet. */
+  needsOnboarding: boolean;
+  signInGithub: () => Promise<void>;
+  setRole: (role: Role, companyName?: string) => Promise<void>;
   logout: () => void;
 };
 
 const Ctx = createContext<CurrentUser | null>(null);
 
-// DEV AUTH (localStorage stand-in). Real GitHub OAuth (Convex Auth) is a follow-up.
+// Real auth via Convex Auth (GitHub OAuth). The signed-in user is read from
+// `api.users.viewer` (identity from the session, never the client).
 export function CurrentUserProvider({ children }: { children: ReactNode }) {
-  const [userId, setUserId] = useState<Id<"users"> | null>(null);
-  const [hydrated, setHydrated] = useState(false);
+  const { isLoading, isAuthenticated } = useConvexAuth();
+  const { signIn, signOut } = useAuthActions();
+  const user = useQuery(api.users.viewer, isAuthenticated ? {} : "skip");
+  const setRoleMut = useMutation(api.users.setRole);
 
-  // Read the stored uid once, on mount. Until then we don't know the auth state.
-  useEffect(() => {
-    const s = localStorage.getItem("uid");
-    if (s) setUserId(s as Id<"users">);
-    setHydrated(true);
-  }, []);
-
-  // undefined = loading, null = not found (e.g. deleted / wiped dev DB), Doc = ok.
-  const userDoc = useQuery(api.users.get, userId ? { id: userId } : "skip");
-  const createOrGet = useMutation(api.users.createOrGet);
-
-  // A stored uid that no longer resolves to a user → clear it (stale session).
-  useEffect(() => {
-    if (hydrated && userId && userDoc === null) {
-      localStorage.removeItem("uid");
-      setUserId(null);
-    }
-  }, [hydrated, userId, userDoc]);
-
-  const login = async (name: string, role: Role, githubHandle?: string) => {
-    const id = await createOrGet({ name, role, githubHandle });
-    localStorage.setItem("uid", id);
-    setUserId(id);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("uid");
-    setUserId(null);
-  };
-
-  const authReady = hydrated && (userId === null || userDoc !== undefined);
+  const authReady = !isLoading && (!isAuthenticated || user !== undefined);
+  const resolvedUser = user ?? null;
 
   return (
     <Ctx.Provider
-      value={{ userId, user: userDoc ?? null, authReady, login, logout }}
+      value={{
+        userId: resolvedUser?._id ?? null,
+        user: resolvedUser,
+        authReady,
+        needsOnboarding: Boolean(
+          isAuthenticated && resolvedUser && !resolvedUser.onboarded,
+        ),
+        signInGithub: async () => {
+          await signIn("github");
+        },
+        setRole: async (role, companyName) => {
+          await setRoleMut({ role, companyName });
+        },
+        logout: () => {
+          void signOut();
+        },
+      }}
     >
       {children}
     </Ctx.Provider>

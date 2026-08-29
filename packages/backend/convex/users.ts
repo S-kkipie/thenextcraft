@@ -13,6 +13,7 @@ import {
   requireUser,
 } from "./domain";
 import { schema, userRoleValidator } from "./schema";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const createOrGet = mutation({
   args: {
@@ -185,6 +186,34 @@ export const remove = mutation({
     }
 
     await ctx.db.delete("users", args.userId);
+    return null;
+  },
+});
+
+// The signed-in user (Convex Auth). null when logged out.
+export const viewer = query({
+  args: {},
+  returns: v.union(schema.doc("users"), v.null()),
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+    return await ctx.db.get("users", userId);
+  },
+});
+
+// Onboarding: pick builder/startup (identity from the session, never the client).
+export const setRole = mutation({
+  args: { role: userRoleValidator, companyName: v.optional(v.string()) },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("No autenticado");
+    await ctx.db.patch("users", userId, {
+      role: args.role,
+      companyName: args.companyName,
+      onboarded: true,
+      updatedAt: Date.now(),
+    });
     return null;
   },
 });
