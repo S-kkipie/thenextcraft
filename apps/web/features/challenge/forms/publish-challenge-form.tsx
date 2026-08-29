@@ -18,11 +18,15 @@ import {
 } from "@/components/ui/form";
 import { useCurrentUser } from "@/lib/current-user";
 import { challengeInput, type ChallengeInput } from "@/features/challenge/schema";
-import { useCreateChallenge } from "@/features/challenge/hooks";
+import {
+  useCreateChallenge,
+  usePublishChallenge,
+} from "@/features/challenge/hooks";
 
 export function PublishChallengeForm() {
   const { userId } = useCurrentUser();
   const create = useCreateChallenge();
+  const publish = usePublishChallenge();
   const router = useRouter();
 
   const form = useForm<ChallengeInput>({
@@ -47,8 +51,8 @@ export function PublishChallengeForm() {
           .map((s) => s.trim())
           .filter(Boolean),
         reward: values.reward?.trim() || undefined,
-        tech: values.tech && values.tech.length > 0 ? values.tech : undefined,
       });
+      await publish({ startupId: userId, challengeId: id });
       toast.success("Reto publicado");
       router.push(`/challenges/${id}`);
     } catch {

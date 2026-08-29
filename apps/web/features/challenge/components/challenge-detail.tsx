@@ -64,7 +64,15 @@ export function ChallengeDetailView({ id }: { id: Id<"challenges"> }) {
           </p>
           <h1 className="text-3xl font-extrabold">{challenge.title}</h1>
           <div>
-            <StatusPill status={challenge.status} />
+            <StatusPill
+              status={
+                challenge.status === "open"
+                  ? "live"
+                  : challenge.status === "draft"
+                    ? "review"
+                    : "closed"
+              }
+            />
           </div>
         </div>
       </header>

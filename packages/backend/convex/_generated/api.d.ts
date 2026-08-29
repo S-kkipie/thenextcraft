@@ -10,10 +10,17 @@
 
 import type * as badges from "../badges.js";
 import type * as challenges from "../challenges.js";
+import type * as domain from "../domain.js";
 import type * as evaluations from "../evaluations.js";
+import type * as feed from "../feed.js";
+import type * as leaderboard from "../leaderboard.js";
+import type * as opportunities from "../opportunities.js";
+import type * as rankings from "../rankings.js";
 import type * as shortlist from "../shortlist.js";
+import type * as startup from "../startup.js";
 import type * as submissions from "../submissions.js";
 import type * as users from "../users.js";
+import type * as views from "../views.js";
 
 import type {
   ApiFromModules,
@@ -24,10 +31,17 @@ import type {
 declare const fullApi: ApiFromModules<{
   badges: typeof badges;
   challenges: typeof challenges;
+  domain: typeof domain;
   evaluations: typeof evaluations;
+  feed: typeof feed;
+  leaderboard: typeof leaderboard;
+  opportunities: typeof opportunities;
+  rankings: typeof rankings;
   shortlist: typeof shortlist;
+  startup: typeof startup;
   submissions: typeof submissions;
   users: typeof users;
+  views: typeof views;
 }>;
 
 /**

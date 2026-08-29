@@ -11,6 +11,7 @@ import {
   useShortlistSummary,
 } from "@/features/shortlist/hooks";
 import { ShortlistTable } from "@/features/shortlist/components/shortlist-table";
+import { useCurrentUser } from "@/lib/current-user";
 
 export function ShortlistView({
   challengeId,
@@ -20,6 +21,7 @@ export function ShortlistView({
   const summary = useShortlistSummary(challengeId);
   const ranked = useShortlistRanked(challengeId);
   const close = useCloseChallenge();
+  const { userId } = useCurrentUser();
 
   // Cargando: cualquiera de los dos queries sin resolver.
   if (summary === undefined || ranked === undefined) {
@@ -41,7 +43,8 @@ export function ShortlistView({
     if (closed) return;
     if (!window.confirm("¿Cerrar el reto? Dejará de recibir submissions."))
       return;
-    void close({ challengeId });
+    if (!userId) return;
+    void close({ startupId: userId, challengeId });
   };
 
   return (

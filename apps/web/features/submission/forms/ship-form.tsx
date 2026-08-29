@@ -54,10 +54,9 @@ export function ShipForm({ challengeId }: { challengeId: Id<"challenges"> }) {
       const submissionId = await ship({
         challengeId,
         builderId: userId,
-        repoUrl: values.repoUrl,
+        repositoryUrl: values.repoUrl,
         demoUrl: values.demoUrl || undefined,
-        description: values.description || undefined,
-        tech: values.tech && values.tech.length > 0 ? values.tech : undefined,
+        pitch: values.description || undefined,
       });
       toast.success("¡Shipeado! ✦ La IA rankea, la startup decide.");
       router.push(`/submissions/${submissionId}`);

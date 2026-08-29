@@ -1,14 +1,13 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
 
-// Ranking de builders. Derivado de señales reales (xp/level crecen de ships,
-// aprobaciones y AI Judge). Read-only, indexado por rol.
+// Ranking de builders. Derivado de señales reales (xp/level de ships/aprobaciones/AI Judge).
 export const top = query({
   args: { skill: v.optional(v.string()), limit: v.optional(v.number()) },
   handler: async (ctx, { skill, limit }) => {
     let builders = await ctx.db
       .query("users")
-      .withIndex("by_role", (q) => q.eq("role", "builder"))
+      .withIndex("by_role_and_updatedAt", (q) => q.eq("role", "builder"))
       .collect();
 
     if (skill) {

@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "convex dev",
     "deploy": "convex deploy",
-    "codegen": "convex codegen"
+    "codegen": "convex codegen",
+    "test": "vitest run",
+    "typecheck": "tsc -p convex/tsconfig.json --noEmit"
   },
   "exports": {
     "./api": "./convex/_generated/api.js",
@@ -14,5 +16,12 @@
   },
   "dependencies": {
     "convex": "^1.45.0"
+  },
+  "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
+    "convex-test": "^0.0.56",
+    "typescript": "^5.9.3",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
   }
 }

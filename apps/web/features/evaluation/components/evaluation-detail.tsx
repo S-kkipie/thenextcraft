@@ -6,7 +6,6 @@ import type { Id } from "@thenextcraft/backend/dataModel";
 import { Button } from "@/components/ui/button";
 import { ScoreBar, StatusPill, CraftBadge } from "@/components/craft";
 import {
-  useCohort,
   useEvaluation,
   useRunJudge,
   useSetAuthorship,
@@ -35,15 +34,14 @@ export function EvaluationDetail({
   submissionId: Id<"submissions">;
 }) {
   const view = useSubmission(submissionId);
-  const evaluation = useEvaluation(submissionId);
-  const cohort = useCohort(view?.submission.challengeId);
+  const evalResult = useEvaluation(submissionId);
 
   const setAuthorship = useSetAuthorship();
   const runJudge = useRunJudge();
   const [running, setRunning] = useState(false);
 
   // Loading: cualquiera de las dos consultas aún sin resolver.
-  if (view === undefined || evaluation === undefined) {
+  if (view === undefined || evalResult === undefined) {
     return <DetailSkeleton />;
   }
   if (view === null) {
@@ -59,9 +57,11 @@ export function EvaluationDetail({
   // `ship` no siembra evaluación → la fila puede no existir todavía. Sin fila o
   // sin total ⇒ aún no evaluado (se puede disparar el juez). `scored` narrowea
   // la evaluación a no-nula para el render del resultado.
+  const evaluation = evalResult?.evaluation ?? null;
   const scored =
     evaluation && typeof evaluation.totalScore === "number" ? evaluation : null;
-  const cohortSize = cohort?.length;
+  const cohortSize = evalResult?.cohort;
+  const rank = evalResult?.rank ?? undefined;
 
   const handleRun = async () => {
     setRunning(true);
@@ -102,7 +102,7 @@ export function EvaluationDetail({
           {scored ? (
             <ScoreCard
               total={scored.totalScore ?? 0}
-              rank={scored.rank}
+              rank={rank}
               cohortSize={cohortSize}
               fit={scored.fitScore}
               quality={scored.qualityScore}
@@ -126,7 +126,9 @@ export function EvaluationDetail({
           {evaluation !== null && (
             <AuthorshipCard
               status={evaluation.authorshipStatus}
-              onSet={(status) => setAuthorship({ submissionId, status })}
+              onSet={(status) =>
+                setAuthorship({ submissionId, authorshipStatus: status })
+              }
             />
           )}
           {scored && (

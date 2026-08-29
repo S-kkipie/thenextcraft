@@ -4,28 +4,21 @@ import { useAction, useMutation, useQuery } from "convex/react";
 import { api } from "@thenextcraft/backend/api";
 import type { Id } from "@thenextcraft/backend/dataModel";
 
-// Evaluación del AI Judge para una submission (reactiva).
+// Evaluación del AI Judge para una submission (reactiva). Devuelve
+// `{ evaluation, rank, cohort }` o `null` si no existe fila todavía.
 export function useEvaluation(submissionId: Id<"submissions"> | undefined) {
   return useQuery(
-    api.evaluations.getBySubmission,
+    api.views.evaluationForSubmission,
     submissionId ? { submissionId } : "skip",
   );
 }
 
-// La submission + su reto (dominio ajeno; solo lectura). `api.submissions.get`
-// devuelve `{ submission, challenge }` o `null` si no existe.
+// La submission + su reto. `api.views.submissionDetail` devuelve
+// `{ submission, challenge, company }` o `null`.
 export function useSubmission(submissionId: Id<"submissions"> | undefined) {
   return useQuery(
-    api.submissions.get,
-    submissionId ? { id: submissionId } : "skip",
-  );
-}
-
-// Cohorte del reto → para derivar N en el rank #n/N.
-export function useCohort(challengeId: Id<"challenges"> | undefined) {
-  return useQuery(
-    api.submissions.byChallenge,
-    challengeId ? { challengeId } : "skip",
+    api.views.submissionDetail,
+    submissionId ? { submissionId } : "skip",
   );
 }
 

@@ -97,9 +97,9 @@ export function ChallengeList() {
               sector={c.sector ?? undefined}
               initials={initialsOf(c.company)}
               problem={c.businessProblem}
-              reward={c.reward}
+              reward={c.reward ?? undefined}
               tech={c.tech}
-              days={daysLeft(c.deadline)}
+              days={daysLeft(c.deadline ?? undefined)}
               status={c.status}
               href={`/challenges/${c._id}`}
             />

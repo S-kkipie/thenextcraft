@@ -19,7 +19,7 @@ import { useProfileSummary } from "@/features/profile/hooks";
 import { BADGE_META, DEFAULT_BADGE_META } from "@/features/profile/schema";
 
 type Summary = NonNullable<
-  FunctionReturnType<typeof api.badges.profileSummary>
+  FunctionReturnType<typeof api.views.profileSummary>
 >;
 type Project = Summary["projects"][number];
 
