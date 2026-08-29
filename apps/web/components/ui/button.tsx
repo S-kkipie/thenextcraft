@@ -18,6 +18,13 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
+        // ---- The Next Ship craft variants: Duolingo-style 3D depth (press/hover) ----
+        craft:
+          "font-display font-extrabold text-[15px] !h-auto !rounded-xl !px-5 !py-3 bg-cream text-ink shadow-[0_4px_0_var(--cream-edge)] transition-all hover:-translate-y-px hover:shadow-[0_5px_0_var(--cream-edge)] active:translate-y-[3px] active:shadow-[0_1px_0_var(--cream-edge)]",
+        craftSecondary:
+          "font-display font-extrabold text-[15px] !h-auto !rounded-xl !px-5 !py-3 bg-sand text-ink shadow-[0_4px_0_var(--sand-edge)] transition-all hover:-translate-y-px hover:shadow-[0_5px_0_var(--sand-edge)] active:translate-y-[3px] active:shadow-[0_1px_0_var(--sand-edge)]",
+        craftGhost:
+          "font-display font-extrabold text-[15px] !h-auto !rounded-xl !px-5 !py-3 border border-line-2 bg-panel-2 text-foreground shadow-[0_4px_0_var(--ink-2)] transition-all hover:-translate-y-px hover:border-tan hover:shadow-[0_5px_0_var(--ink-2)] active:translate-y-[3px] active:shadow-[0_1px_0_var(--ink-2)]",
       },
       size: {
         default:

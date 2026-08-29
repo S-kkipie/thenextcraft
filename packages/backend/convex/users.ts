@@ -25,13 +25,18 @@ export const createOrGet = mutation({
       name: args.name,
       role: args.role,
       githubHandle: args.githubHandle,
+      // engagement layer seeds (grow from real signals)
+      level: 1,
+      xp: 0,
+      streak: 0,
+      skills: [],
     });
   },
 });
 
 export const get = query({
   args: { id: v.id("users") },
-  handler: async (ctx, args) => ctx.db.get("users", args.id),
+  handler: async (ctx, args) => ctx.db.get(args.id),
 });
 
 export const getByHandle = query({
