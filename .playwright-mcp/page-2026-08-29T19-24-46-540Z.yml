@@ -1,0 +1,12 @@
+- generic [active] [ref=f5e1]:
+  - main [ref=f5e2]:
+    - generic [ref=f5e5]:
+      - generic [ref=f5e6]:
+        - generic [ref=f5e7]: The Next Ship
+        - heading "Entra a The Next Ship" [level=1] [ref=f5e9]
+        - paragraph [ref=f5e10]: Resuelve retos reales. Consigue el trabajo.
+      - generic [ref=f5e12]:
+        - button "Continuar con GitHub" [ref=f5e13]
+        - paragraph [ref=f5e14]: Proof-of-work hiring · nunca corremos tu código
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=f5e20] [cursor=pointer]

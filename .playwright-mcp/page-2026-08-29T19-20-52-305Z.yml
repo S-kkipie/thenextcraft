@@ -1,0 +1,68 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e77]:
+    - banner [ref=e78]:
+      - generic [ref=e79]:
+        - link "The Next Ship" [ref=e80] [cursor=pointer]:
+          - /url: /home
+        - navigation [ref=e83]:
+          - link "Retos" [ref=e84] [cursor=pointer]:
+            - /url: /challenges
+          - link "Ranking" [ref=e85] [cursor=pointer]:
+            - /url: /leaderboard
+          - link "Comunidad" [ref=e86] [cursor=pointer]:
+            - /url: /community
+          - link "Passport" [ref=e87] [cursor=pointer]:
+            - /url: /u/adriantest
+        - generic [ref=e88]:
+          - generic [ref=e89]: 🔥 0
+          - generic [ref=e90]: A
+    - generic [ref=e92]:
+      - generic [ref=e93]:
+        - generic [ref=e94]: Tu carrera
+        - heading "Hola, Adrian Test 👋" [level=1] [ref=e95]
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - generic [ref=e103]:
+            - text: "1"
+            - generic [ref=e104]: NIVEL
+          - generic [ref=e105]:
+            - generic [ref=e106]:
+              - generic [ref=e107]: 0 XP
+              - generic [ref=e108]: "250"
+            - generic [ref=e110]: 🔥 0
+        - generic [ref=e112]:
+          - generic [ref=e113]:
+            - generic [ref=e114]: "0"
+            - text: SHIPPED
+          - generic [ref=e115]:
+            - generic [ref=e116]: "0"
+            - text: APPROVED
+          - generic [ref=e117]:
+            - generic [ref=e118]: —
+            - text: AVG JUDGE
+      - generic [ref=e120]:
+        - generic [ref=e121]:
+          - generic [ref=e122]: Próximo paso
+          - generic [ref=e123]: Toma tu primer reto
+          - paragraph [ref=e124]: Elige un problema de negocio real, shipea tu solución y deja que tu trabajo hable por ti.
+        - link "Ver retos" [ref=e125] [cursor=pointer]:
+          - /url: /challenges
+      - generic [ref=e126]:
+        - heading "Retos para ti" [level=2] [ref=e127]
+        - generic [ref=e128]: No hay retos abiertos ahora mismo. Vuelve pronto.
+      - generic [ref=e129]:
+        - heading "Actividad reciente" [level=2] [ref=e130]
+        - generic [ref=e131]: Aún no hay actividad. Toma un reto y empieza a shipear.
+  - region "Notifications alt+T"
+  - generic [ref=e24] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e25]
+    - generic [ref=e29]:
+      - button "Open issues overlay" [ref=e30]:
+        - generic [ref=e132]:
+          - generic [ref=e133]: "1"
+          - generic [ref=e134]: "2"
+        - generic [ref=e34]:
+          - text: Issue
+          - generic [ref=e135]: s
+      - button "Collapse issues badge" [ref=e35]
+  - alert [ref=e38]: Hola 👋
