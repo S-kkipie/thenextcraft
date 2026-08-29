@@ -80,6 +80,10 @@ export const builderSubmissions = query({
     for (const s of subs) {
       const ch = await ctx.db.get("challenges", s.challengeId);
       const st = ch ? await ctx.db.get("users", ch.startupId) : null;
+      const ev = await ctx.db
+        .query("evaluations")
+        .withIndex("by_submissionId", (q) => q.eq("submissionId", s._id))
+        .unique();
       out.push({
         _id: s._id,
         challengeId: s.challengeId,
@@ -87,8 +91,11 @@ export const builderSubmissions = query({
         repositoryUrl: s.repositoryUrl,
         tech: s.tech ?? [],
         challengeTitle: ch?.title ?? "Reto",
+        challengeStatus: ch?.status ?? null,
         company: st?.companyName ?? st?.name ?? null,
         submittedAt: s.submittedAt,
+        feedbackStatus: ev?.feedbackStatus ?? "pending",
+        score: ev?.totalScore ?? null,
       });
     }
     return out;

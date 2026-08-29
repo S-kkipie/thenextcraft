@@ -8,6 +8,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Id } from "@thenextcraft/backend/dataModel";
 import { useChallenge } from "@/features/challenge/hooks";
+import { useMySubmissionForChallenge } from "@/features/submission/hooks";
+import { useCurrentUser } from "@/lib/current-user";
 import { initialsOf, daysLeft } from "@/features/challenge/utils";
 
 function fmtDate(ms: number): string {
@@ -19,6 +21,12 @@ function fmtDate(ms: number): string {
 
 export function ChallengeDetailView({ id }: { id: Id<"challenges"> }) {
   const challenge = useChallenge(id);
+  const { userId, user } = useCurrentUser();
+  const isBuilder = user?.role !== "startup";
+  const mySubmission = useMySubmissionForChallenge(
+    isBuilder ? id : undefined,
+    isBuilder ? userId : null,
+  );
 
   if (challenge === undefined) {
     return (
@@ -174,7 +182,8 @@ export function ChallengeDetailView({ id }: { id: Id<"challenges"> }) {
               <li className="flex gap-2.5">
                 <span className="data text-faint">3.</span>
                 <span>
-                  Autoría <span className="text-muted-foreground">(viva humana)</span>
+                  Feedback del juez{" "}
+                  <span className="text-muted-foreground">(al finalizar)</span>
                 </span>
               </li>
             </ol>
@@ -182,18 +191,30 @@ export function ChallengeDetailView({ id }: { id: Id<"challenges"> }) {
 
           <hr className="border-line" />
 
-          <Link
-            href={`/ship/${challenge._id}`}
-            className={buttonVariants({ variant: "craftSecondary" }) + " w-full"}
-          >
-            Participar <PixelIcon name="arrowRight" size={12} />
-          </Link>
-          <button
-            type="button"
-            className={buttonVariants({ variant: "craftGhost" }) + " w-full"}
-          >
-            Guardar
-          </button>
+          {mySubmission ? (
+            <Link
+              href={`/submissions/${mySubmission._id}`}
+              className={buttonVariants({ variant: "craft" }) + " w-full"}
+            >
+              Ver mi submission <PixelIcon name="arrowRight" size={12} />
+            </Link>
+          ) : challenge.status === "open" ? (
+            <Link
+              href={`/ship/${challenge._id}`}
+              className={buttonVariants({ variant: "craftSecondary" }) + " w-full"}
+            >
+              Participar <PixelIcon name="arrowRight" size={12} />
+            </Link>
+          ) : (
+            <div
+              className={
+                buttonVariants({ variant: "craftGhost" }) +
+                " pointer-events-none w-full opacity-60"
+              }
+            >
+              Reto cerrado
+            </div>
+          )}
         </aside>
       </div>
     </div>

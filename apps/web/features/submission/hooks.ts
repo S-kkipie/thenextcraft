@@ -21,3 +21,14 @@ export function useBuilderSubmissions(builderId: Id<"users"> | null) {
     builderId ? { builderId } : "skip",
   );
 }
+
+/** Mi submission para un reto (o null). Ambos ids requeridos ⇒ si no, skip. */
+export function useMySubmissionForChallenge(
+  challengeId: Id<"challenges"> | undefined,
+  builderId: Id<"users"> | null,
+) {
+  return useQuery(
+    api.submissions.mineForChallenge,
+    challengeId && builderId ? { challengeId, builderId } : "skip",
+  );
+}

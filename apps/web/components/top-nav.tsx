@@ -38,6 +38,7 @@ type Tab = { href: string; label: string; icon: PixelIconName };
 const BUILDER_TABS: Tab[] = [
   { href: "/home", label: "Inicio", icon: "terminal" },
   { href: "/challenges", label: "Retos", icon: "target" },
+  { href: "/submissions", label: "Mis envíos", icon: "ship" },
   { href: "/leaderboard", label: "Ranking", icon: "trophy" },
   { href: "/community", label: "Comunidad", icon: "users" },
 ];

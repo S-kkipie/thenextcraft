@@ -22,6 +22,20 @@ export const get = query({
     await ctx.db.get("submissions", args.submissionId),
 });
 
+// La submission del builder para un reto (o null). Para el CTA del detalle del
+// reto: si ya envió, mostrar "Ver mi submission" en vez de "Participar".
+export const mineForChallenge = query({
+  args: { challengeId: v.id("challenges"), builderId: v.id("users") },
+  returns: v.union(schema.doc("submissions"), v.null()),
+  handler: async (ctx, { challengeId, builderId }) =>
+    await ctx.db
+      .query("submissions")
+      .withIndex("by_challengeId_and_builderId", (q) =>
+        q.eq("challengeId", challengeId).eq("builderId", builderId),
+      )
+      .unique(),
+});
+
 export const listByChallenge = query({
   args: {
     challengeId: v.id("challenges"),
