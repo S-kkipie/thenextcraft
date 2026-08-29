@@ -1,0 +1,17 @@
+node_modules
+.next
+.turbo
+out
+dist
+*.log
+
+# env
+.env
+.env.local
+.env*.local
+
+# convex generated
+packages/backend/convex/_generated
+.convex
+
+.DS_Store

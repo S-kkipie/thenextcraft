@@ -1,0 +1,14 @@
+{
+  "name": "thenextcraft",
+  "private": true,
+  "packageManager": "pnpm@11.24.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "backend": "pnpm --filter @thenextcraft/backend dev"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.8"
+  }
+}

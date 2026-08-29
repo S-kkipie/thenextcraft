@@ -54,6 +54,32 @@ reto de negocio  →  build  →  ship (link público)  →  AI evalúa + rankea
 
 Nace en el track **Learning by Shipping** de [The Next Craft](https://thenextcraft.org/es) — *"menos escuela, más hacer"*. Convex es sponsor del evento.
 
+## Monorepo
+
+Turborepo + pnpm.
+
+```
+apps/web/          Next.js 16 (App Router, TS, Tailwind v4) → Vercel
+packages/backend/  Convex (schema + funciones)             → Convex Cloud
+```
+
+## Setup local
+
+```bash
+pnpm install
+
+# 1) backend: login Convex + genera _generated + levanta deployment dev
+pnpm --filter @thenextcraft/backend dev      # = npx convex dev
+
+# 2) copia la URL que imprime Convex a apps/web/.env.local
+cp apps/web/.env.local.example apps/web/.env.local
+#   NEXT_PUBLIC_CONVEX_URL=<url del deployment>
+
+# 3) frontend (o `pnpm dev` para todo con turbo)
+pnpm --filter web dev
+```
+
 ## Estado
 
-Concepto lockeado. **MVP demoable pendiente de definir** (pantallas + flujo mínimo).
+Concepto lockeado. **Scaffold listo** (monorepo, Next + Convex, schema MVP, landing).
+Pendiente: auth (Convex Auth + GitHub OAuth), pantallas del flujo, pipeline AI de evaluación.
