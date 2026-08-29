@@ -1,0 +1,119 @@
+- generic [ref=f6e1]:
+  - generic [active]:
+    - generic [ref=f6e29]:
+      - generic [ref=f6e30]:
+        - navigation [ref=f6e32]:
+          - button [disabled] [ref=f6e33]:
+            - img "previous" [ref=f6e34]
+          - generic [ref=f6e36]:
+            - generic [ref=f6e37]: 1/
+            - generic [ref=f6e38]: "2"
+          - button [ref=f6e39] [cursor=pointer]:
+            - img "next" [ref=f6e40]
+        - generic [ref=f6e43]:
+          - generic "Latest available version is detected (16.3.3)." [ref=f6e46]: Next.js 16.3.3
+          - generic [ref=f6e47]: Turbopack
+      - dialog "Console Error" [ref=f6e49]:
+        - generic [ref=f6e52]:
+          - generic [ref=f6e54]:
+            - generic [ref=f6e55]:
+              - generic [ref=f6e56]: Console Error
+              - generic [ref=f6e58]:
+                - button "Copy Error Info" [ref=f6e59] [cursor=pointer]
+                - button "No related documentation found" [disabled] [ref=f6e62]
+                - button "Attach Node.js inspector" [ref=f6e65] [cursor=pointer]
+            - generic [ref=f6e75]:
+              - text: "Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`. at Button ("
+              - link "http://localhost:3000/_next/static/chunks/apps_web_1vc8lug._.js:508:446" [ref=f6e76] [cursor=pointer]:
+                - /url: http://localhost:3000/_next/static/chunks/apps_web_1vc8lug._.js:508:446
+              - text: ) at NextStepCard (
+              - link "http://localhost:3000/_next/static/chunks/apps_web_1_sjjbb._.js:1257:483" [ref=f6e77] [cursor=pointer]:
+                - /url: http://localhost:3000/_next/static/chunks/apps_web_1_sjjbb._.js:1257:483
+              - text: ) at BuilderDashboard (
+              - link "http://localhost:3000/_next/static/chunks/apps_web_1_sjjbb._.js:1110:470" [ref=f6e78] [cursor=pointer]:
+                - /url: http://localhost:3000/_next/static/chunks/apps_web_1_sjjbb._.js:1110:470
+              - text: ) at HomePage (about://React/Server/file:///home/skkippie/work/AI-DO/thenextcraft/apps/web/.next/dev/server/chunks/ssr/%5Broot-of-the-server%5D__0rzvtq4._.js?8:25:495)
+            - button "Show More" [ref=f6e80] [cursor=pointer]
+          - generic [ref=f6e81]:
+            - generic [ref=f6e82]:
+              - paragraph [ref=f6e84]:
+                - generic [ref=f6e89]: components/ui/button.tsx (57:5) @ Button
+                - button "Open in editor" [ref=f6e90] [cursor=pointer]
+              - generic [ref=f6e94]:
+                - generic [ref=f6e95]: "55 | }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {"
+                - generic [ref=f6e96]: 56 | return (
+                - generic [ref=f6e97]: "> 57 | <ButtonPrimitive"
+                - generic [ref=f6e98]: "| ^"
+                - generic [ref=f6e99]: 58 | data-slot="button"
+                - generic [ref=f6e100]: "59 | className={cn(buttonVariants({ variant, size, className }))}"
+                - generic [ref=f6e101]: "60 | {...props}"
+            - generic [ref=f6e102]:
+              - generic [ref=f6e103]:
+                - paragraph [ref=f6e104]:
+                  - text: Call Stack
+                  - generic [ref=f6e105]: "58"
+                - button "Show 50 ignore-listed frame(s)" [ref=f6e106] [cursor=pointer]
+              - generic [ref=f6e109]:
+                - generic [ref=f6e110]:
+                  - text: Button
+                  - button "Open Button in editor" [ref=f6e111] [cursor=pointer]
+                - text: components/ui/button.tsx (57:5)
+              - generic [ref=f6e114]:
+                - generic [ref=f6e115]:
+                  - text: NextStepCard
+                  - button "Open NextStepCard in editor" [ref=f6e116] [cursor=pointer]
+                - text: features/dashboard/components/next-step-card.tsx (19:11)
+              - generic [ref=f6e119]:
+                - generic [ref=f6e120]:
+                  - text: BuilderDashboard
+                  - button "Open BuilderDashboard in editor" [ref=f6e121] [cursor=pointer]
+                - text: features/dashboard/components/builder-dashboard.tsx (81:31)
+              - generic [ref=f6e124]:
+                - generic [ref=f6e125]:
+                  - text: HomePage
+                  - button "Open HomePage in editor" [ref=f6e126] [cursor=pointer]
+                - text: app/(app)/home/page.tsx (9:10)
+              - generic [ref=f6e129]:
+                - generic [ref=f6e130]:
+                  - text: Button
+                  - button "Open Button in editor" [ref=f6e131] [cursor=pointer]
+                - text: components/ui/button.tsx (57:5)
+              - generic [ref=f6e134]:
+                - generic [ref=f6e135]:
+                  - text: NextStepCard
+                  - button "Open NextStepCard in editor" [ref=f6e136] [cursor=pointer]
+                - text: features/dashboard/components/next-step-card.tsx (19:11)
+              - generic [ref=f6e139]:
+                - generic [ref=f6e140]:
+                  - text: BuilderDashboard
+                  - button "Open BuilderDashboard in editor" [ref=f6e141] [cursor=pointer]
+                - text: features/dashboard/components/builder-dashboard.tsx (81:31)
+              - generic [ref=f6e144]:
+                - generic [ref=f6e145]:
+                  - text: HomePage
+                  - button "Open HomePage in editor" [ref=f6e146] [cursor=pointer]
+                - text: app/(app)/home/page.tsx (9:10)
+      - contentinfo [ref=f6e149]:
+        - region "Error feedback" [ref=f6e150]:
+          - paragraph [ref=f6e151]:
+            - link "Was this helpful?" [ref=f6e152] [cursor=pointer]:
+              - /url: https://nextjs.org/telemetry#error-feedback
+          - button "Mark as helpful" [ref=f6e153] [cursor=pointer]
+          - button "Mark as not helpful" [ref=f6e157] [cursor=pointer]
+    - generic [ref=f6e21] [cursor=pointer]:
+      - button "Open Next.js Dev Tools" [ref=f6e22]
+      - generic [ref=f6e160]:
+        - button "Open issues overlay" [ref=f6e161]:
+          - generic [ref=f6e162]:
+            - generic [ref=f6e163]: "1"
+            - generic [ref=f6e164]: "2"
+          - generic [ref=f6e165]:
+            - text: Issue
+            - generic [ref=f6e166]: s
+        - button "Collapse issues badge" [ref=f6e167]
+  - generic [ref=f6e171]:
+    - heading "This page couldn’t load" [level=1] [ref=f6e174]
+    - paragraph [ref=f6e175]: Reload to try again, or go back.
+    - generic [ref=f6e176]:
+      - button "Reload" [ref=f6e178] [cursor=pointer]
+      - button "Back" [ref=f6e179] [cursor=pointer]

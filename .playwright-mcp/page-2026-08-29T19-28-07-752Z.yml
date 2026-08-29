@@ -1,0 +1,19 @@
+- generic [active] [ref=f6e1]:
+  - generic [ref=f6e2]:
+    - banner [ref=f6e3]:
+      - generic [ref=f6e4]:
+        - link "The Next Ship" [ref=f6e5] [cursor=pointer]:
+          - /url: /home
+        - navigation [ref=f6e8]:
+          - link "Retos" [ref=f6e9] [cursor=pointer]:
+            - /url: /challenges
+          - link "Ranking" [ref=f6e10] [cursor=pointer]:
+            - /url: /leaderboard
+          - link "Comunidad" [ref=f6e11] [cursor=pointer]:
+            - /url: /community
+        - link "Entrar" [ref=f6e13] [cursor=pointer]:
+          - /url: /login
+    - generic [ref=f6e14]: Cargando…
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=f6e22] [cursor=pointer]
+  - alert [ref=f6e26]

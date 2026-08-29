@@ -15,10 +15,14 @@
     "./dataModel": "./convex/_generated/dataModel.d.ts"
   },
   "dependencies": {
-    "convex": "^1.45.0"
+    "@ai-sdk/openai": "^4.0.51",
+    "ai": "^7.0.84",
+    "convex": "^1.45.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@edge-runtime/vm": "^5.0.0",
+    "@types/node": "^22.10.0",
     "convex-test": "^0.0.56",
     "typescript": "^5.9.3",
     "vite": "^8.2.2",
