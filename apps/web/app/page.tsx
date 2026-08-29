@@ -1,119 +1,130 @@
 import Link from "next/link";
 
 import { Beto } from "@/components/craft/beto";
+import { LiquidShader } from "@/components/craft/liquid-shader";
+import { TiltCard } from "@/components/craft/tilt-card";
 
 /*
- * Landing · macrostructure Manifesto, piel retro-terminal.
+ * Landing · arte de docs/design-foundation.html.
  *
- * ADN muestreado en vivo de thenextcraft.org/es: IBM Plex Mono en todo, papel
- * #1A1A17 sobre tinta crema, wordmark manuscrito, números de línea BASIC como
- * etiquetas de sección, botones-bloque con sombra dura, retícula CRT, dither.
- * Sin boot sequence: el jurado entra directo al contenido.
+ * Tokens, escala tipográfica, profundidad 3D de los botones, radios, badges y
+ * el shader líquido salen tal cual de ese archivo. Lo único que sobrevive de la
+ * pasada retro es el prompt READY., como guiño a thenextcraft.org.
  *
- * Regla de copy: cero métricas inventadas. Todo sale del README.
+ * Todo va scopeado bajo `.landing`: la app corre en el tema mono y no hereda
+ * nada de acá.
+ *
+ * Regla de copy: cero métricas inventadas. El reto de Novabank va rotulado como
+ * ejemplo porque lo es — viene del propio design foundation.
  */
 
 export const metadata = {
-  title: "thenextcraft · Tu CV no prueba nada",
+  title: "thenextcraft · Resuelve el reto. Consigue el trabajo.",
   description:
-    "Las startups publican su problema de negocio real. Shipeas una solución pública. La IA rankea. Te contratan por lo que construiste.",
+    "Las startups publican su problema de negocio. Shipeas una solución pública. La IA filtra y rankea, tú defiendes tu autoría, la startup contrata.",
 };
 
 export default function Landing() {
   return (
-    <>
-      <Ticker />
+    <div className="landing flex flex-1 flex-col">
       <Nav />
       <main className="flex-1">
         <Hero />
-        <Claims />
-        <Loop />
-        <Evaluation />
-        <Difference />
-        <ForStartups />
+        <div className="mx-auto w-full max-w-[1080px] px-6">
+          <Manifesto />
+          <Loop />
+          <Evaluation />
+          <Difference />
+          <ForStartups />
+        </div>
         <FinalCta />
       </main>
       <Footer />
-    </>
-  );
-}
-
-/* ── Piezas del sistema retro ─────────────────────────────────────────────── */
-
-/** Etiqueta de sección como una línea de BASIC. El número va en bitmap. */
-function BasicLine({ n, children }: { n: number; children: React.ReactNode }) {
-  return (
-    <p className="flex items-baseline gap-3 text-sm tracking-wider text-muted-foreground uppercase">
-      <span className="font-pixel text-brand">{n}</span>
-      <span>{children}</span>
-    </p>
-  );
-}
-
-/** Banda dithered de 1 bit: el divisor entre secciones. */
-function DitherRule() {
-  return <div className="dither h-2 w-full opacity-25" aria-hidden />;
-}
-
-const BLOCK_BUTTON =
-  "shadow-hard inline-flex items-center gap-2 border border-foreground bg-primary px-6 py-3 text-sm font-semibold tracking-widest whitespace-nowrap text-primary-foreground uppercase transition-[transform,box-shadow] hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_0_var(--dim)] active:translate-x-1 active:translate-y-1 active:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
-
-const GHOST_BUTTON =
-  "shadow-hard-sm inline-flex items-center gap-2 border border-foreground/50 px-5 py-2.5 text-sm font-semibold tracking-widest whitespace-nowrap uppercase transition-[transform,box-shadow] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
-
-/* ── Ticker + nav N8 terminal ─────────────────────────────────────────────── */
-
-function Ticker() {
-  return (
-    <div className="border-b border-border">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 overflow-hidden px-5 py-1.5 text-[11px] tracking-widest text-dim uppercase">
-        <span className="whitespace-nowrap">
-          Proof-of-work hiring · Lima · Remoto
-        </span>
-        <span className="font-pixel whitespace-nowrap">0 00 00111</span>
-      </div>
     </div>
   );
 }
 
+/* ── Piezas compartidas ───────────────────────────────────────────────────── */
+
+function SectionHead({
+  n,
+  title,
+  children,
+}: {
+  n: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="mb-7">
+      <div className="eyebrow">
+        {n} — {title}
+      </div>
+      <h2 className="mt-1.5 text-[26px] font-extrabold sm:text-[30px]">
+        {children}
+      </h2>
+    </div>
+  );
+}
+
+function Section({ id, children }: { id?: string; children: React.ReactNode }) {
+  return (
+    <section
+      id={id}
+      className="scroll-mt-20 border-t border-[var(--line)] py-14 first:border-t-0"
+    >
+      {children}
+    </section>
+  );
+}
+
+/* ── Nav ──────────────────────────────────────────────────────────────────── */
+
 const ANCHORS = [
   { href: "#manifiesto", label: "Manifiesto" },
   { href: "#loop", label: "El loop" },
-  { href: "#evaluacion", label: "Rúbrica" },
+  { href: "#evaluacion", label: "Evaluación" },
   { href: "#startups", label: "Startups" },
 ];
 
 function Nav() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-sm">
-      <nav className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-3">
-        <Link href="/" className="font-script text-xl leading-none">
+    <div className="sticky top-0 z-20 border-b border-[var(--line)] bg-[rgb(26_26_23_/_0.72)] backdrop-blur-[14px]">
+      <div className="mx-auto flex h-[60px] max-w-[1080px] items-center gap-6 px-6">
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 text-[19px] font-black tracking-[-0.03em]"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          <span className="size-[11px] rounded-[3px] bg-[var(--sand)] shadow-[0_0_14px_rgb(198_161_91_/_0.6)]" />
           thenextcraft
         </Link>
 
-        <div className="hidden flex-1 items-center gap-5 md:flex">
+        <nav className="hidden gap-[18px] text-sm font-semibold text-[var(--muted)] md:flex">
           {ANCHORS.map((anchor) => (
             <a
               key={anchor.href}
               href={anchor.href}
-              className="text-xs tracking-widest whitespace-nowrap text-muted-foreground uppercase transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="whitespace-nowrap transition-colors hover:text-[var(--text)]"
             >
               {anchor.label}
             </a>
           ))}
-        </div>
+        </nav>
 
-        <Link
-          href="/home"
-          className="ml-auto border border-foreground/50 px-3 py-1.5 text-xs tracking-widest whitespace-nowrap uppercase transition-colors hover:bg-foreground hover:text-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:ml-0"
-        >
-          Entrar
-        </Link>
-        <Link href="/desafios" className={`${BLOCK_BUTTON} hidden sm:inline-flex`}>
-          Postular →
-        </Link>
-      </nav>
-    </header>
+        <div className="ml-auto flex items-center gap-3">
+          <Link href="/home" className="btn btn-ghost btn-sm">
+            Entrar
+          </Link>
+          <Link
+            href="/desafios"
+            className="btn btn-secondary btn-sm hidden sm:inline-flex"
+          >
+            Explorar retos →
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -121,40 +132,68 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="crt-grid relative">
-      <div className="mx-auto max-w-6xl px-5 pt-20 pb-24 sm:pt-28 sm:pb-32">
-        <p className="text-sm tracking-widest text-brand">
-          READY.
-          <span className="cursor-block ml-0.5 inline-block h-[1em] w-[0.55em] translate-y-[0.1em] bg-brand" />
-        </p>
+    <header className="relative overflow-hidden">
+      <LiquidShader className="absolute inset-0 block size-full" />
+      {/* Funde el shader contra el ground para que el texto no pelee con él. */}
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(120% 90% at 50% 0%, transparent 42%, var(--ink) 94%), linear-gradient(180deg, rgb(19 19 16 / 0.2), rgb(19 19 16 / 0.05) 40%, var(--ink))",
+        }}
+      />
 
-        <h1 className="display mt-10 text-[clamp(2.25rem,8.5vw,5.5rem)] leading-[1.02] font-bold tracking-[-0.02em] uppercase">
-          Tu CV no
+      <div className="relative mx-auto max-w-[1080px] px-6 pt-[92px] pb-24">
+        {/* Lo único que queda del referente C64. */}
+        <a
+          href="https://thenextcraft.org/es"
+          target="_blank"
+          rel="noreferrer"
+          className="data inline-flex items-center text-[13px] text-[var(--muted)] transition-colors hover:text-[var(--sand)]"
+        >
+          READY.
+          <span className="cursor-block ml-1 inline-block h-[0.9em] w-[0.55em] translate-y-[0.05em] bg-[var(--sand)]" />
+        </a>
+
+        <div className="eyebrow mt-6 text-[var(--sand)]">Proof-of-work hiring</div>
+
+        <h1 className="mt-3.5 text-[clamp(38px,7vw,74px)] leading-[1.02] font-black">
+          Resuelve el reto real
           <br />
-          prueba nada.
+          de una startup.
           <br />
-          <span className="bg-foreground px-2 text-background">Tu código sí.</span>
+          <span className="bg-gradient-to-r from-[var(--sand)] to-[var(--terra)] bg-clip-text text-transparent">
+            Consigue el trabajo.
+          </span>
         </h1>
 
-        <p className="mt-12 max-w-lg leading-relaxed text-muted-foreground">
-          Las startups publican su problema de negocio real. Shipeas una solución
-          pública. La IA rankea las submissions. Ellas contratan.
+        <p className="mt-5 max-w-[52ch] text-[clamp(16px,2vw,20px)] text-[#C9C3B4]">
+          Las startups publican su problema de negocio. Tú shipeas una solución
+          pública. La IA filtra y rankea, tú defiendes tu autoría, la startup
+          contrata.
         </p>
 
-        <div className="mt-12 flex flex-wrap items-center gap-4">
-          <Link href="/desafios" className={BLOCK_BUTTON}>
-            Ver desafíos →
+        <div className="mt-[34px] flex flex-wrap gap-3.5">
+          <Link href="/desafios" className="btn btn-primary">
+            Explorar retos →
           </Link>
-          <a href="#loop" className={GHOST_BUTTON}>
-            Cómo funciona ↓
+          <a href="#startups" className="btn btn-ghost">
+            Publicar reto
           </a>
         </div>
+
+        <p className="mt-[26px] max-w-[60ch] text-[13px] text-[var(--muted)]">
+          Streak · Nivel · XP = capa de progreso sobre señales{" "}
+          <b className="text-[var(--text)]">reales</b> (shipped · startup-approved
+          · AI review · autoría verificada).
+        </p>
       </div>
-    </section>
+    </header>
   );
 }
 
-/* ── 10 · El manifiesto, una afirmación por banda ─────────────────────────── */
+/* ── 01 · Manifiesto ──────────────────────────────────────────────────────── */
 
 const CLAIMS = [
   {
@@ -171,134 +210,215 @@ const CLAIMS = [
   },
 ];
 
-function Claims() {
+function Manifesto() {
   return (
-    <section id="manifiesto" className="scroll-mt-16 border-y border-border bg-elev">
-      <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
-        <BasicLine n={10}>{'PRINT "MANIFIESTO"'}</BasicLine>
+    <Section id="manifiesto">
+      <SectionHead n="01" title="Manifiesto">
+        Tres cosas que no negociamos
+      </SectionHead>
 
-        <ul className="mt-12 space-y-12">
-          {CLAIMS.map((claim) => (
-            <li key={claim.line} className="border-l-2 border-brand pl-6">
-              <p className="display max-w-3xl text-[clamp(1.25rem,3.6vw,2.25rem)] leading-[1.2] font-semibold tracking-tight">
-                {claim.line}
-              </p>
-              <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                {claim.tail}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <DitherRule />
-    </section>
+      <ul className="grid gap-5 md:grid-cols-3">
+        {CLAIMS.map((claim) => (
+          <li key={claim.line} className="card card-hover">
+            <p className="text-[19px] leading-snug font-extrabold tracking-[-0.02em]">
+              {claim.line}
+            </p>
+            <p className="mt-2.5 text-sm text-[var(--muted)]">{claim.tail}</p>
+          </li>
+        ))}
+      </ul>
+    </Section>
   );
 }
 
-/* ── 20 · El loop ─────────────────────────────────────────────────────────── */
+/* ── 02 · El loop + el reto de ejemplo ────────────────────────────────────── */
 
 const LOOP = [
   {
-    n: "1.0",
+    n: "1",
     title: "La startup publica su reto",
-    body: "Un problema real de su negocio, con criterios de éxito medibles. No un enunciado de examen.",
+    body: "Un problema real de su negocio, con criterios de éxito medibles.",
   },
   {
-    n: "2.0",
+    n: "2",
     title: "Muchos builders shipean",
-    body: "Cada uno resuelve a su manera y entrega un link público. Repo, deploy, lo que pruebe que existe.",
+    body: "Cada uno entrega un link público. Repo, deploy, lo que pruebe que existe.",
   },
   {
-    n: "3.0",
+    n: "3",
     title: "La IA rankea, no decide",
-    body: "Hace el filtro pesado — de cien a diez, con un score comparable. La startup elige entre esos diez.",
+    body: "Hace el filtro pesado. La startup elige entre los que quedan arriba.",
   },
   {
-    n: "4.0",
+    n: "4",
     title: "Te contratan",
-    body: "No por tu CV: por haber resuelto su problema. De regalo queda un portfolio verificable.",
+    body: "Por haber resuelto su problema. De regalo queda un portfolio verificable.",
   },
 ];
 
 function Loop() {
   return (
-    <section id="loop" className="mx-auto max-w-6xl scroll-mt-16 px-5 py-24 sm:py-32">
-      <BasicLine n={20}>{"GOSUB EL LOOP"}</BasicLine>
-
-      <h2 className="display mt-8 text-[clamp(1.5rem,5vw,3rem)] leading-[1.05] font-bold tracking-tight uppercase">
+    <Section id="loop">
+      <SectionHead n="02" title="El loop">
         Reto → build → ship → hire
-      </h2>
+      </SectionHead>
 
-      <ol className="mt-14 grid gap-x-10 gap-y-10 sm:grid-cols-2">
-        {LOOP.map((step) => (
-          <li key={step.n} className="border-t border-border pt-5">
-            <span className="font-pixel text-sm text-brand">{step.n}</span>
-            <h3 className="mt-3 font-semibold tracking-tight">{step.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {step.body}
-            </p>
-          </li>
-        ))}
-      </ol>
-    </section>
+      <div className="grid gap-5 lg:grid-cols-[1fr_minmax(0,400px)] lg:items-start">
+        <ol className="grid gap-5 sm:grid-cols-2">
+          {LOOP.map((step) => (
+            <li key={step.n} className="card card-hover">
+              <span
+                className="grid size-8 place-items-center rounded-[10px] bg-[var(--tan)] text-sm font-black text-[var(--cream)]"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                {step.n}
+              </span>
+              <h3 className="mt-3.5 text-[17px] font-extrabold">{step.title}</h3>
+              <p className="mt-1.5 text-sm text-[var(--muted)]">{step.body}</p>
+            </li>
+          ))}
+        </ol>
+
+        <ExampleChallenge />
+      </div>
+
+      <div className="mt-8 flex flex-wrap items-center gap-2.5">
+        <span className="eyebrow mr-1">Byproduct verificable</span>
+        <span className="badge b-first">✦ First ship</span>
+        <span className="badge b-ship">🚀 Shipped</span>
+        <span className="badge b-approved">✓ Startup-approved</span>
+        <span className="badge b-auth">🧬 Autoría verificada</span>
+      </div>
+    </Section>
   );
 }
 
-/* ── 30 · Rúbrica ─────────────────────────────────────────────────────────── */
+/** El reto tal como lo ve un builder. Se inclina siguiendo al puntero. */
+function ExampleChallenge() {
+  return (
+    <TiltCard>
+      <div className="card card-raised">
+        <div className="mb-3.5 flex items-center gap-2.5">
+          <span
+            className="grid size-[38px] place-items-center rounded-[10px] bg-gradient-to-br from-[var(--tan)] to-[#7a6844] text-sm font-black text-[var(--cream)]"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            NV
+          </span>
+          <div style={{ fontFamily: "var(--font-display)" }}>
+            <div className="text-sm font-extrabold">Novabank</div>
+            <div className="text-xs font-semibold text-[var(--faint)]">
+              Fintech · 12 personas
+            </div>
+          </div>
+          <div
+            className="ml-auto text-right"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            <b className="text-[15px] text-[var(--sand)]">$1,500</b>
+            <small className="block text-[11px] text-[var(--faint)]">
+              + entrevista
+            </small>
+          </div>
+        </div>
+
+        <h3 className="mb-2 text-[18px] font-extrabold">
+          Detectar transacciones fraudulentas en el dashboard
+        </h3>
+        <p className="mb-3.5 text-sm text-[var(--muted)]">
+          Nuestro equipo de soporte revisa fraude a mano. Queremos una vista que
+          priorice los casos más riesgosos con una explicación clara.
+        </p>
+
+        <div className="flex flex-wrap gap-2">
+          <span className="tag-pill">Next.js</span>
+          <span className="tag-pill">Data viz</span>
+          <span className="tag-pill">LLM</span>
+        </div>
+
+        <div className="my-3.5 flex flex-wrap gap-4 text-[12.5px] font-semibold text-[var(--faint)]">
+          <span>
+            👥 <b className="text-[var(--text)]">42</b> participantes
+          </span>
+          <span>
+            ⏱ <b className="text-[var(--text)]">10</b> días
+          </span>
+          <span>
+            🎯 <b className="text-[var(--text)]">4</b> criterios
+          </span>
+        </div>
+
+        <span className="btn btn-secondary w-full justify-center">
+          Participar →
+        </span>
+        <p className="mt-3 text-center text-[11px] text-[var(--faint)]">
+          Reto de ejemplo — así se ve la pieza core del loop.
+        </p>
+      </div>
+    </TiltCard>
+  );
+}
+
+/* ── 03 · Evaluación ──────────────────────────────────────────────────────── */
 
 const CRITERIA = [
   {
-    label: "Primero",
+    order: "Primero ★",
     title: "¿Resuelve el problema?",
     body: "Se juzga como producto, no como código. La IA evalúa contra los criterios de la startup; la startup confirma.",
+    primary: true,
   },
   {
-    label: "Segundo",
+    order: "Segundo",
     title: "Calidad de build",
     body: "Revisión estática: arquitectura, seguridad, legibilidad. Un score comparable entre todas las submissions.",
+    primary: false,
   },
   {
-    label: "Tercero",
+    order: "Tercero",
     title: "Autoría y entendimiento",
     body: "Humano. Defiendes tu diff en video o audio, o escalas a entrevista con la startup. No es un quiz automático.",
+    primary: false,
   },
 ];
 
 function Evaluation() {
   return (
-    <section id="evaluacion" className="scroll-mt-16 border-y border-border bg-elev">
-      <div className="mx-auto max-w-6xl px-5 py-24 sm:py-32">
-        <BasicLine n={30}>{"IF RESUELVE THEN HIRE"}</BasicLine>
+    <Section id="evaluacion">
+      <SectionHead n="03" title="Evaluación">
+        En este orden, no en otro
+      </SectionHead>
+      <p className="mb-7 max-w-[60ch] text-[var(--muted)]">
+        Review estático — la plataforma nunca corre tu código. El tercer criterio
+        es el que ningún competidor tiene.
+      </p>
 
-        <h2 className="display mt-8 text-[clamp(1.5rem,5vw,3rem)] leading-[1.05] font-bold tracking-tight uppercase">
-          Cómo se evalúa
-        </h2>
-        <p className="mt-5 max-w-xl text-sm text-muted-foreground">
-          En este orden. El tercero es el que ningún competidor tiene.
-        </p>
-
-        <div className="mt-14 grid gap-8 md:grid-cols-3">
-          {CRITERIA.map((criterion) => (
+      <div className="grid gap-5 md:grid-cols-3">
+        {CRITERIA.map((criterion) => (
+          <div
+            key={criterion.title}
+            className={
+              criterion.primary
+                ? "card card-hover card-raised"
+                : "card card-hover"
+            }
+          >
             <div
-              key={criterion.title}
-              className="border border-border bg-background p-6"
+              className="eyebrow"
+              style={criterion.primary ? { color: "var(--sand)" } : undefined}
             >
-              <span className="font-pixel text-xs text-brand uppercase">
-                {criterion.label}
-              </span>
-              <h3 className="mt-4 font-semibold tracking-tight">{criterion.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {criterion.body}
-              </p>
+              {criterion.order}
             </div>
-          ))}
-        </div>
+            <h3 className="mt-3 text-[17px] font-extrabold">{criterion.title}</h3>
+            <p className="mt-2 text-sm text-[var(--muted)]">{criterion.body}</p>
+          </div>
+        ))}
       </div>
-    </section>
+    </Section>
   );
 }
 
-/* ── 40 · Posicionamiento ─────────────────────────────────────────────────── */
+/* ── 04 · Posicionamiento ─────────────────────────────────────────────────── */
 
 const COMPARISON = [
   {
@@ -320,43 +440,43 @@ const COMPARISON = [
 
 function Difference() {
   return (
-    <section className="mx-auto max-w-6xl px-5 py-24 sm:py-32">
-      <BasicLine n={40}>{"REM NO ES LO MISMO"}</BasicLine>
-
-      <h2 className="display mt-8 text-[clamp(1.5rem,5vw,3rem)] leading-[1.05] font-bold tracking-tight uppercase">
+    <Section>
+      <SectionHead n="04" title="Posicionamiento">
         No es lo mismo
-      </h2>
+      </SectionHead>
 
-      <dl className="mt-12 divide-y divide-border border-y border-border">
+      <dl className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
         {COMPARISON.map((row) => (
           <div
             key={row.them}
-            className="grid gap-2 py-6 md:grid-cols-[180px_1fr_1fr] md:gap-8"
+            className="grid gap-2 py-5 md:grid-cols-[170px_1fr_1fr] md:gap-8"
           >
-            <dt className="text-xs tracking-widest text-brand uppercase">
+            <dt
+              className="text-sm font-extrabold text-[var(--faint)]"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
               {row.them}
             </dt>
-            <dd className="text-sm text-muted-foreground">{row.theirs}</dd>
+            <dd className="text-sm text-[var(--muted)]">{row.theirs}</dd>
             <dd className="text-sm font-semibold">{row.ours}</dd>
           </div>
         ))}
       </dl>
-    </section>
+    </Section>
   );
 }
 
-/* ── 50 · El otro lado del marketplace ────────────────────────────────────── */
+/* ── 05 · Startups ────────────────────────────────────────────────────────── */
 
 function ForStartups() {
   return (
-    <section id="startups" className="scroll-mt-16 border-y border-border bg-elev">
-      <div className="mx-auto max-w-6xl px-5 py-24 sm:py-32">
-        <BasicLine n={50}>{"INPUT TU PROBLEMA"}</BasicLine>
+    <Section id="startups">
+      <SectionHead n="05" title="Para startups">
+        Publica el problema que ya tienes
+      </SectionHead>
 
-        <h2 className="display mt-8 max-w-3xl text-[clamp(1.35rem,4.2vw,2.5rem)] leading-[1.12] font-bold tracking-tight">
-          Publica el problema que ya tienes. Recibe soluciones, no CVs.
-        </h2>
-        <p className="mt-6 max-w-xl text-sm leading-relaxed text-muted-foreground">
+      <div className="card card-raised">
+        <p className="max-w-[62ch] text-[var(--muted)]">
           Escribe el reto una vez, con tus criterios de éxito. Muchos builders lo
           resuelven en paralelo y tú ves código que corre — rankeado, con la
           autoría ya verificada. Te quedas con la solución y, si quieres, con
@@ -366,12 +486,12 @@ function ForStartups() {
           href="https://github.com/S-kkipie/thenextcraft"
           target="_blank"
           rel="noreferrer"
-          className={`${GHOST_BUTTON} mt-10`}
+          className="btn btn-secondary mt-6"
         >
           Hablar con el equipo →
         </a>
       </div>
-    </section>
+    </Section>
   );
 }
 
@@ -379,15 +499,16 @@ function ForStartups() {
 
 function FinalCta() {
   return (
-    <section className="crt-grid">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-10 px-5 py-28 sm:py-36">
+    <section className="border-t border-[var(--line)] bg-[var(--ink-2)]">
+      <div className="mx-auto flex max-w-[1080px] flex-wrap items-center justify-between gap-10 px-6 py-20">
         <div>
-          <h2 className="display max-w-2xl text-[clamp(1.75rem,6.5vw,4rem)] leading-[1.02] font-bold tracking-[-0.02em] uppercase">
-            Deja de postular.
-            <br />
-            <span className="text-brand">Empieza a shipear.</span>
+          <h2 className="max-w-[16ch] text-[clamp(28px,5vw,48px)] leading-[1.05] font-black">
+            Deja de postular.{" "}
+            <span className="bg-gradient-to-r from-[var(--sand)] to-[var(--terra)] bg-clip-text text-transparent">
+              Empieza a shipear.
+            </span>
           </h2>
-          <Link href="/desafios" className={`${BLOCK_BUTTON} mt-10 px-8 py-4`}>
+          <Link href="/desafios" className="btn btn-primary mt-8">
             Ver los desafíos abiertos →
           </Link>
         </div>
@@ -397,33 +518,36 @@ function FinalCta() {
   );
 }
 
-/* ── Ft5 · footer declaración ─────────────────────────────────────────────── */
+/* ── Footer ───────────────────────────────────────────────────────────────── */
 
 function Footer() {
   return (
-    <footer className="border-t border-border">
-      <div className="mx-auto max-w-6xl px-5 py-16">
-        <p className="font-script text-3xl leading-tight sm:text-4xl">
+    <footer className="border-t border-[var(--line)]">
+      <div className="mx-auto flex max-w-[1080px] flex-wrap items-center justify-between gap-6 px-6 py-10 text-[13px] text-[var(--faint)]">
+        <span
+          className="text-base font-black text-[var(--text)]"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
           Menos escuela, más hacer.
-        </p>
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-6 text-xs tracking-widest text-muted-foreground uppercase">
-          <span className="font-pixel">thenextcraft</span>
-          <div className="flex flex-wrap gap-x-6 gap-y-2">
-            <Link href="/desafios" className="whitespace-nowrap hover:text-foreground">
-              Desafíos
-            </Link>
-            <Link href="/home" className="whitespace-nowrap hover:text-foreground">
-              Entrar
-            </Link>
-            <a
-              href="https://thenextcraft.org/es"
-              target="_blank"
-              rel="noreferrer"
-              className="whitespace-nowrap hover:text-foreground"
-            >
-              The Next Craft
-            </a>
-          </div>
+        </span>
+        <div className="flex flex-wrap gap-x-6 gap-y-2 font-semibold">
+          <Link
+            href="/desafios"
+            className="whitespace-nowrap hover:text-[var(--text)]"
+          >
+            Desafíos
+          </Link>
+          <Link href="/home" className="whitespace-nowrap hover:text-[var(--text)]">
+            Entrar
+          </Link>
+          <a
+            href="https://thenextcraft.org/es"
+            target="_blank"
+            rel="noreferrer"
+            className="whitespace-nowrap hover:text-[var(--text)]"
+          >
+            The Next Craft
+          </a>
         </div>
       </div>
     </footer>
