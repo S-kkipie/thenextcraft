@@ -21,3 +21,8 @@ packages/backend/convex/_generated
 
 # docs de diseno internos (local)
 docs/gamification.md
+
+# skills de agentes (instaladas localmente)
+.agents/
+.claude/
+skills-lock.json

@@ -1,16 +1,15 @@
 import Link from "next/link";
 
-import { AuthorshipDiff } from "@/components/craft/authorship-diff";
 import { Beto } from "@/components/craft/beto";
 import { HeroType } from "@/components/craft/hero-type";
 import { LiquidShader } from "@/components/craft/liquid-shader";
 import {
   JobPostingStrike,
   RecordingPrompt,
-  RefusingConsole,
 } from "@/components/craft/manifesto-asides";
 import { Reveal } from "@/components/craft/reveal";
 import { ShortlistCanvas } from "@/components/craft/shortlist-canvas";
+import { SubmissionFeedback } from "@/components/craft/submission-feedback";
 import { TiltCard } from "@/components/craft/tilt-card";
 
 /*
@@ -140,17 +139,10 @@ const CLAIMS = [
     aside: <JobPostingStrike />,
   },
   {
-    label: "El entregable",
-    line: "La plataforma nunca corre tu código.",
-    tail: "El entregable es un link público. Un repo, un deploy — algo que existe.",
-    bg: "bg-[var(--panel)]",
-    aside: <RefusingConsole />,
-  },
-  {
     label: "La autoría",
     line: "La defensa de tu código es tuya. En video.",
     tail: "La IA saca las preguntas de tu propio diff. Respondes tú. Eso no se genera.",
-    bg: "bg-[var(--ink-2)]",
+    bg: "bg-[var(--panel)]",
     aside: <RecordingPrompt />,
   },
 ];
@@ -159,7 +151,7 @@ function Manifesto() {
   return (
     <section id="manifiesto" className="scroll-mt-16">
       {CLAIMS.map((claim, i) => {
-        // La banda del medio invierte el orden: el texto salta al otro lado.
+        // Las bandas impares invierten el orden: el texto salta al otro lado.
         const flipped = i % 2 === 1;
         return (
           <div
@@ -493,15 +485,16 @@ function Defense() {
                 El diff que te defiende
               </h2>
             </div>
-            <p className="max-w-[38ch] text-sm text-[var(--muted)] sm:text-right">
-              Cualquiera puede generar código. Nadie puede generar las razones por
-              las que lo escribió así. Ahí es donde se cae el AI-slop.
+            <p className="max-w-[40ch] text-sm text-[var(--muted)] sm:text-right">
+              El feedback no es un score suelto ni un lint: cada línea se lee
+              contra los criterios de éxito que escribió la startup. Cambia el
+              reto, cambia lo que se te dice.
             </p>
           </div>
         </Reveal>
 
         <Reveal delay={120} className="mt-10">
-          <AuthorshipDiff />
+          <SubmissionFeedback />
         </Reveal>
       </div>
     </section>
