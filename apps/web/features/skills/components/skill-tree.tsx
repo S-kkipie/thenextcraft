@@ -1,5 +1,7 @@
 "use client";
 
+import * as React from "react";
+
 import { cn } from "@/lib/utils";
 import { PixelIcon } from "@/components/craft/pixel-icon";
 
@@ -47,6 +49,28 @@ const EDGES: [NodeId, NodeId][] = [
   ["devops", "security"],
 ];
 
+/** De qué ramas cuelga cada nodo. La relación la dibujaban solo los conectores;
+ *  un lector de pantalla no los ve, así que también va en texto. */
+const PARENTS: Partial<Record<CategoryKey, NodeId[]>> = EDGES.reduce(
+  (acc, [from, to]) => {
+    if (to === "root") return acc;
+    (acc[to as CategoryKey] ??= []).push(from);
+    return acc;
+  },
+  {} as Partial<Record<CategoryKey, NodeId[]>>,
+);
+
+const LABEL: Record<NodeId, string> = {
+  root: "tus ships",
+  frontend: "Frontend",
+  backend: "Backend",
+  "ai-ml": "AI / ML",
+  databases: "Databases",
+  devops: "DevOps",
+  security: "Security",
+  fullstack: "Full Stack",
+};
+
 /** Codo: baja del padre, gira a la altura media, baja al hijo. */
 function elbow(a: { x: number; y: number }, b: { x: number; y: number }) {
   const midY = a.y + (b.y - a.y) * 0.55;
@@ -65,6 +89,38 @@ export function SkillTree({
   onSelect: (key: CategoryKey) => void;
 }) {
   const byKey = new Map(categories.map((c) => [c.key, c]));
+  // Roving tabindex: el árbol entra con UN Tab y por dentro se recorre con las
+  // flechas, como manda el patrón de tree/toolbar.
+  const [focus, setFocus] = React.useState(0);
+  const refs = React.useRef<(HTMLButtonElement | null)[]>([]);
+
+  const move = (delta: number) => {
+    const next = (focus + delta + categories.length) % categories.length;
+    setFocus(next);
+    refs.current[next]?.focus();
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    const map: Record<string, number> = {
+      ArrowRight: 1,
+      ArrowDown: 1,
+      ArrowLeft: -1,
+      ArrowUp: -1,
+    };
+    if (e.key in map) {
+      e.preventDefault();
+      move(map[e.key]);
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setFocus(0);
+      refs.current[0]?.focus();
+    } else if (e.key === "End") {
+      e.preventDefault();
+      const last = categories.length - 1;
+      setFocus(last);
+      refs.current[last]?.focus();
+    }
+  };
   const lit = (id: NodeId) =>
     id === "root" ? totalShips > 0 : (byKey.get(id)?.level ?? 0) > 0;
 
@@ -78,7 +134,12 @@ export function SkillTree({
         </span>
       </div>
 
-      <div className="relative aspect-[16/12] w-full sm:aspect-[16/9]">
+      <div
+        role="tree"
+        aria-label="Árbol de skills"
+        onKeyDown={onKeyDown}
+        className="relative aspect-[16/12] w-full sm:aspect-[16/9]"
+      >
         {/* Rejilla de fondo: el papel milimetrado del terminal. */}
         <div
           aria-hidden
@@ -135,16 +196,27 @@ export function SkillTree({
           </div>
         </div>
 
-        {categories.map((c) => {
+        {categories.map((c, i) => {
           const pos = POS[c.key];
           const on = c.level > 0;
           const active = selected === c.key;
+          const from = (PARENTS[c.key] ?? []).map((p) => LABEL[p]).join(" y ");
           return (
             <button
               key={c.key}
               type="button"
+              ref={(el) => {
+                refs.current[i] = el;
+              }}
               onClick={() => onSelect(c.key)}
-              aria-pressed={active}
+              onFocus={() => setFocus(i)}
+              tabIndex={i === focus ? 0 : -1}
+              role="treeitem"
+              aria-level={from ? 2 : 1}
+              aria-selected={active}
+              aria-label={`${c.label}. ${
+                on ? `Nivel ${c.level} de 5` : "Sin ships todavía"
+              }.${from ? ` Rama de ${from}.` : ""}`}
               title={`${c.label} — ${on ? `Nv. ${c.level}` : "sin ships todavía"}`}
               className="absolute -translate-x-1/2 -translate-y-1/2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--phos)]"
               style={{ left: `${pos.x}%`, top: `${pos.y}%` }}

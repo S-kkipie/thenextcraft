@@ -3,6 +3,7 @@ import { IBM_Plex_Mono, Silkscreen } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/sonner";
+import { BinaryRain } from "@/components/craft/binary-rain";
 
 // ADN thenextcraft.org: la app entera corre en Plex Mono (terminal);
 // Silkscreen es el display bitmap de arcade que usa la landing.
@@ -30,8 +31,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="es"
       className={`dark ${plexMono.variable} ${silkscreen.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <Providers>{children}</Providers>
+      <body className="relative min-h-full flex flex-col">
+        {/* Decoración de margen: solo en xl, por debajo de todo, sin eventos. */}
+        <BinaryRain />
+        <div className="relative z-10 flex min-h-full flex-1 flex-col">
+          <Providers>{children}</Providers>
+        </div>
         <Toaster />
       </body>
     </html>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Id } from "@thenextcraft/backend/dataModel";
 import { ScoreBar, StatusPill } from "@/components/craft";
 import { PixelIcon } from "@/components/craft/pixel-icon";
+import { JudgeProgress } from "./judge-progress";
 import { useEvaluation, useSubmission } from "@/features/evaluation/hooks";
 
 // Color del chip por severidad del hallazgo.
@@ -90,6 +91,10 @@ export function EvaluationDetail({
             <FeedbackPendingCard status={feedbackStatus} />
           )}
 
+          {/* Si hay una review en vuelo, sus fases mandan sobre el copy de
+              "pendiente": el juez tarda decenas de segundos y sin esto se lee
+              como que se colgó. Se apaga solo al completar. */}
+          <JudgeProgress submissionId={submissionId} />
           {scored && summary && (
             <VerdictCard verdict={verdict} summary={summary} />
           )}

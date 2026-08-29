@@ -195,11 +195,19 @@ export function TopNav() {
         </div>
       </div>
 
-      {/* Prompt de ruta: migas en todas las pantallas, en el idioma de la landing. */}
+      {/* Prompt de ruta: migas en todas las pantallas, en el idioma de la
+          landing, y la única vuelta al manifiesto desde dentro de la app —
+          el wordmark lleva a /home, no a /. */}
       <div className="border-t border-[var(--line)] bg-[var(--ink-2)]">
         <div className="data mx-auto flex h-[26px] w-full max-w-5xl items-center gap-2 px-6 text-[11px] text-[var(--faint)]">
           <span className="size-1.5 rounded-full bg-[var(--phos)]" />
-          the-next-ship
+          <Link
+            href="/"
+            title="Volver al manifiesto"
+            className="transition-colors hover:text-[var(--phos)]"
+          >
+            the-next-ship
+          </Link>
           <span className="text-[var(--line-2)]">~</span>
           <span className="truncate text-[var(--muted)]">{pathname}</span>
         </div>

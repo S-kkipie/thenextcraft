@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { Beto } from "@/components/craft/beto";
 import { BrandMark } from "@/components/craft/brand-mark";
 import { PixelIcon } from "@/components/craft/pixel-icon";
 import { HeroType } from "@/components/craft/hero-type";
@@ -630,11 +629,11 @@ function ForStartups() {
 function FinalCta() {
   return (
     <section className="border-t border-[var(--line)] bg-[var(--ink-2)]">
-      <div
-        className={`${WRAP} flex flex-wrap items-center justify-between gap-10 py-20 sm:py-24`}
-      >
-        <Reveal from="left">
-          <h2 className="max-w-[16ch] text-[clamp(20px,3.4vw,40px)] leading-[1.3] font-bold">
+      {/* Sin la mascota al lado, el bloque se centra: con `justify-between` y un
+          solo hijo el titular quedaba pegado a la izquierda y medio ancho vacío. */}
+      <div className={`${WRAP} flex flex-col items-center py-20 text-center sm:py-24`}>
+        <Reveal>
+          <h2 className="mx-auto max-w-[18ch] text-[clamp(20px,3.4vw,40px)] leading-[1.3] font-bold">
             Deja de postular.{" "}
             <span className="bg-gradient-to-r from-[var(--phos)] to-[var(--cyan)] bg-clip-text text-transparent">
               Empieza a shipear.
@@ -644,7 +643,6 @@ function FinalCta() {
             Ver los desafíos abiertos <PixelIcon name="arrowRight" size={12} />
           </Link>
         </Reveal>
-        <Beto variant="build" className="size-32 shrink-0 sm:size-40" />
       </div>
     </section>
   );

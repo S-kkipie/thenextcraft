@@ -656,6 +656,18 @@ export const get = query({
   handler: async (ctx, args) => ctx.db.get("technicalReviews", args.reviewId),
 });
 
+// La UI conoce la submission, no el reviewId: `start` usa el submissionId como
+// requestId, así que el progreso en vivo se lee por ahí (índice ya existente).
+export const getByRequest = query({
+  args: { requestId: v.string() },
+  returns: v.union(reviewDocumentValidator, v.null()),
+  handler: async (ctx, { requestId }) =>
+    await ctx.db
+      .query("technicalReviews")
+      .withIndex("by_request_id", (q) => q.eq("requestId", requestId))
+      .unique(),
+});
+
 export const setStatus = internalMutation({
   args: {
     reviewId: v.id("technicalReviews"),
