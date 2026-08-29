@@ -41,6 +41,12 @@ const reviewStatusValidator = v.union(
   v.literal("failed"),
 );
 
+const reviewEventValidator = v.object({
+  status: reviewStatusValidator,
+  message: v.string(),
+  timestamp: v.number(),
+});
+
 const repositoryValidator = v.object({
   owner: v.string(),
   name: v.string(),
@@ -127,6 +133,7 @@ const reviewDocumentValidator = v.object({
   completedAt: v.optional(v.number()),
   failureCode: v.optional(v.string()),
   failureMessage: v.optional(v.string()),
+  events: v.optional(v.array(reviewEventValidator)),
   repository: v.optional(repositoryValidator),
   coverage: v.optional(coverageValidator),
   result: v.optional(resultValidator),
@@ -597,6 +604,13 @@ export const start = mutation({
       status: "queued",
       startedAt: now,
       updatedAt: now,
+      events: [
+        {
+          status: "queued",
+          message: "Solicitud registrada. Esperando al trabajador de revisión.",
+          timestamp: now,
+        },
+      ],
     });
 
     await ctx.scheduler.runAfter(0, internal.technicalJudge.run, {
@@ -633,6 +647,32 @@ export const setStatus = internalMutation({
   },
 });
 
+export const recordProgress = internalMutation({
+  args: {
+    reviewId: v.id("technicalReviews"),
+    status: reviewStatusValidator,
+    message: v.string(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const review = await ctx.db.get("technicalReviews", args.reviewId);
+    if (!review || review.status === "completed" || review.status === "failed") {
+      return null;
+    }
+
+    const now = Date.now();
+    await ctx.db.patch(args.reviewId, {
+      status: args.status,
+      updatedAt: now,
+      events: [
+        ...(review.events ?? []),
+        { status: args.status, message: args.message.slice(0, 500), timestamp: now },
+      ].slice(-30),
+    });
+    return null;
+  },
+});
+
 export const setRepository = internalMutation({
   args: {
     reviewId: v.id("technicalReviews"),
@@ -660,6 +700,8 @@ export const complete = internalMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const now = Date.now();
+    const review = await ctx.db.get("technicalReviews", args.reviewId);
+    if (!review) return null;
     await ctx.db.patch(args.reviewId, {
       status: "completed",
       repository: args.repository,
@@ -670,6 +712,10 @@ export const complete = internalMutation({
       completedAt: now,
       failureCode: undefined,
       failureMessage: undefined,
+      events: [
+        ...(review.events ?? []),
+        { status: "completed" as const, message: "Reporte validado y listo para consultar.", timestamp: now },
+      ].slice(-30),
     });
 
     // Bridge the technical review into the app's `evaluations` row so the
@@ -711,12 +757,18 @@ export const fail = internalMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const now = Date.now();
+    const review = await ctx.db.get("technicalReviews", args.reviewId);
+    if (!review) return null;
     await ctx.db.patch(args.reviewId, {
       status: "failed",
       failureCode: args.code,
       failureMessage: args.message,
       updatedAt: now,
       completedAt: now,
+      events: [
+        ...(review.events ?? []),
+        { status: "failed" as const, message: args.message.slice(0, 500), timestamp: now },
+      ].slice(-30),
     });
     return null;
   },
@@ -963,9 +1015,10 @@ export const run = internalAction({
     const canonical = canonicalizeGithubUrl(args.repoUrl);
 
     try {
-      await ctx.runMutation(internal.technicalJudge.setStatus, {
+      await ctx.runMutation(internal.technicalJudge.recordProgress, {
         reviewId: args.reviewId,
         status: "validating_repository",
+        message: "Consultando la información pública del repositorio en GitHub.",
       });
 
       const metadata = await fetchGithubJson(
@@ -973,9 +1026,10 @@ export const run = internalAction({
         githubRepositorySchema,
       );
 
-      await ctx.runMutation(internal.technicalJudge.setStatus, {
+      await ctx.runMutation(internal.technicalJudge.recordProgress, {
         reviewId: args.reviewId,
         status: "reading_repository",
+        message: "Repositorio accesible. Fijando el commit del branch principal.",
       });
 
       const commit = await fetchGithubJson(
@@ -1013,6 +1067,12 @@ export const run = internalAction({
         repository,
       });
 
+      await ctx.runMutation(internal.technicalJudge.recordProgress, {
+        reviewId: args.reviewId,
+        status: "reading_repository",
+        message: `Snapshot fijado en ${commit.sha.slice(0, 7)}. Leyendo ${tree.tree.length} entradas del árbol.`,
+      });
+
       const blobs: TreeFile[] = tree.tree.flatMap((entry) =>
         entry.type === "blob" && typeof entry.size === "number"
           ? [{ path: entry.path, size: entry.size, type: "blob" as const }]
@@ -1025,9 +1085,10 @@ export const run = internalAction({
         );
       }
 
-      await ctx.runMutation(internal.technicalJudge.setStatus, {
+      await ctx.runMutation(internal.technicalJudge.recordProgress, {
         reviewId: args.reviewId,
         status: "selecting_files",
+        message: `Seleccionando archivos de texto relevantes entre ${blobs.length} archivos del repositorio.`,
       });
 
       const candidates = selectCandidateFiles(blobs);
@@ -1037,6 +1098,12 @@ export const run = internalAction({
           "No encontramos archivos de texto seguros para analizar.",
         );
       }
+
+      await ctx.runMutation(internal.technicalJudge.recordProgress, {
+        reviewId: args.reviewId,
+        status: "selecting_files",
+        message: `Descargando una muestra de hasta ${Math.min(candidates.length, MAX_FILES)} archivos candidatos.`,
+      });
 
       const downloaded = await mapWithConcurrency(
         candidates.slice(0, MAX_FILES),
@@ -1072,12 +1139,13 @@ export const run = internalAction({
         );
       }
 
-      await ctx.runMutation(internal.technicalJudge.setStatus, {
+      const model = process.env.OPENAI_MODEL?.trim() || DEFAULT_MODEL;
+      await ctx.runMutation(internal.technicalJudge.recordProgress, {
         reviewId: args.reviewId,
         status: "reviewing_code",
+        message: `Muestra lista: ${reviewedFiles.length} archivos y ${totalCharacters.toLocaleString("en-US")} caracteres. Solicitando el reporte a ${model}.`,
       });
 
-      const model = process.env.OPENAI_MODEL?.trim() || DEFAULT_MODEL;
       const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
       const generation = await generateText({
         model: openai.responses(model),
@@ -1108,9 +1176,10 @@ export const run = internalAction({
         },
       });
 
-      await ctx.runMutation(internal.technicalJudge.setStatus, {
+      await ctx.runMutation(internal.technicalJudge.recordProgress, {
         reviewId: args.reviewId,
         status: "finalizing",
+        message: "Respuesta del modelo recibida. Validando citas y calculando el score final.",
       });
 
       const findings = generation.output.findings

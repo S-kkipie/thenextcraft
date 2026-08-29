@@ -200,10 +200,113 @@ export const schema = defineSchema({
     completedAt: v.optional(v.number()),
     failureCode: v.optional(v.string()),
     failureMessage: v.optional(v.string()),
-    repository: v.optional(v.any()),
-    coverage: v.optional(v.any()),
-    result: v.optional(v.any()),
-    usage: v.optional(v.any()),
+    events: v.optional(v.array(
+      v.object({
+        status: v.union(
+          v.literal("queued"),
+          v.literal("validating_repository"),
+          v.literal("reading_repository"),
+          v.literal("selecting_files"),
+          v.literal("reviewing_code"),
+          v.literal("finalizing"),
+          v.literal("completed"),
+          v.literal("failed"),
+        ),
+        message: v.string(),
+        timestamp: v.number(),
+      }),
+    )),
+    repository: v.optional(
+      v.object({
+        owner: v.string(),
+        name: v.string(),
+        url: v.string(),
+        defaultBranch: v.string(),
+        commitSha: v.string(),
+        description: v.union(v.string(), v.null()),
+        primaryLanguage: v.union(v.string(), v.null()),
+        stars: v.number(),
+        sizeKb: v.number(),
+      }),
+    ),
+    coverage: v.optional(
+      v.object({
+        totalFiles: v.number(),
+        candidateFiles: v.number(),
+        analyzedFiles: v.number(),
+        analyzedCharacters: v.number(),
+        omittedFiles: v.number(),
+        limited: v.boolean(),
+      }),
+    ),
+    result: v.optional(
+      v.object({
+        dimensions: v.object({
+          correctness: v.object({
+            score: v.number(),
+            rationale: v.string(),
+            confidence: v.string(),
+          }),
+          security: v.object({
+            score: v.number(),
+            rationale: v.string(),
+            confidence: v.string(),
+          }),
+          architecture: v.object({
+            score: v.number(),
+            rationale: v.string(),
+            confidence: v.string(),
+          }),
+          codeQuality: v.object({
+            score: v.number(),
+            rationale: v.string(),
+            confidence: v.string(),
+          }),
+          performance: v.object({
+            score: v.number(),
+            rationale: v.string(),
+            confidence: v.string(),
+          }),
+        }),
+        overallScore: v.number(),
+        summary: v.string(),
+        verdict: v.string(),
+        strengths: v.array(v.string()),
+        findings: v.array(
+          v.object({
+            title: v.string(),
+            severity: v.string(),
+            dimension: v.string(),
+            description: v.string(),
+            evidence: v.array(
+              v.object({
+                path: v.string(),
+                startLine: v.number(),
+                endLine: v.number(),
+                snippet: v.string(),
+              }),
+            ),
+          }),
+        ),
+        recommendations: v.array(
+          v.object({
+            priority: v.string(),
+            title: v.string(),
+            description: v.string(),
+          }),
+        ),
+        limitations: v.array(v.string()),
+      }),
+    ),
+    usage: v.optional(
+      v.object({
+        model: v.string(),
+        inputTokens: v.number(),
+        outputTokens: v.number(),
+        totalTokens: v.number(),
+        durationMs: v.number(),
+      }),
+    ),
   }).index("by_request_id", ["requestId"]),
 });
 

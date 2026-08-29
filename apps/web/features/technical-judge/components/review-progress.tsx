@@ -1,9 +1,12 @@
 import {
+  Activity,
   Check,
   Circle,
   Clock3,
   LoaderCircle,
 } from "lucide-react";
+import type { FunctionReturnType } from "convex/server";
+import { api } from "@thenextcraft/backend/api";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -39,7 +42,25 @@ const stageCopy: Record<ReviewStage, { title: string; detail: string }> = {
   },
 };
 
-export function ReviewProgress({ status }: { status: ReviewStage }) {
+type ReviewEvent = NonNullable<
+  NonNullable<FunctionReturnType<typeof api.technicalJudge.get>>["events"]
+>[number];
+
+function formatEventTime(timestamp: number) {
+  return new Intl.DateTimeFormat("es-PE", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(timestamp);
+}
+
+export function ReviewProgress({
+  status,
+  events,
+}: {
+  status: ReviewStage;
+  events: ReviewEvent[];
+}) {
   const currentIndex = reviewStages.indexOf(status);
 
   return (
@@ -87,6 +108,22 @@ export function ReviewProgress({ status }: { status: ReviewStage }) {
             );
           })}
         </ol>
+        <div className="mt-6 border-t pt-5">
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <Activity className="size-4" />
+            Actividad del trabajador
+          </div>
+          <ol className="mt-3 max-h-48 space-y-3 overflow-y-auto pr-2" aria-label="Actividad de la revisión">
+            {events.slice().reverse().map((event, index) => (
+              <li key={`${event.timestamp}-${index}`} className="grid grid-cols-[auto_1fr] gap-x-3 text-sm">
+                <time className="font-mono text-xs tabular-nums text-muted-foreground" dateTime={new Date(event.timestamp).toISOString()}>
+                  {formatEventTime(event.timestamp)}
+                </time>
+                <p className="min-w-0 break-words leading-relaxed text-muted-foreground">{event.message}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
       </CardContent>
     </Card>
   );

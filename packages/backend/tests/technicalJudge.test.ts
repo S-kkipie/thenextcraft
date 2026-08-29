@@ -174,7 +174,61 @@ describe("technical review persistence", () => {
       status: "queued",
       owner: "openai",
       repo: "openai-node",
+      events: [
+        expect.objectContaining({
+          status: "queued",
+          message: expect.stringContaining("Solicitud registrada"),
+        }),
+      ],
     });
+  });
+
+  it("retains a bounded, timestamped activity log while a review runs", async () => {
+    const t = convexTest(schema, modules);
+    const reviewId = await t.mutation(api.technicalJudge.start, {
+      repoUrl: "https://github.com/openai/openai-node",
+      requestId: "request-progress-001",
+    });
+
+    await t.mutation(internal.technicalJudge.recordProgress, {
+      reviewId,
+      status: "reading_repository",
+      message: "Snapshot fijado en abcdef1.",
+    });
+
+    const review = await t.query(api.technicalJudge.get, { reviewId });
+    expect(review).toMatchObject({
+      status: "reading_repository",
+      events: [
+        expect.objectContaining({ status: "queued" }),
+        expect.objectContaining({
+          status: "reading_repository",
+          message: "Snapshot fijado en abcdef1.",
+          timestamp: expect.any(Number),
+        }),
+      ],
+    });
+  });
+
+  it("keeps only the most recent 30 activity events", async () => {
+    const t = convexTest(schema, modules);
+    const reviewId = await t.mutation(api.technicalJudge.start, {
+      repoUrl: "https://github.com/openai/openai-node",
+      requestId: "request-progress-bound-001",
+    });
+
+    for (let step = 1; step <= 31; step += 1) {
+      await t.mutation(internal.technicalJudge.recordProgress, {
+        reviewId,
+        status: "reading_repository",
+        message: `Paso ${step}.`,
+      });
+    }
+
+    const review = await t.query(api.technicalJudge.get, { reviewId });
+    expect(review?.events).toHaveLength(30);
+    expect(review?.events?.[0]?.message).toBe("Paso 2.");
+    expect(review?.events?.at(-1)?.message).toBe("Paso 31.");
   });
 
   it("persists status transitions and a completed report", async () => {
@@ -255,6 +309,9 @@ describe("technical review persistence", () => {
       repository,
       result: { overallScore: 80 },
       usage: { model: "gpt-5.6-terra" },
+      events: expect.arrayContaining([
+        expect.objectContaining({ status: "completed" }),
+      ]),
     });
   });
 
@@ -275,6 +332,9 @@ describe("technical review persistence", () => {
       status: "failed",
       failureCode: "openai_rate_limit",
       failureMessage: "OpenAI alcanzó su límite de solicitudes.",
+      events: expect.arrayContaining([
+        expect.objectContaining({ status: "failed" }),
+      ]),
     });
   });
 });

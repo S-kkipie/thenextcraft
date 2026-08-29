@@ -165,7 +165,10 @@ export function JudgeScreen() {
       {review ? <RepositoryCard review={review} /> : null}
 
       {review && reviewStages.includes(review.status as (typeof reviewStages)[number]) ? (
-        <ReviewProgress status={review.status as (typeof reviewStages)[number]} />
+        <ReviewProgress
+          status={review.status as (typeof reviewStages)[number]}
+          events={review.events ?? []}
+        />
       ) : null}
 
       {review?.status === "failed" ? (
