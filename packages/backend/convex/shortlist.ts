@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
+import { challengeStatusValidator } from "./schema";
 
 // Startup Shortlist — la IA filtra/rankea (N → 10, score comparable) y verifica
 // autoría; la STARTUP toma la decisión final de contratación. La plataforma nunca
@@ -33,7 +34,7 @@ const rankedRowValidator = v.object({
 const summaryValidator = v.object({
   challenge: v.object({
     title: v.string(),
-    status: v.union(v.literal("open"), v.literal("closed")),
+    status: challengeStatusValidator,
     reward: v.union(v.string(), v.null()),
   }),
   stats: v.object({
@@ -46,7 +47,7 @@ const summaryValidator = v.object({
 
 // Tarjeta de builder para la tabla: nombre, @handle e iniciales del avatar.
 function builderCard(user: Doc<"users">) {
-  const name = user.name;
+  const name = user.name ?? user.githubHandle ?? "Builder";
   const handle = user.githubHandle ?? name.toLowerCase().replace(/\s+/g, "");
   const initials =
     name
@@ -67,14 +68,18 @@ export const ranked = query({
   handler: async (ctx, args) => {
     const submissions = await ctx.db
       .query("submissions")
-      .withIndex("by_challenge", (q) => q.eq("challengeId", args.challengeId))
-      .collect();
+      .withIndex("by_challengeId_and_updatedAt", (q) =>
+        q.eq("challengeId", args.challengeId),
+      )
+      .take(100);
 
     const scored = [];
     for (const submission of submissions) {
       const evaluation = await ctx.db
         .query("evaluations")
-        .withIndex("by_submission", (q) => q.eq("submissionId", submission._id))
+        .withIndex("by_submissionId", (q) =>
+          q.eq("submissionId", submission._id),
+        )
         .unique();
       if (!evaluation || evaluation.totalScore == null) continue;
 
@@ -117,15 +122,19 @@ export const summary = query({
 
     const submissions = await ctx.db
       .query("submissions")
-      .withIndex("by_challenge", (q) => q.eq("challengeId", args.challengeId))
-      .collect();
+      .withIndex("by_challengeId_and_updatedAt", (q) =>
+        q.eq("challengeId", args.challengeId),
+      )
+      .take(100);
 
     let evaluated = 0;
     let scoreSum = 0;
     for (const submission of submissions) {
       const evaluation = await ctx.db
         .query("evaluations")
-        .withIndex("by_submission", (q) => q.eq("submissionId", submission._id))
+        .withIndex("by_submissionId", (q) =>
+          q.eq("submissionId", submission._id),
+        )
         .unique();
       if (evaluation && evaluation.totalScore != null) {
         evaluated += 1;
@@ -157,7 +166,11 @@ export const close = mutation({
   handler: async (ctx, args) => {
     const challenge = await ctx.db.get(args.challengeId);
     if (!challenge) throw new Error("Reto no encontrado");
-    await ctx.db.patch(args.challengeId, { status: "closed" });
+    await ctx.db.patch("challenges", args.challengeId, {
+      status: "closed",
+      closedAt: Date.now(),
+      updatedAt: Date.now(),
+    });
     return null;
   },
 });

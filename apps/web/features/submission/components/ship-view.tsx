@@ -12,7 +12,7 @@ import { CriteriaSidebar } from "./criteria-sidebar";
 // query reactiva) y monta el formulario. `api.challenges.get` lo provee el
 // dominio de challenges (otro owner) — ver blockers.
 export function ShipView({ challengeId }: { challengeId: Id<"challenges"> }) {
-  const challenge = useQuery(api.challenges.get, { id: challengeId });
+  const challenge = useQuery(api.challenges.get, { challengeId });
 
   return (
     <div className="flex flex-col gap-1">

@@ -8,11 +8,14 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
 import type * as badges from "../badges.js";
 import type * as challenges from "../challenges.js";
 import type * as domain from "../domain.js";
 import type * as evaluations from "../evaluations.js";
+import type * as http from "../http.js";
 import type * as rankings from "../rankings.js";
+import type * as shortlist from "../shortlist.js";
 import type * as submissions from "../submissions.js";
 import type * as users from "../users.js";
 
@@ -23,11 +26,14 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
   badges: typeof badges;
   challenges: typeof challenges;
   domain: typeof domain;
   evaluations: typeof evaluations;
+  http: typeof http;
   rankings: typeof rankings;
+  shortlist: typeof shortlist;
   submissions: typeof submissions;
   users: typeof users;
 }>;

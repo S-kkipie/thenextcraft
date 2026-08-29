@@ -12,10 +12,13 @@ import type { Id } from "@thenextcraft/backend/dataModel";
 
 /** Every submission by the current builder (joined to its reto). `skip` when logged out. */
 export function useBuilderSubmissions(userId: Id<"users"> | null) {
-  return useQuery(
-    api.submissions.byBuilder,
-    userId ? { builderId: userId } : "skip",
+  const result = useQuery(
+    api.submissions.listByBuilder,
+    userId
+      ? { builderId: userId, paginationOpts: { numItems: 100, cursor: null } }
+      : "skip",
   );
+  return result?.page;
 }
 
 /**
@@ -24,5 +27,9 @@ export function useBuilderSubmissions(userId: Id<"users"> | null) {
  * we filter to open client-side in ./model.ts.
  */
 export function useOpenChallenges() {
-  return useQuery(api.challenges.list, {});
+  const result = useQuery(api.challenges.list, {
+    status: "open",
+    paginationOpts: { numItems: 100, cursor: null },
+  });
+  return result?.page;
 }

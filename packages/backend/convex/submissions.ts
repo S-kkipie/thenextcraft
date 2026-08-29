@@ -86,6 +86,8 @@ export const submit = mutation({
     demoUrl: v.optional(v.string()),
     mediaUrl: v.optional(v.string()),
     pitch: v.optional(v.string()),
+    description: v.optional(v.string()),
+    tech: v.optional(v.array(v.string())),
   },
   returns: v.id("submissions"),
   handler: async (ctx, args) => {
@@ -116,6 +118,9 @@ export const submit = mutation({
       demoUrl: cleanHttpUrl(args.demoUrl, "demoUrl") ?? undefined,
       mediaUrl: cleanHttpUrl(args.mediaUrl, "mediaUrl") ?? undefined,
       pitch: cleanOptionalText(args.pitch, "pitch", 2_000) ?? undefined,
+      description:
+        cleanOptionalText(args.description, "description", 2_000) ?? undefined,
+      tech: args.tech,
       status: "submitted",
       submittedAt: now,
       updatedAt: now,

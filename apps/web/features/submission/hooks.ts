@@ -7,26 +7,32 @@ import type { Id } from "@thenextcraft/backend/dataModel";
 
 /** Mutación de ship → devuelve el Id de la submission creada. */
 export function useShip() {
-  return useMutation(api.submissions.ship);
+  return useMutation(api.submissions.submit);
 }
 
 /** Una submission + su reto (vista de resultado). `null` ⇒ skip. */
 export function useSubmission(id: Id<"submissions"> | null) {
-  return useQuery(api.submissions.get, id ? { id } : "skip");
+  return useQuery(api.submissions.get, id ? { submissionId: id } : "skip");
 }
 
 /** Historial de ships de un builder. `null` ⇒ skip. */
 export function useBuilderSubmissions(builderId: Id<"users"> | null) {
-  return useQuery(
-    api.submissions.byBuilder,
-    builderId ? { builderId } : "skip",
+  const result = useQuery(
+    api.submissions.listByBuilder,
+    builderId
+      ? { builderId, paginationOpts: { numItems: 100, cursor: null } }
+      : "skip",
   );
+  return result?.page;
 }
 
 /** Ships de un reto (ranking / lista de la startup). `null` ⇒ skip. */
 export function useChallengeSubmissions(challengeId: Id<"challenges"> | null) {
-  return useQuery(
-    api.submissions.byChallenge,
-    challengeId ? { challengeId } : "skip",
+  const result = useQuery(
+    api.submissions.listByChallenge,
+    challengeId
+      ? { challengeId, paginationOpts: { numItems: 100, cursor: null } }
+      : "skip",
   );
+  return result?.page;
 }

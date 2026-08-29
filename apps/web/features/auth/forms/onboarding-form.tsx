@@ -2,6 +2,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { useMutation } from "convex/react";
+import { api } from "@thenextcraft/backend/api";
 
 import { useCurrentUser } from "@/lib/current-user";
 import { Button } from "@/components/ui/button";
@@ -21,20 +23,28 @@ import {
 } from "@/features/auth/schema";
 import { RoleCard } from "@/features/auth/components/role-card";
 
-/** Minimal onboarding: name + GitHub handle + role → login() → /home. */
+/** Completes the profile created by GitHub OAuth, then enters the app. */
 export function OnboardingForm({ onBack }: { onBack: () => void }) {
   const router = useRouter();
-  const { login } = useCurrentUser();
+  const { user } = useCurrentUser();
+  const completeOnboarding = useMutation(api.users.completeOnboarding);
 
   const form = useForm<OnboardingInput>({
     resolver: zodResolver(onboardingInput),
-    defaultValues: { name: "", githubHandle: "" },
+    defaultValues: {
+      name: user?.name ?? "",
+      githubHandle: user?.githubHandle ?? "",
+    },
     mode: "onTouched",
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
     const handle = values.githubHandle.replace(/^@/, "");
-    await login(values.name, values.role, handle);
+    await completeOnboarding({
+      name: values.name,
+      role: values.role,
+      githubHandle: handle,
+    });
     router.push("/home");
   });
 

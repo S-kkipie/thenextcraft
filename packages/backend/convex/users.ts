@@ -2,6 +2,7 @@ import {
   paginationOptsValidator,
   paginationResultValidator,
 } from "convex/server";
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import {
@@ -13,6 +14,52 @@ import {
   requireUser,
 } from "./domain";
 import { schema, userRoleValidator } from "./schema";
+
+export const current = query({
+  args: {},
+  returns: v.union(schema.doc("users"), v.null()),
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    return userId === null ? null : await ctx.db.get("users", userId);
+  },
+});
+
+export const completeOnboarding = mutation({
+  args: {
+    name: v.string(),
+    role: userRoleValidator,
+    githubHandle: v.string(),
+  },
+  returns: schema.doc("users"),
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) {
+      fail("AUTH_REQUIRED", "Sign in before completing onboarding");
+    }
+
+    const name = cleanRequiredText(args.name, "name", 2, 80);
+    const githubHandle = cleanGithubHandle(args.githubHandle);
+    if (!githubHandle) {
+      fail("INVALID_GITHUB_HANDLE", "githubHandle is required");
+    }
+
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_githubHandle", (q) => q.eq("githubHandle", githubHandle))
+      .unique();
+    if (existing && existing._id !== userId) {
+      fail("GITHUB_HANDLE_TAKEN", "This GitHub handle is already in use");
+    }
+
+    await ctx.db.patch("users", userId, {
+      name,
+      role: args.role,
+      githubHandle,
+      updatedAt: Date.now(),
+    });
+    return await requireUser(ctx, userId);
+  },
+});
 
 export const createOrGet = mutation({
   args: {

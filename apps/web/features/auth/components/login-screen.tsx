@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthActions } from "@convex-dev/auth/react";
 
 import { LiquidShader, BrandMark } from "@/components/craft";
 import { Button } from "@/components/ui/button";
@@ -12,13 +13,30 @@ import { OnboardingForm } from "@/features/auth/forms/onboarding-form";
 /** /login — liquid-shader hero, centered auth card. Intro → onboarding step. */
 export function LoginScreen() {
   const router = useRouter();
-  const { userId } = useCurrentUser();
-  const [step, setStep] = useState<"intro" | "onboarding">("intro");
+  const { signIn, signOut } = useAuthActions();
+  const { user, isAuthenticated, isLoading } = useCurrentUser();
+  const [isStarting, setIsStarting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Already signed in → skip login.
   useEffect(() => {
-    if (userId) router.replace("/home");
-  }, [userId, router]);
+    if (!isLoading && isAuthenticated && user?.role) {
+      router.replace("/home");
+    }
+  }, [isAuthenticated, isLoading, router, user]);
+
+  const showOnboarding =
+    !isLoading && isAuthenticated && user !== null && !user.role;
+
+  const handleSignIn = async () => {
+    setError(null);
+    setIsStarting(true);
+    try {
+      await signIn("github", { redirectTo: "/login" });
+    } catch {
+      setError("No pudimos iniciar sesión con GitHub. Inténtalo de nuevo.");
+      setIsStarting(false);
+    }
+  };
 
   return (
     <main className="relative flex min-h-screen flex-1 flex-col items-center justify-center overflow-hidden px-6 py-10">
@@ -40,21 +58,28 @@ export function LoginScreen() {
         </div>
 
         <div className="mt-7">
-          {step === "intro" ? (
+          {!showOnboarding ? (
             <div className="grid gap-4">
               <Button
                 variant="craft"
                 className="h-12 w-full text-base"
-                onClick={() => setStep("onboarding")}
+                disabled={isLoading || isStarting}
+                onClick={() => void handleSignIn()}
               >
-                <GithubMark className="size-5" /> Continuar con GitHub
+                <GithubMark className="size-5" />
+                {isStarting ? "Abriendo GitHub…" : "Continuar con GitHub"}
               </Button>
+              {error && (
+                <p role="alert" className="text-destructive text-center text-sm">
+                  {error}
+                </p>
+              )}
               <p className="text-center text-xs text-faint">
-                Proof-of-work hiring · nunca corremos tu código
+                Solo perfil básico y email · sin acceso a repositorios privados
               </p>
             </div>
           ) : (
-            <OnboardingForm onBack={() => setStep("intro")} />
+            <OnboardingForm onBack={() => void signOut()} />
           )}
         </div>
       </div>

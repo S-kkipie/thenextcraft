@@ -3,7 +3,8 @@ import {
   paginationResultValidator,
 } from "convex/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import type { Doc } from "./_generated/dataModel";
+import { mutation, query, type QueryCtx } from "./_generated/server";
 import {
   cleanOptionalText,
   cleanRequiredText,
@@ -15,28 +16,13 @@ import {
 } from "./domain";
 import { challengeStatusValidator, schema } from "./schema";
 
-export const get = query({
-  args: { challengeId: v.id("challenges") },
-  returns: v.union(schema.doc("challenges"), v.null()),
-  handler: async (ctx, args) =>
-    await ctx.db.get("challenges", args.challengeId),
+const challengeWithStartupValidator = schema.doc("challenges").extend({
+  company: v.string(),
+  sector: v.union(v.string(), v.null()),
 });
 
-// The Next Ship — challenges domain (retos de negocio de startups).
-// list / get devuelven el reto enriquecido con el nombre + sector de la startup
-// (un solo db.get por reto) para que la UI no tenga que hacer un fetch aparte.
-
-type ChallengeWithStartup = Doc<"challenges"> & {
-  company: string;
-  sector: string | null;
-};
-
-// Adjunta company/sector leyendo el user (startup) dueño del reto.
-async function withStartup(
-  ctx: QueryCtx,
-  challenge: Doc<"challenges">,
-): Promise<ChallengeWithStartup> {
-  const startup = await ctx.db.get(challenge.startupId);
+async function withStartup(ctx: QueryCtx, challenge: Doc<"challenges">) {
+  const startup = await ctx.db.get("users", challenge.startupId);
   return {
     ...challenge,
     company: startup?.companyName ?? startup?.name ?? "Startup",
@@ -44,28 +30,43 @@ async function withStartup(
   };
 }
 
-// Retos abiertos para el tablero de /challenges. Índice by_status (no table scan).
-// .take(100): colección acotada por guideline; el MVP no lista miles de retos.
+export const get = query({
+  args: { challengeId: v.id("challenges") },
+  returns: v.union(challengeWithStartupValidator, v.null()),
+  handler: async (ctx, args) => {
+    const challenge = await ctx.db.get("challenges", args.challengeId);
+    return challenge ? await withStartup(ctx, challenge) : null;
+  },
+});
+
 export const list = query({
   args: {
     paginationOpts: paginationOptsValidator,
     status: v.optional(challengeStatusValidator),
   },
-  returns: paginationResultValidator(schema.doc("challenges")),
+  returns: paginationResultValidator(challengeWithStartupValidator),
   handler: async (ctx, args) => {
+    let result;
     if (args.status) {
       const status = args.status;
-      return await ctx.db
+      result = await ctx.db
         .query("challenges")
         .withIndex("by_status_and_updatedAt", (q) => q.eq("status", status))
         .order("desc")
         .paginate(args.paginationOpts);
+    } else {
+      result = await ctx.db
+        .query("challenges")
+        .withIndex("by_updatedAt")
+        .order("desc")
+        .paginate(args.paginationOpts);
     }
-    return await ctx.db
-      .query("challenges")
-      .withIndex("by_updatedAt")
-      .order("desc")
-      .paginate(args.paginationOpts);
+    return {
+      ...result,
+      page: await Promise.all(
+        result.page.map((challenge) => withStartup(ctx, challenge)),
+      ),
+    };
   },
 });
 
@@ -75,25 +76,33 @@ export const listByStartup = query({
     paginationOpts: paginationOptsValidator,
     status: v.optional(challengeStatusValidator),
   },
-  returns: paginationResultValidator(schema.doc("challenges")),
+  returns: paginationResultValidator(challengeWithStartupValidator),
   handler: async (ctx, args) => {
+    let result;
     if (args.status) {
       const status = args.status;
-      return await ctx.db
+      result = await ctx.db
         .query("challenges")
         .withIndex("by_startupId_and_status_and_updatedAt", (q) =>
           q.eq("startupId", args.startupId).eq("status", status),
         )
         .order("desc")
         .paginate(args.paginationOpts);
+    } else {
+      result = await ctx.db
+        .query("challenges")
+        .withIndex("by_startupId_and_updatedAt", (q) =>
+          q.eq("startupId", args.startupId),
+        )
+        .order("desc")
+        .paginate(args.paginationOpts);
     }
-    return await ctx.db
-      .query("challenges")
-      .withIndex("by_startupId_and_updatedAt", (q) =>
-        q.eq("startupId", args.startupId),
-      )
-      .order("desc")
-      .paginate(args.paginationOpts);
+    return {
+      ...result,
+      page: await Promise.all(
+        result.page.map((challenge) => withStartup(ctx, challenge)),
+      ),
+    };
   },
 });
 
@@ -110,6 +119,7 @@ export const create = mutation({
     successCriteria: v.array(v.string()),
     reward: v.optional(v.string()),
     tech: v.optional(v.array(v.string())),
+    deadline: v.optional(v.number()),
   },
   returns: v.id("challenges"),
   handler: async (ctx, args) => {
@@ -126,6 +136,7 @@ export const create = mutation({
       ),
       successCriteria: cleanSuccessCriteria(args.successCriteria),
       reward: cleanOptionalText(args.reward, "reward", 500) ?? undefined,
+      tech: args.tech,
       deadline: ensureFutureDeadline(args.deadline) ?? undefined,
       status: "draft",
       updatedAt: now,

@@ -9,27 +9,34 @@ import type { Id } from "@thenextcraft/backend/dataModel";
 // mano): se recalculan solos cuando el owner de convex regenera el api.
 export type ChallengeListItem = FunctionReturnType<
   typeof api.challenges.list
->[number];
+>["page"][number];
 export type ChallengeDetail = NonNullable<
   FunctionReturnType<typeof api.challenges.get>
 >;
 
+const paginationOpts = { numItems: 100, cursor: null };
+
 // Reactive read de todos los retos abiertos. undefined mientras carga.
 export function useChallenges() {
-  return useQuery(api.challenges.list, {});
+  const result = useQuery(api.challenges.list, {
+    paginationOpts,
+    status: "open",
+  });
+  return result?.page;
 }
 
 // Detalle por id. "skip" hasta tener un id. undefined=cargando, null=no existe.
 export function useChallenge(id: Id<"challenges"> | undefined) {
-  return useQuery(api.challenges.get, id ? { id } : "skip");
+  return useQuery(api.challenges.get, id ? { challengeId: id } : "skip");
 }
 
 // Retos de una startup (panel "Mis retos").
 export function useChallengesByStartup(startupId: Id<"users"> | undefined) {
-  return useQuery(
+  const result = useQuery(
     api.challenges.listByStartup,
-    startupId ? { startupId } : "skip",
+    startupId ? { startupId, paginationOpts } : "skip",
   );
+  return result?.page;
 }
 
 // Mutation para publicar un reto.

@@ -1,15 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { LogOut } from "lucide-react";
+import { useAuthActions } from "@convex-dev/auth/react";
 import { useCurrentUser } from "@/lib/current-user";
 import { BrandMark } from "@/components/craft/brand-mark";
 import { StreakPill } from "@/components/craft/streak-pill";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 /** Role-aware top nav for The Next Ship. Reads the current user. */
 export function TopNav() {
   const { user } = useCurrentUser();
+  const { signOut } = useAuthActions();
   const role = user?.role;
   const handle = user?.githubHandle;
 
@@ -52,6 +55,16 @@ export function TopNav() {
               >
                 {(user.name?.[0] ?? "?").toUpperCase()}
               </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label="Cerrar sesión"
+                title="Cerrar sesión"
+                onClick={() => void signOut()}
+              >
+                <LogOut />
+              </Button>
             </>
           ) : (
             <Link

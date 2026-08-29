@@ -45,6 +45,52 @@ async function createOpenChallenge(
 }
 
 describe("users", () => {
+  test("returns only the profile attached to the authenticated identity", async () => {
+    const t = convexTest(schema, modules);
+    const builderId = await createUser(t, "Ada", "builder", "ada-l");
+
+    expect(await t.query(api.users.current, {})).toBeNull();
+
+    const authenticated = t.withIdentity({
+      subject: `${builderId}|test-session`,
+    });
+    expect(await authenticated.query(api.users.current, {})).toMatchObject({
+      _id: builderId,
+      githubHandle: "ada-l",
+    });
+  });
+
+  test("requires authentication to complete onboarding", async () => {
+    const t = convexTest(schema, modules);
+    const userId = await t.run(async (ctx) =>
+      ctx.db.insert("users", {
+        name: "Ada",
+        githubHandle: "ada-l",
+        updatedAt: Date.now(),
+      }),
+    );
+    const onboarding = {
+      name: "Ada Lovelace",
+      role: "builder" as const,
+      githubHandle: "ada-l",
+    };
+
+    await expect(
+      t.mutation(api.users.completeOnboarding, onboarding),
+    ).rejects.toThrow("Sign in before completing onboarding");
+
+    const authenticated = t.withIdentity({
+      subject: `${userId}|test-session`,
+    });
+    await expect(
+      authenticated.mutation(api.users.completeOnboarding, onboarding),
+    ).resolves.toMatchObject({
+      _id: userId,
+      name: "Ada Lovelace",
+      role: "builder",
+    });
+  });
+
   test("creates, normalizes, lists, updates, and deletes an unused profile", async () => {
     const t = convexTest(schema, modules);
     const builderId = await createUser(t, " Ada ", "builder", "@Ada-L");

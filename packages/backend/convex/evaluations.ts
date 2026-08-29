@@ -8,6 +8,7 @@ import {
 } from "./_generated/server";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
+import { schema } from "./schema";
 
 // AI Judge — evaluación ESTÁTICA. Analiza el repo/link, NUNCA ejecuta código.
 // Sin métricas de latency/throughput/tests-ejecutados. Prioridad de scoring:
@@ -17,10 +18,11 @@ import type { Id } from "./_generated/dataModel";
 // ── Read ────────────────────────────────────────────────────────────────
 export const getBySubmission = query({
   args: { submissionId: v.id("submissions") },
+  returns: v.union(schema.doc("evaluations"), v.null()),
   handler: async (ctx, args) =>
     ctx.db
       .query("evaluations")
-      .withIndex("by_submission", (q) =>
+      .withIndex("by_submissionId", (q) =>
         q.eq("submissionId", args.submissionId),
       )
       .unique(),
@@ -38,15 +40,20 @@ export const setAuthorship = mutation({
       v.literal("approved"),
     ),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const evaluation = await ctx.db
       .query("evaluations")
-      .withIndex("by_submission", (q) =>
+      .withIndex("by_submissionId", (q) =>
         q.eq("submissionId", args.submissionId),
       )
       .unique();
     if (!evaluation) throw new Error("evaluación no encontrada");
-    await ctx.db.patch(evaluation._id, { authorshipStatus: args.status });
+    await ctx.db.patch("evaluations", evaluation._id, {
+      authorshipStatus: args.status,
+      updatedAt: Date.now(),
+    });
+    return null;
   },
 });
 
@@ -64,10 +71,17 @@ export const evaluate = action({
   args: { submissionId: v.id("submissions") },
   returns: v.object({
     submissionId: v.id("submissions"),
-    status: v.literal("not_implemented"),
+    totalScore: v.number(),
   }),
-  handler: async (_ctx, args) => {
-    return {
+  handler: async (ctx, args) => {
+    const scores = mockEvaluation(args.submissionId);
+    const totalScore = Math.round(
+      scores.fitScore * WEIGHTS.fit +
+        scores.qualityScore * WEIGHTS.quality +
+        scores.architectureScore * WEIGHTS.architecture +
+        scores.securityScore * WEIGHTS.security,
+    );
+    await ctx.runMutation(internal.evaluations.applyEvaluation, {
       submissionId: args.submissionId,
       ...scores,
       totalScore,
@@ -89,15 +103,16 @@ export const applyEvaluation = internalMutation({
     strengths: v.array(v.string()),
     issues: v.array(v.string()),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
-    const submission = await ctx.db.get(args.submissionId);
+    const submission = await ctx.db.get("submissions", args.submissionId);
     if (!submission) throw new Error("submission no encontrada");
 
     // Upsert: `ship` ya no siembra la fila de evaluación, así que el ciclo de
     // vida de `evaluations` vive en este dominio. Si no existe, la creamos.
     const evaluation = await ctx.db
       .query("evaluations")
-      .withIndex("by_submission", (q) =>
+      .withIndex("by_submissionId", (q) =>
         q.eq("submissionId", args.submissionId),
       )
       .unique();
@@ -111,20 +126,27 @@ export const applyEvaluation = internalMutation({
       strengths: args.strengths,
       issues: args.issues,
       aiEvidence: "Análisis estático del repo/link (mock).",
+      status: "completed" as const,
+      updatedAt: Date.now(),
     };
 
     if (evaluation) {
-      await ctx.db.patch(evaluation._id, scores);
+      await ctx.db.patch("evaluations", evaluation._id, scores);
     } else {
       await ctx.db.insert("evaluations", {
+        challengeId: submission.challengeId,
         submissionId: args.submissionId,
         authorshipStatus: "pending",
         ...scores,
       });
     }
-    await ctx.db.patch(args.submissionId, { status: "evaluated" });
+    await ctx.db.patch("submissions", args.submissionId, {
+      status: "evaluated",
+      updatedAt: Date.now(),
+    });
 
     await recomputeRanks(ctx, submission.challengeId);
+    return null;
   },
 });
 
@@ -134,14 +156,16 @@ export const applyEvaluation = internalMutation({
 async function recomputeRanks(ctx: MutationCtx, challengeId: Id<"challenges">) {
   const submissions = await ctx.db
     .query("submissions")
-    .withIndex("by_challenge", (q) => q.eq("challengeId", challengeId))
-    .collect();
+    .withIndex("by_challengeId_and_updatedAt", (q) =>
+      q.eq("challengeId", challengeId),
+    )
+    .take(100);
 
   const scored: Array<{ id: Id<"evaluations">; total: number }> = [];
   for (const s of submissions) {
     const ev = await ctx.db
       .query("evaluations")
-      .withIndex("by_submission", (q) => q.eq("submissionId", s._id))
+      .withIndex("by_submissionId", (q) => q.eq("submissionId", s._id))
       .unique();
     if (ev && typeof ev.totalScore === "number") {
       scored.push({ id: ev._id, total: ev.totalScore });
@@ -150,7 +174,7 @@ async function recomputeRanks(ctx: MutationCtx, challengeId: Id<"challenges">) {
 
   scored.sort((a, b) => b.total - a.total);
   for (let i = 0; i < scored.length; i++) {
-    await ctx.db.patch(scored[i].id, { rank: i + 1 });
+    await ctx.db.patch("evaluations", scored[i].id, { rank: i + 1 });
   }
 }
 

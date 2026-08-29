@@ -37,6 +37,7 @@ export function PassportView({ handle }: { handle: string }) {
 function PassportContent({ summary }: { summary: Summary }) {
   const { user, stats, score, skills, badges, projects } = summary;
   const handle = user.githubHandle ?? "";
+  const name = user.name ?? (handle || "Builder");
   const level = user.level ?? 1;
   const xp = user.xp ?? 0;
   const xpForNext = level * 500;
@@ -54,10 +55,10 @@ function PassportContent({ summary }: { summary: Summary }) {
       <Card>
         <CardContent className="flex flex-col gap-5">
           <div className="flex flex-wrap items-start gap-4">
-            <PassportAvatar name={user.name} avatarUrl={user.avatarUrl} />
+            <PassportAvatar name={name} avatarUrl={user.avatarUrl} />
             <div className="min-w-[200px] flex-1">
               <h1 className="font-display text-2xl font-black tracking-tight">
-                {user.name}
+                {name}
               </h1>
               <p className="text-muted-foreground mt-1 font-mono text-[13px]">
                 @{handle}

@@ -15,10 +15,14 @@
     "./dataModel": "./convex/_generated/dataModel.d.ts"
   },
   "dependencies": {
-    "convex": "^1.45.0"
+    "@auth/core": "0.41.1",
+    "@convex-dev/auth": "^0.0.95",
+    "convex": "^1.45.0",
+    "jose": "^6.2.10"
   },
   "devDependencies": {
     "@edge-runtime/vm": "^5.0.0",
+    "@types/node": "^20.19.43",
     "convex-test": "^0.0.56",
     "typescript": "^5.9.3",
     "vite": "^8.2.2",
