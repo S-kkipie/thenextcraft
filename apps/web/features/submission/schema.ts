@@ -13,17 +13,6 @@ export const shipInput = z.object({
 });
 export type ShipInput = z.infer<typeof shipInput>;
 
-// Schema del FORMULARIO = shipInput + gate de autoría. El checkbox "Confirmo
-// autoría" es obligatorio para poder shipear (producto: autoría humana), pero NO
-// se persiste: se valida aquí y se descarta antes de llamar a la mutación, que
-// recibe exactamente los campos de shipInput.
-export const shipForm = shipInput.extend({
-  confirmAuthorship: z.boolean().refine((val) => val === true, {
-    message: "Confirma que el trabajo es de tu autoría.",
-  }),
-});
-export type ShipForm = z.infer<typeof shipForm>;
-
 // Sugerencias de tech para el chip-input (del mockup). Solo UI.
 export const TECH_SUGGESTIONS = [
   "Next.js",

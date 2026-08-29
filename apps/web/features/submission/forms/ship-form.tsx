@@ -22,7 +22,7 @@ import {
 import { useCurrentUser } from "@/lib/current-user";
 import type { Id } from "@thenextcraft/backend/dataModel";
 
-import { shipForm, type ShipForm, TECH_SUGGESTIONS } from "../schema";
+import { shipInput, type ShipInput, TECH_SUGGESTIONS } from "../schema";
 import { useShip } from "../hooks";
 
 export function ShipForm({ challengeId }: { challengeId: Id<"challenges"> }) {
@@ -30,14 +30,13 @@ export function ShipForm({ challengeId }: { challengeId: Id<"challenges"> }) {
   const { userId } = useCurrentUser();
   const ship = useShip();
 
-  const form = useForm<ShipForm>({
-    resolver: zodResolver(shipForm),
+  const form = useForm<ShipInput>({
+    resolver: zodResolver(shipInput),
     defaultValues: {
       repoUrl: "",
       demoUrl: "",
       description: "",
       tech: [],
-      confirmAuthorship: false,
     },
   });
 
@@ -49,7 +48,7 @@ export function ShipForm({ challengeId }: { challengeId: Id<"challenges"> }) {
       toast.error("Inicia sesión para poder shipear.");
       return;
     }
-    // `confirmAuthorship` es solo gate: no se envía. Vacíos → undefined.
+    // Vacíos → undefined.
     try {
       const submissionId = await ship({
         challengeId,
@@ -65,8 +64,6 @@ export function ShipForm({ challengeId }: { challengeId: Id<"challenges"> }) {
     }
   });
 
-  const notImplemented = () =>
-    toast.info("Próximamente — defensa de autoría (viva humana).");
 
   return (
     <Form {...form}>
@@ -205,63 +202,6 @@ export function ShipForm({ challengeId }: { challengeId: Id<"challenges"> }) {
                   </FormItem>
                 );
               }}
-            />
-
-            <div className="border-line border-t" />
-
-            {/* Prueba de autoría (humana) — placeholders */}
-            <div className="flex flex-col gap-3">
-              <div className="text-sm font-semibold">
-                Prueba de autoría (humana)
-              </div>
-              <div className="bg-ink-2 border-line rounded-xl border p-4">
-                <p className="text-muted-foreground m-0 text-[13px]">
-                  La plataforma nunca corre tu código. Defiende tu autoría: graba
-                  un video/audio corto sobre tus decisiones clave, o agenda una
-                  entrevista con la startup.
-                </p>
-                <div className="mt-3.5 flex flex-wrap gap-2.5">
-                  <Button
-                    type="button"
-                    variant="craftGhost"
-                    size="sm"
-                    onClick={notImplemented}
-                  >
-                    🎥 Grabar video/audio
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="craftGhost"
-                    size="sm"
-                    onClick={notImplemented}
-                  >
-                    📅 Agendar entrevista
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Confirmación de autoría (gate) */}
-            <FormField
-              control={form.control}
-              name="confirmAuthorship"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <label className="flex cursor-pointer items-center gap-2.5 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={field.value ?? false}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        onBlur={field.onBlur}
-                        className="accent-sand size-4"
-                      />
-                      <span>Confirmo que este trabajo es de mi autoría.</span>
-                    </label>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
             />
 
             <Button
