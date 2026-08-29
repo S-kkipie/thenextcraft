@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Shipear · thenextcraft</title>
+<link rel="stylesheet" href="craft.css">
+</head>
+<body>
+
+<div class="nav"><div class="wrap nav-in">
+  <a href="home-builder.html" class="logo"><span class="dot"></span>thenextcraft</a>
+  <nav class="nav-links"><a href="challenges.html" class="active">Retos</a><a href="passport.html">Passport</a><a href="#" title="Notificaciones">🔔</a></nav>
+  <div class="nav-right"><div class="mini flame" title="Streak">🔥 14</div><div class="lvl-pill"><span class="lvl-badge"><span>12</span></span><div class="mini gold" style="gap:4px">2450<span style="color:var(--faint);font-weight:700">/3000 XP</span></div></div><a href="passport.html" class="avatar">AI</a></div>
+</div></div>
+
+<main class="wrap page">
+
+  <div class="crumb"><a href="challenges.html">Retos</a> / <a href="#">Novabank</a> / <span class="text">Shipear</span></div>
+
+  <h1 style="font-size:30px;font-weight:900;margin-top:12px">Shipear tu solución</h1>
+  <p class="muted" style="margin:8px 0 26px">Reto: Priorizar transacciones fraudulentas — Novabank</p>
+
+  <div style="display:grid;gap:24px;grid-template-columns:1fr 320px">
+
+    <!-- ===== LEFT: form ===== -->
+    <form class="card" onsubmit="return false">
+
+      <div class="field">
+        <label for="repo">Link del repo (público) <span class="terra">*</span></label>
+        <input id="repo" class="input" type="url" placeholder="https://github.com/…" required>
+      </div>
+
+      <div class="field">
+        <label for="deploy">Link del deploy / demo <span class="faint">(opcional)</span></label>
+        <input id="deploy" class="input" type="url" placeholder="https://…">
+      </div>
+
+      <div class="field">
+        <label for="how">¿Cómo resuelve el reto?</label>
+        <textarea id="how" class="textarea" placeholder="Explica tu enfoque y las decisiones clave…"></textarea>
+        <span class="hint">Mapea tu solución a los 4 criterios de evaluación</span>
+      </div>
+
+      <div class="field">
+        <label for="tech">Tecnologías usadas</label>
+        <input id="tech" class="input" type="text" placeholder="Next.js, Convex, …">
+        <div class="tags" style="margin-top:2px">
+          <span class="tag-pill">Next.js</span>
+          <span class="tag-pill">Convex</span>
+          <span class="tag-pill">TypeScript</span>
+          <span class="tag-pill">LLM</span>
+          <span class="tag-pill">Tailwind</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section-title" style="margin-bottom:10px">Prueba de autoría (humana)</div>
+      <div class="well" style="margin-bottom:14px">
+        <p class="muted" style="font-size:13px;margin:0">La plataforma nunca corre tu código. Defiende tu autoría: graba un video/audio corto sobre decisiones clave, o agenda una entrevista con Novabank.</p>
+        <div class="row wrap" style="margin-top:14px">
+          <button type="button" class="btn btn-ghost btn-sm">🎥 Grabar video/audio</button>
+          <button type="button" class="btn btn-ghost btn-sm">📅 Agendar entrevista</button>
+        </div>
+      </div>
+
+      <label class="row" style="gap:10px;cursor:pointer;margin-bottom:18px;font-size:14px">
+        <input type="checkbox">
+        <span>Confirmo que este trabajo es de mi autoría.</span>
+      </label>
+
+      <button type="submit" class="btn btn-secondary btn-full">SHIP IT ✦</button>
+
+    </form>
+
+    <!-- ===== RIGHT: sidebar ===== -->
+    <aside class="card card-raised static" style="position:sticky;top:80px;align-self:start">
+      <div class="section-title" style="margin-bottom:12px">Recordatorio — criterios</div>
+      <div class="stack" style="gap:10px">
+        <div class="row" style="gap:9px;font-size:13.5px"><span class="sage">✓</span><span>Detecta el fraude con precisión medible</span></div>
+        <div class="row" style="gap:9px;font-size:13.5px"><span class="sage">✓</span><span>Prioriza los casos por riesgo, con explicación</span></div>
+        <div class="row" style="gap:9px;font-size:13.5px"><span class="sage">✓</span><span>UX clara para el analista de fraude</span></div>
+        <div class="row" style="gap:9px;font-size:13.5px"><span class="sage">✓</span><span>Código legible y decisiones bien argumentadas</span></div>
+      </div>
+      <hr class="divider">
+      <div class="well">
+        <p class="muted" style="font-size:12.5px;margin:0">Evaluamos el LINK + tu autoría, no ejecutamos código. La IA rankea; la startup decide.</p>
+      </div>
+    </aside>
+
+  </div>
+
+</main>
+
+<script src="craft.js" defer></script>
+</body>
+</html>

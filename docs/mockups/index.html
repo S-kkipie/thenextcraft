@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>thenextcraft — Páginas (mockups)</title>
+<link rel="stylesheet" href="craft.css" />
+<style>
+  .idx-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+  .idx a{display:block;text-decoration:none}
+  .idx .card{height:100%}
+  .idx .k{font-family:var(--font-mono);font-size:11px;color:var(--faint)}
+  .idx h3{font-size:16px;margin:8px 0 6px}
+  .idx p{margin:0;font-size:13px;color:var(--muted)}
+  .idx .who{margin-top:12px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+  .who.b{color:var(--sand)} .who.s{color:var(--terra)}
+</style>
+</head>
+<body>
+<div class="hero" style="min-height:220px">
+  <canvas id="shader"></canvas>
+  <div class="hero-overlay"></div>
+  <div class="wrap hero-in" style="padding:48px 0 40px">
+    <div class="logo" style="font-size:22px"><span class="dot"></span>thenextcraft</div>
+    <h1 style="font-size:32px;margin-top:12px">Páginas · mockups</h1>
+    <p class="muted" style="margin:8px 0 0;max-width:60ch">Warm-craft design system · proof-of-work hiring. Cada card abre una pantalla. Todo local, nada en cloud.</p>
+  </div>
+</div>
+
+<main class="wrap page">
+  <div class="section-title">Foundation</div>
+  <div class="idx idx-grid" style="margin-bottom:34px">
+    <a href="../design-foundation.html"><div class="card"><div class="k">design-foundation</div><h3>Design Foundation ▦</h3><p>Tokens, tipografía, botones 3D, shader líquido, componentes.</p><div class="who b">Referencia</div></div></a>
+  </div>
+
+  <div class="section-title">Builder</div>
+  <div class="idx idx-grid">
+    <a href="auth.html"><div class="card"><div class="k">auth</div><h3>Entrar / Onboarding</h3><p>GitHub login + elegir rol (Builder / Startup).</p><div class="who b">Builder · Startup</div></div></a>
+    <a href="home-builder.html"><div class="card"><div class="k">home-builder</div><h3>Home · Tu carrera</h3><p>Progreso (nivel/XP/streak), retos activos, sugeridos, actividad.</p><div class="who b">Builder</div></div></a>
+    <a href="challenges.html"><div class="card"><div class="k">challenges</div><h3>Retos abiertos</h3><p>Browse + filtros. 6 retos de negocio de startups.</p><div class="who b">Builder</div></div></a>
+    <a href="challenge-detail.html"><div class="card"><div class="k">challenge-detail</div><h3>Detalle del reto</h3><p>Problema, criterios, entregable, cómo se evalúa.</p><div class="who b">Builder</div></div></a>
+    <a href="ship.html"><div class="card"><div class="k">ship</div><h3>Shipear</h3><p>Link + descripción + prueba de autoría humana.</p><div class="who b">Builder</div></div></a>
+    <a href="judge.html"><div class="card"><div class="k">judge</div><h3>Evaluación (AI Judge)</h3><p>Score estático + rank + proof of authorship.</p><div class="who b">Builder</div></div></a>
+    <a href="passport.html"><div class="card"><div class="k">passport</div><h3>Developer Passport</h3><p>Perfil verificable, builder score, skills, badges.</p><div class="who b">Builder</div></div></a>
+  </div>
+
+  <div class="section-title" style="margin-top:34px">Startup</div>
+  <div class="idx idx-grid">
+    <a href="shortlist.html"><div class="card"><div class="k">shortlist</div><h3>Shortlist</h3><p>Submissions rankeadas por la IA · decisión final de la startup.</p><div class="who s">Startup</div></div></a>
+  </div>
+</main>
+<script src="craft.js" defer></script>
+</body>
+</html>
