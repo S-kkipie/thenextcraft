@@ -74,106 +74,110 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* -------- THE palette. Edit here to reskin the whole app. -------- */
+/* -------- THE palette. Edit here to reskin the whole app. --------
+   Ahora = la paleta de la landing (retro-terminal, fósforo verde sobre
+   ground verde-negro). Los mismos tokens que consume la landing (.landing)
+   viven acá con los MISMOS valores, así /home y todo el resto heredan la
+   misma estética. Acento = --phos #4af07e; secundario = --cyan #45e0d0. */
 :root {
-  --background: #1A1A17;
-  --foreground: #F1EDE4;
-  --card: #201F1B;
-  --card-foreground: #F1EDE4;
-  --popover: #201F1B;
-  --popover-foreground: #F1EDE4;
-  --primary: #F1EDE4;            /* cream — crafter monochrome primary */
-  --primary-foreground: #1A1A17;
-  --secondary: #272520;
-  --secondary-foreground: #F1EDE4;
-  --muted: #201F1B;
-  --muted-foreground: #6F6A5D;
-  --accent: #272520;
-  --accent-foreground: #F1EDE4;
-  --destructive: #C0554B;
-  --border: #33302A;
-  --input: #403C34;
-  --ring: #C6A15B;              /* focus = amber */
+  --background: #0b0e0b;         /* ink */
+  --foreground: #e6f0e4;         /* text */
+  --card: #121712;              /* panel */
+  --card-foreground: #e6f0e4;
+  --popover: #121712;
+  --popover-foreground: #e6f0e4;
+  --primary: #e6f0e4;           /* cream — acción primaria (btn-primary) */
+  --primary-foreground: #0b0e0b;
+  --secondary: #182018;         /* panel-2 */
+  --secondary-foreground: #e6f0e4;
+  --muted: #121712;
+  --muted-foreground: #7e8f7e;
+  --accent: #182018;
+  --accent-foreground: #e6f0e4;
+  --destructive: #e5544b;       /* rust */
+  --border: #1f2a20;            /* line */
+  --input: #2d3d2f;             /* line-2 */
+  --ring: #4af07e;              /* focus = fósforo verde */
 
-  /* craft extras */
-  --ink-2: #131310;
-  --panel-2: #272520;
-  --line-2: #403C34;
-  --sand: #C6A15B;
-  --sand-edge: #8C6E33;
-  --tan: #5D5037;
-  --cream: #F1EDE4;
-  --cream-edge: #C7C1B2;
-  --terra: #C56A3D;
-  --sage: #94A96B;
-  --faint: #55524A;
+  /* craft extras — apuntados a la paleta fósforo */
+  --ink-2: #060806;
+  --panel-2: #182018;
+  --line-2: #2d3d2f;
+  --sand: #4af07e;             /* acento del craft kit = fósforo */
+  --sand-edge: #1e8f46;        /* phos-edge (profundidad 3d) */
+  --tan: #1c3a25;              /* phos-dark (superficie verde profunda) */
+  --cream: #e6f0e4;
+  --cream-edge: #97ac96;
+  --terra: #45e0d0;            /* cyan — el otro fósforo del CRT */
+  --sage: #4af07e;
+  --faint: #566356;
 
-  --chart-1: #C6A15B;
-  --chart-2: #5D5037;
-  --chart-3: #C56A3D;
-  --chart-4: #94A96B;
-  --chart-5: #6F6A5D;
+  --chart-1: #4af07e;
+  --chart-2: #45e0d0;
+  --chart-3: #9fe0b6;
+  --chart-4: #e6f0e4;
+  --chart-5: #7e8f7e;
 
   --radius: 0.9rem;
   --font-display: var(--font-plex-mono), ui-monospace, "SF Mono", monospace;
 
-  --sidebar: #201F1B;
-  --sidebar-foreground: #F1EDE4;
-  --sidebar-primary: #C6A15B;
-  --sidebar-primary-foreground: #1A1A17;
-  --sidebar-accent: #272520;
-  --sidebar-accent-foreground: #F1EDE4;
-  --sidebar-border: #33302A;
-  --sidebar-ring: #C6A15B;
+  --sidebar: #121712;
+  --sidebar-foreground: #e6f0e4;
+  --sidebar-primary: #4af07e;
+  --sidebar-primary-foreground: #0b0e0b;
+  --sidebar-accent: #182018;
+  --sidebar-accent-foreground: #e6f0e4;
+  --sidebar-border: #1f2a20;
+  --sidebar-ring: #4af07e;
 }
 
-/* Dark-only MVP: identical warm-dark palette so the look holds with or without .dark. */
+/* Dark-only MVP: identical phosphor palette so the look holds with or without .dark. */
 .dark {
-  --background: #1A1A17;
-  --foreground: #F1EDE4;
-  --card: #201F1B;
-  --card-foreground: #F1EDE4;
-  --popover: #201F1B;
-  --popover-foreground: #F1EDE4;
-  --primary: #F1EDE4;
-  --primary-foreground: #1A1A17;
-  --secondary: #272520;
-  --secondary-foreground: #F1EDE4;
-  --muted: #201F1B;
-  --muted-foreground: #6F6A5D;
-  --accent: #272520;
-  --accent-foreground: #F1EDE4;
-  --destructive: #C0554B;
-  --border: #33302A;
-  --input: #403C34;
-  --ring: #C6A15B;
+  --background: #0b0e0b;
+  --foreground: #e6f0e4;
+  --card: #121712;
+  --card-foreground: #e6f0e4;
+  --popover: #121712;
+  --popover-foreground: #e6f0e4;
+  --primary: #e6f0e4;
+  --primary-foreground: #0b0e0b;
+  --secondary: #182018;
+  --secondary-foreground: #e6f0e4;
+  --muted: #121712;
+  --muted-foreground: #7e8f7e;
+  --accent: #182018;
+  --accent-foreground: #e6f0e4;
+  --destructive: #e5544b;
+  --border: #1f2a20;
+  --input: #2d3d2f;
+  --ring: #4af07e;
 
-  --ink-2: #131310;
-  --panel-2: #272520;
-  --line-2: #403C34;
-  --sand: #C6A15B;
-  --sand-edge: #8C6E33;
-  --tan: #5D5037;
-  --cream: #F1EDE4;
-  --cream-edge: #C7C1B2;
-  --terra: #C56A3D;
-  --sage: #94A96B;
-  --faint: #55524A;
+  --ink-2: #060806;
+  --panel-2: #182018;
+  --line-2: #2d3d2f;
+  --sand: #4af07e;
+  --sand-edge: #1e8f46;
+  --tan: #1c3a25;
+  --cream: #e6f0e4;
+  --cream-edge: #97ac96;
+  --terra: #45e0d0;
+  --sage: #4af07e;
+  --faint: #566356;
 
-  --chart-1: #C6A15B;
-  --chart-2: #5D5037;
-  --chart-3: #C56A3D;
-  --chart-4: #94A96B;
-  --chart-5: #6F6A5D;
+  --chart-1: #4af07e;
+  --chart-2: #45e0d0;
+  --chart-3: #9fe0b6;
+  --chart-4: #e6f0e4;
+  --chart-5: #7e8f7e;
 
-  --sidebar: #201F1B;
-  --sidebar-foreground: #F1EDE4;
-  --sidebar-primary: #C6A15B;
-  --sidebar-primary-foreground: #1A1A17;
-  --sidebar-accent: #272520;
-  --sidebar-accent-foreground: #F1EDE4;
-  --sidebar-border: #33302A;
-  --sidebar-ring: #C6A15B;
+  --sidebar: #121712;
+  --sidebar-foreground: #e6f0e4;
+  --sidebar-primary: #4af07e;
+  --sidebar-primary-foreground: #0b0e0b;
+  --sidebar-accent: #182018;
+  --sidebar-accent-foreground: #e6f0e4;
+  --sidebar-border: #1f2a20;
+  --sidebar-ring: #4af07e;
 }
 
 @layer base {
