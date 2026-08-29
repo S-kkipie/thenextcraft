@@ -1,0 +1,21 @@
+- generic [active] [ref=e1]:
+  - main [ref=e39]:
+    - generic [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e44]: The Next Ship
+        - heading "Entra a The Next Ship" [level=1] [ref=e46]
+        - paragraph [ref=e47]: Resuelve retos reales. Consigue el trabajo.
+      - generic [ref=e49]:
+        - button "Continuar con GitHub" [ref=e50]
+        - paragraph [ref=e51]: Proof-of-work hiring · nunca corremos tu código
+  - region "Notifications alt+T"
+  - generic [ref=e24] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e25]
+    - generic [ref=e29]:
+      - button "Open issues overlay" [ref=e30]:
+        - generic [ref=e31]:
+          - generic [ref=e32]: "0"
+          - generic [ref=e33]: "1"
+        - generic [ref=e34]: Issue
+      - button "Collapse issues badge" [ref=e35]
+  - alert [ref=e38]: Entrar · The Next Ship

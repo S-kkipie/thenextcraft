@@ -1,0 +1,22 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e2]:
+    - banner [ref=f2e3]:
+      - generic [ref=f2e4]:
+        - link "The Next Ship" [ref=f2e5] [cursor=pointer]:
+          - /url: /home
+        - navigation [ref=f2e8]:
+          - link "Retos" [ref=f2e9] [cursor=pointer]:
+            - /url: /challenges
+          - link "Ranking" [ref=f2e10] [cursor=pointer]:
+            - /url: /leaderboard
+          - link "Comunidad" [ref=f2e11] [cursor=pointer]:
+            - /url: /community
+        - link "Entrar" [ref=f2e13] [cursor=pointer]:
+          - /url: /login
+    - generic [ref=f2e15]:
+      - heading "Entra para ver tu carrera" [level=1] [ref=f2e16]
+      - paragraph [ref=f2e17]: Inicia sesión desde la barra superior para ver tu progreso, tus retos activos y las oportunidades hechas para ti.
+      - link "Explorar retos" [ref=f2e19] [cursor=pointer]:
+        - /url: /challenges
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=f2e25] [cursor=pointer]

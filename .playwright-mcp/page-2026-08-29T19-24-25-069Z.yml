@@ -1,0 +1,26 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - banner [ref=f4e3]:
+      - generic [ref=f4e4]:
+        - link "The Next Ship" [ref=f4e5] [cursor=pointer]:
+          - /url: /home
+        - navigation [ref=f4e8]:
+          - link "Retos" [ref=f4e9] [cursor=pointer]:
+            - /url: /challenges
+          - link "Ranking" [ref=f4e10] [cursor=pointer]:
+            - /url: /leaderboard
+          - link "Comunidad" [ref=f4e11] [cursor=pointer]:
+            - /url: /community
+        - link "Entrar" [ref=f4e13] [cursor=pointer]:
+          - /url: /login
+    - generic [ref=f4e15]:
+      - generic [ref=f4e16]:
+        - generic [ref=f4e17]: Proof-of-work hiring
+        - heading "Retos abiertos" [level=1] [ref=f4e18]
+        - paragraph [ref=f4e19]: Problemas reales de negocio. Shipea una solución, consigue el trabajo.
+      - generic [ref=f4e20]:
+        - textbox "Buscar retos" [ref=f4e21]:
+          - /placeholder: Buscar retos…
+        - button "Todos" [pressed] [ref=f4e22]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=f4e33] [cursor=pointer]

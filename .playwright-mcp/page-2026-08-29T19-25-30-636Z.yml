@@ -1,0 +1,34 @@
+- generic [active] [ref=f5e1]:
+  - main [ref=f5e2]:
+    - generic [ref=f5e5]:
+      - generic [ref=f5e6]:
+        - generic [ref=f5e7]: The Next Ship
+        - heading "Entra a The Next Ship" [level=1] [ref=f5e9]
+        - paragraph [ref=f5e10]: Resuelve retos reales. Consigue el trabajo.
+      - generic [ref=f5e24]:
+        - generic [ref=f5e25]:
+          - generic [ref=f5e26]: Nombre
+          - textbox "Nombre" [ref=f5e27]:
+            - /placeholder: Ada Lovelace
+            - text: Adrian Test
+        - generic [ref=f5e28]:
+          - generic [ref=f5e29]: Usuario de GitHub
+          - textbox "Usuario de GitHub" [ref=f5e30]:
+            - /placeholder: "@ada"
+            - text: adriantest
+        - generic [ref=f5e31]:
+          - generic [ref=f5e32]: ¿Cómo quieres entrar?
+          - generic [ref=f5e33]:
+            - button "🛠 Builder Resuelve retos, consigue trabajo." [pressed] [ref=f5e34]:
+              - generic [ref=f5e35]: 🛠
+              - generic [ref=f5e36]: Builder
+              - generic [ref=f5e37]: Resuelve retos, consigue trabajo.
+            - button "🏢 Startup Publica tu reto, contrata." [ref=f5e38]:
+              - generic [ref=f5e39]: 🏢
+              - generic [ref=f5e40]: Startup
+              - generic [ref=f5e41]: Publica tu reto, contrata.
+        - button "Entrando…" [disabled]
+        - button "Volver" [ref=f5e43]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=f5e20] [cursor=pointer]
+  - alert [ref=f5e46]
