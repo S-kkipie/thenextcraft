@@ -15,3 +15,9 @@ packages/backend/convex/_generated
 .convex
 
 .DS_Store
+
+# referencias de diseño (local)
+/ui/
+
+# docs de diseno internos (local)
+docs/gamification.md
