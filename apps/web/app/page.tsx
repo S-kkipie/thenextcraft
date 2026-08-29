@@ -4,6 +4,11 @@ import { AuthorshipDiff } from "@/components/craft/authorship-diff";
 import { Beto } from "@/components/craft/beto";
 import { HeroType } from "@/components/craft/hero-type";
 import { LiquidShader } from "@/components/craft/liquid-shader";
+import {
+  JobPostingStrike,
+  RecordingPrompt,
+  RefusingConsole,
+} from "@/components/craft/manifesto-asides";
 import { Reveal } from "@/components/craft/reveal";
 import { ShortlistCanvas } from "@/components/craft/shortlist-canvas";
 import { TiltCard } from "@/components/craft/tilt-card";
@@ -128,19 +133,25 @@ function Hero() {
 
 const CLAIMS = [
   {
+    label: "El reto",
     line: "El reto no es un ejercicio. Es su problema de negocio.",
     tail: "Criterios de éxito medibles, escritos por la startup que los tiene.",
     bg: "bg-[var(--ink-2)]",
+    aside: <JobPostingStrike />,
   },
   {
+    label: "El entregable",
     line: "La plataforma nunca corre tu código.",
     tail: "El entregable es un link público. Un repo, un deploy — algo que existe.",
     bg: "bg-[var(--panel)]",
+    aside: <RefusingConsole />,
   },
   {
+    label: "La autoría",
     line: "La defensa de tu código es tuya. En video.",
     tail: "La IA saca las preguntas de tu propio diff. Respondes tú. Eso no se genera.",
     bg: "bg-[var(--ink-2)]",
+    aside: <RecordingPrompt />,
   },
 ];
 
@@ -148,36 +159,40 @@ function Manifesto() {
   return (
     <section id="manifiesto" className="scroll-mt-16">
       {CLAIMS.map((claim, i) => {
-        const right = i % 2 === 1;
+        // La banda del medio invierte el orden: el texto salta al otro lado.
+        const flipped = i % 2 === 1;
         return (
           <div
             key={claim.line}
             className={`${claim.bg} border-t border-[var(--line)]`}
           >
             <div className={`${WRAP} py-16 sm:py-20`}>
-              <Reveal from={right ? "right" : "left"}>
-                <div
-                  /* Ancho en px, no en `ch`: la unidad se resolvería con el
-                     font-size del contenedor (16px), no con el del titular. */
-                  className={
-                    right
-                      ? "ml-auto max-w-[700px] text-right sm:mr-[4%]"
-                      : "max-w-[700px] sm:ml-[4%]"
-                  }
+              <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+                <Reveal
+                  from={flipped ? "right" : "left"}
+                  className={flipped ? "lg:order-2 lg:text-right" : ""}
                 >
                   <span className="eyebrow text-[var(--phos)]">
-                    0{i + 1} — No negociable
+                    0{i + 1} — {claim.label}
                   </span>
                   <p className="mt-4 text-[clamp(18px,3vw,34px)] leading-[1.35] font-bold text-balance">
                     {claim.line}
                   </p>
                   <p
-                    className={`mt-5 max-w-[46ch] text-[var(--muted)] ${right ? "ml-auto" : ""}`}
+                    className={`mt-5 max-w-[46ch] text-[var(--muted)] ${flipped ? "lg:ml-auto" : ""}`}
                   >
                     {claim.tail}
                   </p>
-                </div>
-              </Reveal>
+                </Reveal>
+
+                <Reveal
+                  from={flipped ? "left" : "right"}
+                  delay={140}
+                  className={flipped ? "lg:order-1" : ""}
+                >
+                  {claim.aside}
+                </Reveal>
+              </div>
             </div>
           </div>
         );

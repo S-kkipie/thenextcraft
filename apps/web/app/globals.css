@@ -489,6 +489,25 @@
     padding-left: 12px;
   }
 
+  /* Waveform de la defensa: cada barra late con su propio desfase. */
+  .landing .wave-bar {
+    opacity: 0.35;
+    transform-origin: center;
+  }
+  .landing .wave-bar.wave-live {
+    animation: wave 1.4s ease-in-out infinite alternate;
+  }
+  @keyframes wave {
+    from {
+      transform: scaleY(0.35);
+      opacity: 0.3;
+    }
+    to {
+      transform: scaleY(1);
+      opacity: 0.95;
+    }
+  }
+
   /* El cursor de bloque del prompt C64 — único resto del guiño retro. */
   .cursor-block {
     animation: cursor-blink 1.1s steps(1) infinite;
@@ -518,6 +537,9 @@
     }
     .landing .parallax {
       transform: none;
+    }
+    .landing .wave-bar {
+      animation: none;
     }
   }
 }
