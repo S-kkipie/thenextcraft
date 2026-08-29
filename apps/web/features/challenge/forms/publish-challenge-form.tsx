@@ -18,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useCurrentUser } from "@/lib/current-user";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 import { challengeInput, type ChallengeInput } from "@/features/challenge/schema";
 import {
   useCreateChallenge,
@@ -68,10 +69,10 @@ export function PublishChallengeForm() {
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-2">
-        <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-sand">
+        <span className="eyebrow text-[var(--phos)]">
           Para startups
         </span>
-        <h1 className="text-3xl font-extrabold">Publicar un reto</h1>
+        <h1 className="text-3xl font-bold">Publicar un reto</h1>
         <p className="max-w-[56ch] text-muted-foreground">
           Describe un problema de negocio real. Los builders shipean una
           solución y la IA rankea a los candidatos.
@@ -79,7 +80,7 @@ export function PublishChallengeForm() {
       </header>
 
       {!userId && (
-        <div className="rounded-xl border border-line-2 bg-panel-2 p-4 text-sm text-muted-foreground">
+        <div className="card card-raised p-4 text-sm text-muted-foreground">
           Inicia sesión como startup (arriba a la derecha) para publicar un reto.
         </div>
       )}
@@ -156,7 +157,7 @@ export function PublishChallengeForm() {
                             )
                           }
                         >
-                          ✕
+                          <PixelIcon name="cross" size={10} />
                         </Button>
                       )}
                     </div>

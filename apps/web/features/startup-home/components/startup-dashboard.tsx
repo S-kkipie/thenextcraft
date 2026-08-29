@@ -8,6 +8,7 @@ import { useCurrentUser } from "@/lib/current-user";
 import { StatTile, StatusPill } from "@/components/craft";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 
 // Etiqueta + color por estado del feedback (se genera al finalizar el reto).
 const FEEDBACK: Record<string, { label: string; cls: string }> = {
@@ -49,8 +50,8 @@ export function StartupDashboard() {
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black">
-            Hola, {user?.companyName ?? user?.name ?? "startup"} 👋
+          <h1 className="text-2xl font-bold">
+            Hola, {user?.companyName ?? user?.name ?? "startup"}
           </h1>
           <p className="text-muted-foreground text-sm">
             Tus retos de negocio y candidatos.
@@ -78,7 +79,7 @@ export function StartupDashboard() {
               <Link
                 key={i}
                 href={a.href}
-                className="border-line bg-card hover:border-line-2 flex items-center gap-3 rounded-2xl border p-3.5 transition-all hover:-translate-y-0.5"
+                className="card card-hover flex items-center gap-3 p-3.5"
               >
                 <span
                   className={cn(
@@ -88,10 +89,10 @@ export function StartupDashboard() {
                       : "bg-sand/15 text-sand",
                   )}
                 >
-                  {a.kind === "feedback" ? "🧪" : "🏁"}
+                  <PixelIcon name={a.kind === "feedback" ? "search" : "check"} size={12} />
                 </span>
                 <span className="flex-1 text-sm">{a.label}</span>
-                <span className="text-faint text-xs">→</span>
+                <PixelIcon name="arrowRight" size={11} className="text-faint" />
               </Link>
             ))}
           </div>
@@ -131,7 +132,7 @@ export function StartupDashboard() {
         {data === undefined ? (
           <p className="text-muted-foreground text-sm">Cargando…</p>
         ) : challenges.length === 0 ? (
-          <div className="border-line bg-card rounded-2xl border p-6 text-center">
+          <div className="card p-6 text-center">
             <p className="text-muted-foreground text-sm">Aún no publicaste retos.</p>
             <Link
               href="/startup/publicar"
@@ -146,10 +147,10 @@ export function StartupDashboard() {
               <Link
                 key={c._id}
                 href={`/startup/shortlist/${c._id}`}
-                className="border-line bg-card hover:border-line-2 flex items-center gap-4 rounded-2xl border p-4 transition-all hover:-translate-y-0.5"
+                className="card card-hover flex items-center gap-4 p-4"
               >
                 <div className="flex-1">
-                  <div className="font-display font-extrabold">{c.title}</div>
+                  <div className="font-display font-bold">{c.title}</div>
                   <div className="text-faint text-xs">
                     {c.submissionsCount} submissions · {c.shortlistedCount} en shortlist
                   </div>
@@ -177,9 +178,9 @@ export function StartupDashboard() {
                 <Link
                   key={cand.submissionId}
                   href={`/startup/shortlist/${cand.challengeId}`}
-                  className="border-line bg-card hover:border-line-2 flex items-center gap-4 rounded-2xl border p-4 transition-all hover:-translate-y-0.5"
+                  className="card card-hover flex items-center gap-4 p-4"
                 >
-                  <div className="font-display bg-ink-2 text-foreground grid size-9 shrink-0 place-items-center rounded-full text-sm font-black">
+                  <div className="font-display bg-ink-2 text-foreground grid size-9 shrink-0 place-items-center rounded-full text-sm font-bold">
                     {(cand.builderName[0] ?? "?").toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -204,7 +205,7 @@ export function StartupDashboard() {
                     {fb.label}
                   </span>
                   <div className="text-right">
-                    <div className="font-display text-sand text-lg font-black tabular-nums leading-none">
+                    <div className="font-display text-sand text-lg font-bold tabular-nums leading-none">
                       {cand.aiMatch}
                     </div>
                     <div className="text-faint text-[10px] font-semibold">AI MATCH</div>
@@ -224,7 +225,7 @@ export function StartupDashboard() {
               <Link
                 key={s.submissionId}
                 href={`/startup/shortlist/${s.challengeId}`}
-                className="border-line bg-card hover:border-line-2 flex items-center gap-4 rounded-2xl border p-3.5 transition-all hover:-translate-y-0.5"
+                className="card card-hover flex items-center gap-4 p-3.5"
               >
                 <div className="min-w-0 flex-1">
                   <div className="font-display truncate font-bold">
@@ -239,7 +240,7 @@ export function StartupDashboard() {
                 </div>
                 {s.score != null ? (
                   <div className="text-right">
-                    <div className="font-display text-foreground text-sm font-black tabular-nums leading-none">
+                    <div className="font-display text-foreground text-sm font-bold tabular-nums leading-none">
                       {s.score}
                     </div>
                     <div className="text-faint text-[10px] font-semibold">SCORE</div>
@@ -270,7 +271,7 @@ function Section({
   return (
     <section className="flex flex-col gap-3">
       <div>
-        <h2 className="font-display text-[15px] font-extrabold">{title}</h2>
+        <h2 className="font-display text-[15px] font-bold">{title}</h2>
         {hint && <p className="text-faint text-xs">{hint}</p>}
       </div>
       {children}
@@ -304,7 +305,7 @@ function PipelineTile({
 
 function Notice({ children }: { children: ReactNode }) {
   return (
-    <div className="border-line bg-card text-muted-foreground rounded-2xl border p-8 text-center text-sm">
+    <div className="card text-muted-foreground p-8 text-center text-sm">
       {children}
     </div>
   );

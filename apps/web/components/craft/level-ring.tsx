@@ -39,9 +39,9 @@ export function LevelRing({
           strokeDashoffset={offset}
         />
       </svg>
-      <div className="font-display absolute inset-0 grid place-items-center text-[15px] font-black leading-none">
+      <div className="font-display absolute inset-0 grid place-items-center text-[15px] font-bold leading-none">
         {level}
-        <span className="text-faint text-[8px] font-extrabold">NIVEL</span>
+        <span className="text-faint text-[8px] font-bold">NIVEL</span>
       </div>
     </div>
   );

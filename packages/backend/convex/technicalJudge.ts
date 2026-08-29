@@ -793,7 +793,7 @@ function githubHeaders(): Record<string, string> {
   return {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
-    "User-Agent": "thenextcraft-technical-judge",
+    "User-Agent": "the-next-ship-technical-judge",
     ...(process.env.GITHUB_TOKEN
       ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
       : {}),
@@ -801,7 +801,7 @@ function githubHeaders(): Record<string, string> {
 }
 
 function rawGithubHeaders(): Record<string, string> {
-  return { "User-Agent": "thenextcraft-technical-judge" };
+  return { "User-Agent": "the-next-ship-technical-judge" };
 }
 
 async function fetchWithTimeout(

@@ -1,6 +1,7 @@
 "use client";
 
 import type { Id } from "@thenextcraft/backend/dataModel";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 
 import {
   AlertDialog,
@@ -60,7 +61,7 @@ export function ShortlistView({
     <div>
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-balance">
+          <h1 className="text-2xl font-bold text-balance">
             Shortlist — {challenge.title}
           </h1>
           <p className="mt-1.5 text-sm text-muted-foreground">
@@ -105,7 +106,8 @@ export function ShortlistView({
         <p className="text-[13.5px] text-muted-foreground">
           La IA filtró{" "}
           <b className="text-sand">
-            {stats.submissions} → {stats.shortlisted}
+            {stats.submissions} <PixelIcon name="arrowRight" size={11} />{" "}
+            {stats.shortlisted}
           </b>{" "}
           con un score comparable. Al finalizar el reto se genera feedback
           line-level para cada builder. La decisión final de contratación es{" "}
@@ -115,7 +117,7 @@ export function ShortlistView({
 
       {/* ── Galería de ships: preview de cada app + click para visitar ──── */}
       <div className="mb-3 flex items-baseline justify-between gap-3">
-        <h2 className="text-xs font-extrabold uppercase tracking-[0.14em] text-faint">
+        <h2 className="eyebrow">
           Ships enviados
         </h2>
         <span className="text-faint text-[11px]">
@@ -126,7 +128,7 @@ export function ShortlistView({
         <ShipsGrid challengeId={challengeId} />
       </div>
 
-      <h2 className="mb-3 text-xs font-extrabold uppercase tracking-[0.14em] text-faint">
+      <h2 className="mb-3 eyebrow">
         Shortlist (rankeado por la IA)
       </h2>
 

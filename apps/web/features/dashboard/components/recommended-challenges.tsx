@@ -8,7 +8,7 @@ export function RecommendedChallenges({ items }: { items: ChallengeCardData[] })
     return (
       <section>
         <SectionTitle>Retos para ti</SectionTitle>
-        <div className="rounded-2xl border border-line bg-panel p-[22px] text-[13px] text-muted-foreground">
+        <div className="card text-[13px] text-muted-foreground">
           No hay retos abiertos ahora mismo. Vuelve pronto.
         </div>
       </section>

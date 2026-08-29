@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 
 /** AI Judge score row (0..100). primary highlights the reto-fit dimension. */
 export function ScoreBar({
@@ -20,9 +21,9 @@ export function ScoreBar({
         className,
       )}
     >
-      <span className={primary ? "text-sand font-extrabold" : ""}>
+      <span className={primary ? "text-sand font-bold" : ""}>
         {label}
-        {primary ? " ★" : ""}
+        {primary ? <PixelIcon name="star" size={11} className="ml-1" /> : null}
       </span>
       <div className="bg-ink-2 h-[9px] overflow-hidden rounded-full">
         <div
@@ -30,7 +31,7 @@ export function ScoreBar({
           style={{ width: `${pct}%`, background: primary ? "var(--sand)" : "var(--tan)" }}
         />
       </div>
-      <span className="text-muted-foreground text-right font-mono tabular-nums">
+      <span className="text-muted-foreground text-right data tabular-nums">
         {value}
       </span>
     </div>

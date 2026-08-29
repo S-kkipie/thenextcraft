@@ -14,6 +14,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 
 import { useProfileSummary } from "@/features/profile/hooks";
 import { BADGE_META, DEFAULT_BADGE_META } from "@/features/profile/schema";
@@ -47,7 +48,7 @@ function PassportContent({ summary }: { summary: Summary }) {
     <div className="flex flex-col gap-[18px]">
       <p className="text-muted-foreground text-[13px]">
         Perfil público ·{" "}
-        <span className="font-mono text-foreground">/u/{handle}</span>
+        <span className="data text-foreground">/u/{handle}</span>
       </p>
 
       {/* ===== Header ===== */}
@@ -56,10 +57,10 @@ function PassportContent({ summary }: { summary: Summary }) {
           <div className="flex flex-wrap items-start gap-4">
             <PassportAvatar name={user.name} avatarUrl={user.avatarUrl} />
             <div className="min-w-[200px] flex-1">
-              <h1 className="font-display text-2xl font-black tracking-tight">
+              <h1 className="font-display text-2xl font-bold">
                 {user.name}
               </h1>
-              <p className="text-muted-foreground mt-1 font-mono text-[13px]">
+              <p className="text-muted-foreground mt-1 data text-[13px]">
                 @{handle}
               </p>
               <p className="text-muted-foreground mt-1.5 text-[13px]">
@@ -77,7 +78,7 @@ function PassportContent({ summary }: { summary: Summary }) {
             <div className="min-w-[200px] flex-1">
               <XpBar value={xp} max={xpForNext} />
             </div>
-            <span className="text-muted-foreground font-mono text-xs">
+            <span className="text-muted-foreground data text-xs">
               {xp}/{xpForNext}
             </span>
             <ShareButton />
@@ -179,7 +180,7 @@ function BuilderScoreCard({ score }: { score: Summary["score"] }) {
       <CardContent className="flex flex-col gap-4">
         <SectionTitle>Builder Score</SectionTitle>
         <div className="flex flex-wrap items-end gap-3">
-          <span className="font-display text-[var(--sand)] text-5xl leading-none font-black tabular-nums">
+          <span className="font-display text-[var(--sand)] text-5xl leading-none font-bold tabular-nums">
             {score.total}
           </span>
           <span className="text-muted-foreground pb-1.5 text-[13px]">
@@ -220,7 +221,7 @@ function FeaturedProjects({ projects }: { projects: Project[] }) {
               >
                 <div className="flex flex-wrap items-center justify-between gap-2.5">
                   <div>
-                    <p className="font-display text-[15px] font-extrabold">
+                    <p className="font-display text-[15px] font-bold">
                       {p.title}
                     </p>
                     <p className="text-muted-foreground mt-0.5 text-[12.5px]">
@@ -241,7 +242,7 @@ function FeaturedProjects({ projects }: { projects: Project[] }) {
                       rel="noreferrer"
                       className="text-[var(--sand)] text-[13px] font-bold"
                     >
-                      Ver ship →
+                      Ver ship <PixelIcon name="arrowRight" size={12} />
                     </a>
                   </div>
                 </div>
@@ -274,7 +275,7 @@ function PassportAvatar({
   }
   return (
     <span
-      className="text-ink font-display grid size-16 place-items-center rounded-full text-2xl font-black"
+      className="text-ink font-display grid size-16 place-items-center rounded-full text-2xl font-bold"
       style={{ backgroundImage: "linear-gradient(135deg,var(--tan),var(--sand))" }}
     >
       {(name?.[0] ?? "?").toUpperCase()}
@@ -284,7 +285,7 @@ function PassportAvatar({
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[var(--faint)] text-xs font-extrabold tracking-[0.14em] uppercase">
+    <p className="text-[var(--faint)] text-xs font-bold tracking-[0.14em] uppercase">
       {children}
     </p>
   );
@@ -315,10 +316,10 @@ function NotFound({ handle }: { handle: string }) {
   return (
     <Card>
       <CardContent className="flex flex-col items-center gap-2 py-16 text-center">
-        <p className="font-display text-xl font-black">Passport no encontrado</p>
+        <p className="font-display text-xl font-bold">Passport no encontrado</p>
         <p className="text-muted-foreground text-sm">
           No existe un builder con el handle{" "}
-          <span className="font-mono">@{handle}</span>.
+          <span className="data">@{handle}</span>.
         </p>
       </CardContent>
     </Card>

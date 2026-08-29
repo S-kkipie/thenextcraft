@@ -14,6 +14,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { useUserBadges } from "../hooks";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 import {
   deriveBadges,
   deriveProgress,
@@ -42,7 +43,7 @@ export function RewardsView() {
     <div className="flex flex-col gap-[18px]">
       <header>
         <Eyebrow>Recompensas</Eyebrow>
-        <h1 className="font-display mt-2 text-[32px] font-black text-foreground">
+        <h1 className="font-display mt-2 text-[32px] font-bold text-foreground">
           Tu progreso
         </h1>
         <p className="text-muted-foreground mt-1.5 max-w-xl text-[13px]">
@@ -91,12 +92,12 @@ function StreakHero({ streak }: { streak: number }) {
           className="grid size-24 flex-none place-items-center rounded-2xl border border-line-2 bg-ink-2"
           aria-hidden
         >
-          <span className="text-5xl leading-none">🔥</span>
+          <PixelIcon name="fire" size={52} className="text-[var(--cyan)]" />
         </div>
         <div className="min-w-[180px] flex-1">
           <SectionTitle>Racha</SectionTitle>
           <div className="mt-1 flex items-end gap-3">
-            <span className="font-display text-terra text-6xl leading-none font-black tabular-nums">
+            <span className="font-display text-terra text-6xl leading-none font-bold tabular-nums">
               {streak}
             </span>
             <span className="text-muted-foreground pb-2 text-[15px] font-semibold">
@@ -130,12 +131,12 @@ function LevelCard({ progress }: { progress: RewardsProgress }) {
             size={88}
           />
           <div className="min-w-[200px] flex-1">
-            <div className="text-faint mb-1.5 flex justify-between font-mono text-xs tabular-nums">
+            <div className="text-faint mb-1.5 flex justify-between data text-xs tabular-nums">
               <span>Nivel {progress.level}</span>
               <span>Nivel {progress.level + 1}</span>
             </div>
             <XpBar value={progress.xpValue} max={progress.xpMax} />
-            <p className="text-muted-foreground mt-2 font-mono text-xs tabular-nums">
+            <p className="text-muted-foreground mt-2 data text-xs tabular-nums">
               {progress.xpValue}/{progress.xpMax} XP · faltan{" "}
               <span className="text-foreground">{remaining}</span> para el
               siguiente nivel
@@ -160,10 +161,10 @@ function WeeklyGoals({ goals }: { goals: WeeklyGoal[] }) {
             return (
               <div key={goal.key} className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="font-display text-[14px] font-extrabold">
+                  <span className="font-display text-[14px] font-bold">
                     {goal.label}
                   </span>
-                  <span className="text-faint font-mono text-xs tabular-nums">
+                  <span className="text-faint data text-xs tabular-nums">
                     {goal.value}/{goal.max} {goal.unit}
                   </span>
                 </div>
@@ -178,14 +179,14 @@ function WeeklyGoals({ goals }: { goals: WeeklyGoal[] }) {
                   )}
                   {done ? (
                     <span className="text-sage text-[11.5px] font-bold">
-                      ✓ completada
+                      <PixelIcon name="check" size={11} /> completada
                     </span>
                   ) : goal.key === "ship" ? (
                     <Link
                       href="/challenges"
                       className="text-[var(--sand)] text-[12px] font-bold"
                     >
-                      Ver retos →
+                      Ver retos <PixelIcon name="arrowRight" size={12} />
                     </Link>
                   ) : (
                     <span />
@@ -237,7 +238,7 @@ function BadgesCard({
             {locked.map((item) => (
               <div key={item.key} className="flex flex-col gap-1">
                 <CraftBadge variant={item.variant} className="opacity-50">
-                  🔒 {item.label}
+                  <PixelIcon name="lock" size={12} /> {item.label}
                 </CraftBadge>
                 <span className="text-faint pl-1 text-[11px]">
                   {item.unlock}
@@ -255,7 +256,7 @@ function BadgesCard({
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-faint text-xs font-extrabold tracking-[0.14em] uppercase">
+    <div className="text-faint text-xs font-bold tracking-[0.14em] uppercase">
       {children}
     </div>
   );
@@ -263,7 +264,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-faint text-xs font-extrabold tracking-[0.14em] uppercase">
+    <p className="text-faint text-xs font-bold tracking-[0.14em] uppercase">
       {children}
     </p>
   );
@@ -283,7 +284,7 @@ function LoggedOut() {
   return (
     <Card>
       <CardContent className="flex flex-col items-center gap-2 py-16 text-center">
-        <p className="font-display text-xl font-black">
+        <p className="font-display text-xl font-bold">
           Entra para ver tus recompensas
         </p>
         <p className="text-muted-foreground max-w-md text-sm">

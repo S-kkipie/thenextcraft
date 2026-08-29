@@ -34,8 +34,8 @@ export function BuilderDashboard() {
   // Logged out: nudge toward the nav sign-in.
   if (userId === null) {
     return (
-      <div className="rounded-2xl border border-line bg-panel p-8 text-center">
-        <h1 className="font-display text-2xl font-black text-foreground">
+      <div className="card p-8 text-center">
+        <h1 className="text-2xl font-bold text-foreground">
           Entra para ver tu carrera
         </h1>
         <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
@@ -67,8 +67,8 @@ export function BuilderDashboard() {
       {/* Greeting */}
       <div className="mb-[22px]">
         <Eyebrow>Tu carrera</Eyebrow>
-        <h1 className="mt-2 font-display text-[32px] font-black text-foreground">
-          {loading ? "Hola 👋" : `Hola, ${user?.name ?? "builder"} 👋`}
+        <h1 className="mt-2 text-[32px] font-bold text-foreground">
+          {loading ? "Hola" : `Hola, ${user?.name ?? "builder"}`}
         </h1>
       </div>
 

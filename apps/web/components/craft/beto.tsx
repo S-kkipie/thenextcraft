@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Beto, el castor — la mascota de thenextcraft.
+ * Beto, el castor — la mascota de The Next Ship.
  *
  * Metáfora: el castor no "estudia" construir represas, las construye. Corta,
  * apila y shipea río abajo — build → ship, el loop del producto.
@@ -34,7 +34,7 @@ export function Beto({
     <svg
       viewBox="0 0 120 128"
       role="img"
-      aria-label="Beto, el castor de thenextcraft"
+      aria-label="Beto, el castor de The Next Ship"
       className={cn("size-28", className)}
     >
       {/* cola: paleta con textura de tronco, siempre detrás del cuerpo */}

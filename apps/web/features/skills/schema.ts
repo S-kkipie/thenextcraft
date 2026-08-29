@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { PixelIconName } from "@/components/craft/pixel-icon";
+
 /**
  * Skill Map — modelos de vista (zod = fuente única de tipos, AGENTS §1).
  *
@@ -22,18 +24,18 @@ export const CATEGORY_ORDER = [
 export type CategoryKey = (typeof CATEGORY_ORDER)[number];
 
 /**
- * Config estática por categoría: etiqueta, emoji, descripción y las palabras
+ * Config estática por categoría: etiqueta, icono, descripción y las palabras
  * clave (ya normalizadas: minúsculas, solo `[a-z0-9]`) que mapean un token de
  * tech a esta categoría. `fullstack` no tiene keywords — se deriva aparte de los
  * ships que abarcan frontend + backend a la vez (ver model.ts).
  */
 export const CATEGORY_META: Record<
   CategoryKey,
-  { label: string; emoji: string; blurb: string; keywords: readonly string[] }
+  { label: string; icon: PixelIconName; blurb: string; keywords: readonly string[] }
 > = {
   frontend: {
     label: "Frontend",
-    emoji: "🎨",
+    icon: "screen",
     blurb: "Interfaces, componentes y experiencia de usuario.",
     keywords: [
       "next",
@@ -57,7 +59,7 @@ export const CATEGORY_META: Record<
   },
   backend: {
     label: "Backend",
-    emoji: "⚙️",
+    icon: "gear",
     blurb: "APIs, lógica de servidor y datos en movimiento.",
     keywords: [
       "node",
@@ -88,7 +90,7 @@ export const CATEGORY_META: Record<
   },
   "ai-ml": {
     label: "AI / ML",
-    emoji: "🧠",
+    icon: "brain",
     blurb: "Modelos, LLMs, visión y pipelines de datos.",
     keywords: [
       "llm",
@@ -121,7 +123,7 @@ export const CATEGORY_META: Record<
   },
   databases: {
     label: "Databases",
-    emoji: "🗄️",
+    icon: "database",
     blurb: "Persistencia, modelado y consultas.",
     keywords: [
       "postgres",
@@ -147,7 +149,7 @@ export const CATEGORY_META: Record<
   },
   devops: {
     label: "DevOps",
-    emoji: "🛠️",
+    icon: "wrench",
     blurb: "Deploy, infraestructura y automatización.",
     keywords: [
       "docker",
@@ -178,7 +180,7 @@ export const CATEGORY_META: Record<
   },
   security: {
     label: "Security",
-    emoji: "🔐",
+    icon: "shield",
     blurb: "Auth, cifrado y superficie de ataque.",
     keywords: [
       "auth",
@@ -202,7 +204,7 @@ export const CATEGORY_META: Record<
   },
   fullstack: {
     label: "Full Stack",
-    emoji: "🧩",
+    icon: "grid",
     blurb: "Retos shipeados end-to-end: frontend + backend en una sola solución.",
     keywords: [],
   },
@@ -225,7 +227,7 @@ export type SubmissionSource = z.infer<typeof submissionSource>;
 export const derivedCategory = z.object({
   key: z.enum(CATEGORY_ORDER),
   label: z.string(),
-  emoji: z.string(),
+  icon: z.custom<PixelIconName>(),
   blurb: z.string(),
   /** 0..100 — dominio derivado (ships × peso + skills declarados × peso). */
   value: z.number(),

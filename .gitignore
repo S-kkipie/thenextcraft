@@ -22,3 +22,13 @@ packages/backend/.claude/
 
 # git worktrees created under .claude
 .claude/worktrees/
+
+# skills de agentes instaladas localmente (.agents/ ya está arriba)
+.claude/
+skills-lock.json
+
+# referencias de diseño (local)
+/ui/
+
+# docs de diseno internos (local)
+docs/gamification.md

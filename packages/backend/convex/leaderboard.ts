@@ -23,6 +23,7 @@ export const top = query({
       name: u.name,
       handle: u.githubHandle ?? null,
       initials: (u.name?.[0] ?? "?").toUpperCase(),
+      avatarUrl: u.avatarUrl ?? null,
       level: u.level ?? 1,
       xp: u.xp ?? 0,
     }));

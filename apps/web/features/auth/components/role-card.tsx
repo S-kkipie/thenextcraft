@@ -1,9 +1,8 @@
-import { Check } from "lucide-react";
-
 import { cn } from "@/lib/utils";
+import { PixelIcon, type PixelIconName } from "@/components/craft/pixel-icon";
 
 type RoleCardProps = {
-  emoji: string;
+  icon: PixelIconName;
   title: string;
   desc: string;
   selected: boolean;
@@ -11,26 +10,26 @@ type RoleCardProps = {
 };
 
 /** Selectable role card (Builder / Startup). Tactile lift on hover, amber ring when picked. */
-export function RoleCard({ emoji, title, desc, selected, onSelect }: RoleCardProps) {
+export function RoleCard({ icon, title, desc, selected, onSelect }: RoleCardProps) {
   return (
     <button
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
       className={cn(
-        "group relative flex flex-col items-start gap-1 rounded-2xl border bg-panel p-4 text-left transition-all",
+        "card group relative flex flex-col items-start gap-1 p-4 text-left transition-all",
         "hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
         selected
-          ? "border-sand bg-panel-2 ring-2 ring-sand/40"
+          ? "border-[var(--phos)] bg-panel-2 ring-2 ring-[var(--phos)]/40"
           : "border-line hover:border-line-2",
       )}
     >
       {selected && (
-        <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-sand text-ink">
-          <Check className="size-3" strokeWidth={3} />
+        <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-[var(--phos)] text-ink">
+          <PixelIcon name="check" size={11} />
         </span>
       )}
-      <span className="text-2xl leading-none">{emoji}</span>
+      <PixelIcon name={icon} size={26} className="text-[var(--phos)]" />
       <span className="mt-2 font-heading text-base font-semibold text-foreground">
         {title}
       </span>

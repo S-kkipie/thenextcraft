@@ -39,42 +39,52 @@ export function ChallengeList() {
   return (
     <section className="flex flex-col gap-6">
       <header className="flex flex-col gap-3">
-        <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-sand">
-          Proof-of-work hiring
-        </span>
-        <h1 className="text-4xl font-extrabold">Retos abiertos</h1>
+        <span className="eyebrow text-[var(--phos)]">Proof-of-work hiring</span>
+        <h1 className="text-4xl font-bold">Retos abiertos</h1>
         <p className="max-w-[56ch] text-muted-foreground">
           Problemas reales de negocio. Shipea una solución, consigue el trabajo.
         </p>
       </header>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar retos…"
-          className="max-w-[280px]"
-          aria-label="Buscar retos"
-        />
-        {tags.map((t) => {
-          const active = t === tag;
-          return (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTag(t)}
-              aria-pressed={active}
-              className={
-                "rounded-full border px-3 py-1 text-sm font-medium transition-colors " +
-                (active
-                  ? "border-sand text-sand"
-                  : "border-line text-muted-foreground hover:text-foreground hover:border-line-2")
-              }
-            >
-              {t}
-            </button>
-          );
-        })}
+      {/* El filtro es una consulta: va dentro del chrome de terminal, con el
+          recuento vivo en la barra. */}
+      <div className="term">
+        <div className="term-bar">
+          challenges ~ filtro
+          <span className="term-hint">
+            {challenges === undefined
+              ? "cargando…"
+              : `${filtered.length} de ${challenges.length}`}
+          </span>
+        </div>
+        <div className="term-body flex flex-wrap items-center gap-2">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar retos…"
+            className="max-w-[280px]"
+            aria-label="Buscar retos"
+          />
+          {tags.map((t) => {
+            const active = t === tag;
+            return (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setTag(t)}
+                aria-pressed={active}
+                className={
+                  "rounded-[10px] border px-3 py-2 text-[12.5px] font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--phos)] " +
+                  (active
+                    ? "border-[var(--phos)] bg-[var(--phos-dark)] text-[var(--phos)]"
+                    : "border-line-2 text-muted-foreground hover:border-[var(--phos)] hover:text-foreground")
+                }
+              >
+                {t}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {challenges === undefined ? (

@@ -253,7 +253,7 @@ export function deriveActivity(
     .slice(0, 4)
     .map((s) => ({
       id: `ship-${s.id}`,
-      icon: "🚀",
+      icon: "ship",
       text: s.company ? `Shipeaste para ${s.company}` : "Shipeaste un reto",
       when: relativeTime(s.createdAt, now),
     }));
@@ -261,7 +261,7 @@ export function deriveActivity(
   if (user && (user.level ?? 1) > 1) {
     items.push({
       id: `level-${user.level}`,
-      icon: "⬆️",
+      icon: "arrowUp",
       text: `Subiste a Nivel ${user.level}`,
       when: "",
     });

@@ -76,10 +76,10 @@ export function LoginScreen() {
         className="absolute inset-0 -z-10 bg-gradient-to-b from-background/40 via-background/10 to-background/80"
       />
 
-      <div className="w-full max-w-[440px] rounded-3xl border border-line bg-panel/80 p-8 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] backdrop-blur-md">
+      <div className="card w-full max-w-[440px] rounded-3xl bg-[var(--panel)]/80 p-8 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] backdrop-blur-md">
         <div className="flex flex-col items-center text-center">
           <BrandMark className="mb-5" />
-          <h1 className="text-[32px] leading-tight font-black">
+          <h1 className="text-[32px] leading-tight font-bold">
             Entra a The Next Ship
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -97,7 +97,7 @@ export function LoginScreen() {
                 {ROLE_META.map((r) => (
                   <RoleCard
                     key={r.value}
-                    emoji={r.emoji}
+                    icon={r.icon}
                     title={r.title}
                     desc={r.desc}
                     selected={role === r.value}
@@ -150,7 +150,7 @@ export function LoginScreen() {
                 <GithubMark className="size-5" />{" "}
                 {busy ? "Redirigiendo…" : "Continuar con GitHub"}
               </Button>
-              <p className="text-center text-xs text-faint">
+              <p className="data text-center text-xs text-faint">
                 Proof-of-work hiring · nunca corremos tu código
               </p>
             </div>

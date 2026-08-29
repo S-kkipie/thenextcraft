@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { StatusPill } from "@/components/craft";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Id } from "@thenextcraft/backend/dataModel";
@@ -31,12 +32,12 @@ export function ChallengeDetailView({ id }: { id: Id<"challenges"> }) {
   if (challenge === null) {
     return (
       <div className="flex flex-col items-center gap-4 py-24 text-center">
-        <h1 className="text-2xl font-extrabold">Reto no encontrado</h1>
+        <h1 className="text-2xl font-bold">Reto no encontrado</h1>
         <Link
           href="/challenges"
           className={buttonVariants({ variant: "craftSecondary" })}
         >
-          ← Volver a retos
+          <PixelIcon name="arrowLeft" size={12} /> Volver a retos
         </Link>
       </div>
     );
@@ -54,7 +55,7 @@ export function ChallengeDetailView({ id }: { id: Id<"challenges"> }) {
       </nav>
 
       <header className="flex items-start gap-4">
-        <div className="grid size-14 shrink-0 place-items-center rounded-2xl border border-line-2 bg-panel-2 font-display text-lg font-extrabold">
+        <div className="grid size-14 shrink-0 place-items-center rounded-2xl border border-line-2 bg-panel-2 font-display text-lg font-bold">
           {initialsOf(challenge.company)}
         </div>
         <div className="flex flex-col gap-2">
@@ -62,7 +63,7 @@ export function ChallengeDetailView({ id }: { id: Id<"challenges"> }) {
             {challenge.company}
             {challenge.sector ? ` · ${challenge.sector}` : ""}
           </p>
-          <h1 className="text-3xl font-extrabold">{challenge.title}</h1>
+          <h1 className="title-plain text-3xl font-bold">{challenge.title}</h1>
           <div>
             <StatusPill
               status={
@@ -79,26 +80,26 @@ export function ChallengeDetailView({ id }: { id: Id<"challenges"> }) {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="flex flex-col gap-5">
-          <section className="rounded-2xl border border-line bg-card p-6">
+          <section className="card">
             <h2 className="mb-3 text-lg font-bold">El problema de negocio</h2>
             <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
               {challenge.businessProblem}
             </p>
           </section>
 
-          <section className="rounded-2xl border border-line bg-card p-6">
+          <section className="card">
             <h2 className="mb-4 text-lg font-bold">Criterios de evaluación</h2>
             <ul className="flex flex-col gap-3">
               {challenge.successCriteria.map((crit, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm">
-                  <Check className="mt-0.5 size-4 shrink-0 text-sand" />
+                  <Check className="mt-0.5 size-4 shrink-0 text-[var(--phos)]" />
                   <span>{crit}</span>
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="rounded-2xl border border-line bg-card p-6">
+          <section className="card">
             <h2 className="mb-3 text-lg font-bold">Entregable</h2>
             <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
               Un link público: repo y/o demo. La plataforma{" "}
@@ -111,7 +112,7 @@ export function ChallengeDetailView({ id }: { id: Id<"challenges"> }) {
                 {challenge.tech.map((t) => (
                   <span
                     key={t}
-                    className="rounded-full border border-line-2 bg-panel-2 px-2.5 py-1 text-xs font-bold text-muted-foreground"
+                    className="tag-pill"
                   >
                     {t}
                   </span>
@@ -121,10 +122,10 @@ export function ChallengeDetailView({ id }: { id: Id<"challenges"> }) {
           </section>
         </div>
 
-        <aside className="flex h-fit flex-col gap-4 self-start rounded-2xl border border-line-2 bg-panel-2 p-6 lg:sticky lg:top-20">
+        <aside className="card card-raised flex h-fit flex-col gap-4 self-start lg:sticky lg:top-20">
           {challenge.reward && (
             <div>
-              <span className="block font-display text-3xl font-extrabold leading-none text-sand">
+              <span className="block font-display text-3xl font-bold leading-none text-[var(--phos)]">
                 {challenge.reward}
               </span>
               <span className="text-xs text-muted-foreground">recompensa</span>
@@ -158,20 +159,20 @@ export function ChallengeDetailView({ id }: { id: Id<"challenges"> }) {
           <hr className="border-line" />
 
           <div>
-            <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-faint">
-              Cómo se evalúa
-            </span>
+            <span className="eyebrow">Cómo se evalúa</span>
             <ol className="mt-3 flex flex-col gap-2.5 text-sm">
               <li className="flex gap-2.5">
-                <span className="font-mono text-faint">1.</span>
-                <span className="text-sand">Fit al reto ★</span>
+                <span className="data text-faint">1.</span>
+                <span className="inline-flex items-center gap-1.5 text-[var(--phos)]">
+                  Fit al reto <PixelIcon name="star" size={11} />
+                </span>
               </li>
               <li className="flex gap-2.5">
-                <span className="font-mono text-faint">2.</span>
+                <span className="data text-faint">2.</span>
                 <span>Calidad del build</span>
               </li>
               <li className="flex gap-2.5">
-                <span className="font-mono text-faint">3.</span>
+                <span className="data text-faint">3.</span>
                 <span>
                   Autoría <span className="text-muted-foreground">(viva humana)</span>
                 </span>
@@ -185,7 +186,7 @@ export function ChallengeDetailView({ id }: { id: Id<"challenges"> }) {
             href={`/ship/${challenge._id}`}
             className={buttonVariants({ variant: "craftSecondary" }) + " w-full"}
           >
-            Participar →
+            Participar <PixelIcon name="arrowRight" size={12} />
           </Link>
           <button
             type="button"

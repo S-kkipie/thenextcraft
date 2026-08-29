@@ -24,7 +24,7 @@ export function CraftBadge({
   return (
     <span
       className={cn(
-        "font-display inline-flex items-center gap-1.5 rounded-[10px] border px-3 py-1.5 text-[12.5px] font-extrabold",
+        "font-display inline-flex items-center gap-1.5 rounded-[10px] border px-3 py-1.5 text-[12.5px] font-bold",
         map[variant],
         className,
       )}

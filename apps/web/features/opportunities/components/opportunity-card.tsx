@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Id } from "@thenextcraft/backend/dataModel";
 import type { Opportunity } from "../hooks";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 import { opportunityResponse, type OpportunityResponse } from "../schema";
 
 /**
@@ -39,27 +40,29 @@ export function OpportunityCard({
   };
 
   return (
-    <div className="border-line bg-card hover:border-line-2 flex flex-col rounded-2xl border p-[22px] transition-all hover:-translate-y-0.5">
+    <div className="card card-hover flex flex-col">
       <div className="mb-3.5 flex items-center gap-3">
-        <div className="font-display bg-tan text-cream grid size-[38px] flex-none place-items-center rounded-[10px] text-sm font-black">
+        <div className="font-display bg-tan text-cream grid size-[38px] flex-none place-items-center rounded-[10px] text-sm font-bold">
           {initials}
         </div>
         <div className="min-w-0">
-          <div className="font-display text-foreground truncate text-sm font-extrabold leading-tight">
+          <div className="font-display text-foreground truncate text-sm font-bold leading-tight">
             {startupName}
           </div>
-          <span className="text-faint text-[11px] font-extrabold uppercase tracking-[0.14em]">
+          <span className="eyebrow text-[11px]">
             Te descubrieron
           </span>
         </div>
         {matchPct != null && (
           <div className="ml-auto flex-none">
-            <CraftBadge variant="top">🎯 {matchPct}% match</CraftBadge>
+            <CraftBadge variant="top">
+            <PixelIcon name="target" size={12} /> {matchPct}% match
+          </CraftBadge>
           </div>
         )}
       </div>
 
-      <h3 className="font-display text-foreground mb-1.5 text-lg font-extrabold">
+      <h3 className="font-display text-foreground mb-1.5 text-lg font-bold">
         {role}
       </h3>
 
@@ -88,7 +91,9 @@ export function OpportunityCard({
           </Button>
         )}
         {status === "accepted" && (
-          <CraftBadge variant="ship">✓ Conversación aceptada</CraftBadge>
+          <CraftBadge variant="ship">
+          <PixelIcon name="check" size={12} /> Conversación aceptada
+        </CraftBadge>
         )}
         {status === "declined" && (
           <span className="text-faint text-[13px] font-semibold">

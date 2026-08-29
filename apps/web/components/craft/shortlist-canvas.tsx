@@ -321,7 +321,7 @@ export function ShortlistCanvas({ header }: { header?: React.ReactNode }) {
             </span>
             <span className="pb-1.5">
               <span
-                className="block text-[15px] font-extrabold"
+                className="block text-[15px] font-bold"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 {step.label}

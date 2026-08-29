@@ -73,7 +73,7 @@ export type NextStep = z.infer<typeof nextStep>;
 /** "Actividad reciente" row. */
 export const activityItem = z.object({
   id: z.string(),
-  icon: z.string(),
+  icon: z.string(), // nombre de PixelIcon
   text: z.string(),
   when: z.string(),
 });

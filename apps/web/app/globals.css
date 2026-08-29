@@ -112,6 +112,27 @@
   --sage: #4af07e;
   --faint: #566356;
 
+  /* ── kit de la landing, ahora global ──────────────────────────────────────
+     Los mismos tokens que consume la landing viven acá, así las vistas de la
+     app comparten su piel en vez de imitarla. --muted NO sube: en la landing
+     es color de texto, pero en la app es la superficie que consumen bg-muted,
+     Skeleton y Table de shadcn. Fuera de la landing el texto apagado se pide
+     con text-muted-foreground (mismo hex, #7e8f7e). */
+  --ink: #0b0e0b;
+  --panel: #121712;
+  --line: #1f2a20;
+  --text: #e6f0e4;
+  --phos: #4af07e;      /* acento primario — verde de fósforo */
+  --phos-edge: #1e8f46; /* borde inferior 3d del verde */
+  --phos-dark: #1c3a25; /* superficie verde profunda */
+  --cyan: #45e0d0;      /* secundario: el otro fósforo del CRT */
+  --rust: #e5544b;
+  --brand: var(--phos);
+  --warning: var(--cyan);
+
+  --font-body: var(--font-plex-mono), ui-monospace, monospace;
+  --font-data: var(--font-plex-mono), ui-monospace, monospace;
+
   --chart-1: #4af07e;
   --chart-2: #45e0d0;
   --chart-3: #9fe0b6;
@@ -119,7 +140,7 @@
   --chart-5: #7e8f7e;
 
   --radius: 0.9rem;
-  --font-display: var(--font-plex-mono), ui-monospace, "SF Mono", monospace;
+  --font-display: var(--font-silkscreen), "Courier New", monospace;
 
   --sidebar: #121712;
   --sidebar-foreground: #e6f0e4;
@@ -164,6 +185,27 @@
   --sage: #4af07e;
   --faint: #566356;
 
+  /* ── kit de la landing, ahora global ──────────────────────────────────────
+     Los mismos tokens que consume la landing viven acá, así las vistas de la
+     app comparten su piel en vez de imitarla. --muted NO sube: en la landing
+     es color de texto, pero en la app es la superficie que consumen bg-muted,
+     Skeleton y Table de shadcn. Fuera de la landing el texto apagado se pide
+     con text-muted-foreground (mismo hex, #7e8f7e). */
+  --ink: #0b0e0b;
+  --panel: #121712;
+  --line: #1f2a20;
+  --text: #e6f0e4;
+  --phos: #4af07e;      /* acento primario — verde de fósforo */
+  --phos-edge: #1e8f46; /* borde inferior 3d del verde */
+  --phos-dark: #1c3a25; /* superficie verde profunda */
+  --cyan: #45e0d0;      /* secundario: el otro fósforo del CRT */
+  --rust: #e5544b;
+  --brand: var(--phos);
+  --warning: var(--cyan);
+
+  --font-body: var(--font-plex-mono), ui-monospace, monospace;
+  --font-data: var(--font-plex-mono), ui-monospace, monospace;
+
   --chart-1: #4af07e;
   --chart-2: #45e0d0;
   --chart-3: #9fe0b6;
@@ -190,22 +232,42 @@
   html {
     @apply font-sans;
   }
+  /*
+   * --font-display es Silkscreen: un bitmap todo-caps y muy ancho. Reservado
+   * para titulares CORTOS, números y botones. Un bitmap no admite tracking
+   * negativo (los píxeles se pisan) ni parte bien en móvil, de ahí el
+   * letter-spacing 0 y el overflow-wrap.
+   *
+   * Para un título de texto DINÁMICO y largo (el nombre de un reto, de una
+   * empresa) usa `.title-plain`: vuelve a Plex Mono y se lee.
+   */
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
+    line-height: 1.25;
     text-wrap: balance;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .title-plain {
+    font-family: var(--font-body);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
   }
 }
 
 /* ============================================================
-   feat/ui landing design system — retro-terminal, phosphor-green.
-   Everything is scoped under `.landing`; the app keeps the warm-mono
-   theme and inherits nothing from here.
+   Design system retro-terminal (fósforo verde) — GLOBAL.
+
+   Nació scopeado bajo `.landing`; ahora el kit entero (.eyebrow, .card,
+   .btn, .tag-pill, .badge, .term…) vive sin scope, para que las vistas de
+   la app compartan la piel de la landing en vez de imitarla con utilidades
+   sueltas. `.landing` solo sobrevive para el ground de la portada y el
+   override de --muted.
 
    NOTE: kept UNLAYERED on purpose. Tailwind v4 in this build does not
    emit a `components` layer, so wrapping this in `@layer components`
-   drops it entirely. Unlayered, the `.landing` tokens (--phos, the
-   Silkscreen --font-display, etc.) win the cascade over :root.
+   drops it entirely. Unlayered, these rules win the cascade over :root.
    ============================================================ */
 
 /* Gate 34: nunca `hidden` — `clip` no crea contexto de scroll. */
@@ -215,33 +277,10 @@ body {
 }
 
 .landing {
-  /* Estructura de docs/design-foundation.html, paleta girada a fósforo verde:
-     el ground pierde el tinte marrón y el acento pasa de tan/amber a verde. */
-  --ink: #0b0e0b;
-  --ink-2: #060806;
-  --panel: #121712;
-  --panel-2: #182018;
-  --line: #1f2a20;
-  --line-2: #2d3d2f;
-  --text: #e6f0e4;
+  /* Todo el kit ya es global (ver :root). Acá solo queda lo que NO puede
+     subir: --muted es color de TEXTO en la landing, pero en la app es la
+     superficie de bg-muted / Skeleton / Table. */
   --muted: #7e8f7e;
-  --faint: #566356;
-  --phos: #4af07e; /* acento primario — verde de fósforo */
-  --phos-edge: #1e8f46; /* borde inferior 3d del verde */
-  --phos-dark: #1c3a25; /* superficie verde profunda */
-  --cream: #e6f0e4;
-  --cream-edge: #97ac96;
-  --cyan: #45e0d0; /* secundario: el otro fósforo del CRT */
-  --rust: #e5544b;
-
-  --font-display: var(--font-silkscreen), "Courier New", monospace;
-  --font-body: var(--font-plex-mono), ui-monospace, monospace;
-  --font-data: var(--font-plex-mono), ui-monospace, monospace;
-
-  /* Beto lee --brand y --warning; acá los apunta a la paleta craft para que
-     la mascota no llegue con el ámbar de la app. */
-  --brand: var(--phos);
-  --warning: var(--cyan);
 
   background: var(--ink);
   color: var(--text);
@@ -253,28 +292,16 @@ body {
  * Dos niveles tipográficos, a propósito:
  *   Silkscreen (display) — solo mayúsculas y muy ancha, así que se reserva
  *     para titulares cortos, eyebrows, números y botones.
- *   Plex Mono (body) — todo lo que se lee en frases: las afirmaciones del
- *     manifiesto van en <p>, no en <h2>, justamente para caer acá.
- * Poner una frase larga en bitmap todo-caps la vuelve ilegible.
+ *   Plex Mono (body) — todo lo que se lee en frases, y todo título de texto
+ *     dinámico (`.title-plain`): un nombre de reto en bitmap no se lee.
+ * La regla de h1..h4 vive en @layer base, arriba.
  */
-.landing h1,
-.landing h2,
-.landing h3 {
-  font-family: var(--font-display);
-  /* Un bitmap no admite tracking negativo: los píxeles se pisan. */
-  letter-spacing: 0;
-  line-height: 1.25;
-  text-wrap: balance;
-  /* Gate 51: los display largos parten dentro de la palabra en móvil. */
-  overflow-wrap: anywhere;
-  min-width: 0;
-}
 
-.landing .data {
+.data {
   font-family: var(--font-data);
 }
 
-.landing .eyebrow {
+.eyebrow {
   font-family: var(--font-display);
   font-size: 12px;
   font-weight: 800;
@@ -286,7 +313,7 @@ body {
 /* ── Botones · profundidad Duolingo ───────────────────────────────────────
    El borde inferior sólido ES la profundidad: hover lo estira, el click lo
    colapsa y el botón baja. Sin blur, sin gradiente. */
-.landing .btn {
+.btn {
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 15px;
@@ -304,59 +331,59 @@ body {
     transform 0.08s ease,
     box-shadow 0.08s ease;
 }
-.landing .btn:hover {
+.btn:hover {
   transform: translateY(-1px);
 }
-.landing .btn:active {
+.btn:active {
   transform: translateY(3px);
 }
-.landing .btn:focus-visible {
+.btn:focus-visible {
   outline: 2px solid var(--phos);
   outline-offset: 3px;
 }
-.landing .btn-primary {
+.btn-primary {
   background: var(--cream);
   color: var(--ink);
   box-shadow: 0 4px 0 var(--cream-edge);
 }
-.landing .btn-primary:hover {
+.btn-primary:hover {
   box-shadow: 0 5px 0 var(--cream-edge);
 }
-.landing .btn-primary:active {
+.btn-primary:active {
   box-shadow: 0 1px 0 var(--cream-edge);
 }
-.landing .btn-secondary {
+.btn-secondary {
   background: var(--phos);
   color: var(--ink);
   box-shadow: 0 4px 0 var(--phos-edge);
 }
-.landing .btn-secondary:hover {
+.btn-secondary:hover {
   box-shadow: 0 5px 0 var(--phos-edge);
 }
-.landing .btn-secondary:active {
+.btn-secondary:active {
   box-shadow: 0 1px 0 var(--phos-edge);
 }
-.landing .btn-ghost {
+.btn-ghost {
   background: var(--panel-2);
   color: var(--text);
   border: 1px solid var(--line-2);
   box-shadow: 0 4px 0 var(--ink-2);
 }
-.landing .btn-ghost:hover {
+.btn-ghost:hover {
   border-color: var(--phos-dark);
   box-shadow: 0 5px 0 var(--ink-2);
 }
-.landing .btn-ghost:active {
+.btn-ghost:active {
   box-shadow: 0 1px 0 var(--ink-2);
 }
-.landing .btn-sm {
+.btn-sm {
   padding: 9px 15px;
   font-size: 13px;
   border-radius: 10px;
 }
 
 /* ── Cards ─────────────────────────────────────────────────────────────── */
-.landing .card {
+.card {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -366,18 +393,57 @@ body {
     border-color 0.15s ease,
     box-shadow 0.15s ease;
 }
-.landing .card-hover:hover {
+.card-hover:hover {
   transform: translateY(-2px);
   border-color: var(--line-2);
   box-shadow: 0 14px 34px -18px rgb(0 0 0 / 0.8);
 }
-.landing .card-raised {
+.card-raised {
   background: var(--panel-2);
   border-color: var(--line-2);
 }
 
+/* ── Chrome de terminal ───────────────────────────────────────────────────
+   El marco que ya llevaban el diff y la consola de la landing, hecho clase
+   para que cualquier panel de datos de la app lo use: barra superior con el
+   punto de fósforo (la sesión está viva) y una etiqueta monospace. El punto
+   es un ::before, así el markup de la vista solo escribe la etiqueta. */
+.term {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--ink-2);
+}
+.term-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  padding: 10px 16px;
+  font-family: var(--font-data);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--faint);
+}
+.term-bar::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--phos);
+}
+/* Lo que va a la derecha de la barra: contador, atajo, estado. */
+.term-hint {
+  margin-left: auto;
+  color: var(--faint);
+}
+.term-body {
+  padding: 18px;
+}
+
 /* ── Píldoras, badges y barras ─────────────────────────────────────────── */
-.landing .tag-pill {
+.tag-pill {
   font-size: 12px;
   font-weight: 700;
   padding: 5px 11px;
@@ -386,7 +452,7 @@ body {
   border: 1px solid var(--line-2);
   color: var(--muted);
 }
-.landing .badge {
+.badge {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -397,34 +463,34 @@ body {
   border-radius: 10px;
   border: 1px solid transparent;
 }
-.landing .b-ship {
+.b-ship {
   background: rgb(74 240 126 / 0.12);
   color: var(--phos);
   border-color: rgb(74 240 126 / 0.32);
 }
-.landing .b-approved {
+.b-approved {
   background: rgb(69 224 208 / 0.13);
   color: var(--phos);
   border-color: rgb(69 224 208 / 0.34);
 }
-.landing .b-auth {
+.b-auth {
   background: rgb(28 58 37 / 0.5);
   color: #9fe0b6;
   border-color: var(--phos-dark);
 }
-.landing .b-first {
+.b-first {
   background: rgb(69 224 208 / 0.1);
   color: var(--cyan);
   border-color: rgb(69 224 208 / 0.3);
 }
 
-.landing .track {
+.track {
   height: 9px;
   border-radius: 999px;
   background: var(--ink-2);
   overflow: hidden;
 }
-.landing .track > i {
+.track > i {
   display: block;
   height: 100%;
   border-radius: 999px;
@@ -432,16 +498,16 @@ body {
 
 /* ── Tarjeta con inclinación 3D ────────────────────────────────────────────
    Los ángulos los escribe el puntero en --rx/--ry desde el cliente. */
-.landing .tilt {
+.tilt {
   transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
   transform-style: preserve-3d;
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.landing .tilt[data-active="true"] {
+.tilt[data-active="true"] {
   transition: transform 0.06s linear;
 }
 /* El brillo sigue al cursor y da volumen a la inclinación. */
-.landing .tilt-sheen {
+.tilt-sheen {
   background: radial-gradient(
     circle at var(--mx, 50%) var(--my, 50%),
     rgb(74 240 126 / 0.14),
@@ -450,41 +516,41 @@ body {
 }
 
 /* El hook `useParallax` escribe --py; acá se consume una sola vez por frame. */
-.landing .parallax {
+.parallax {
   transform: translate3d(0, var(--py, 0px), 0);
   will-change: transform;
 }
 
 /* Riel horizontal del loop: se desliza en móvil sin romper la página. */
-.landing .rail {
+.rail {
   scrollbar-width: thin;
   scrollbar-color: var(--line-2) transparent;
 }
-.landing .rail::-webkit-scrollbar {
+.rail::-webkit-scrollbar {
   height: 6px;
 }
-.landing .rail::-webkit-scrollbar-thumb {
+.rail::-webkit-scrollbar-thumb {
   background: var(--line-2);
   border-radius: 999px;
 }
 
 /* Filas de la tabla desnuda: el hover ilumina la fila entera. */
-.landing .row-hover {
+.row-hover {
   transition:
     background-color 0.18s ease,
     padding-left 0.18s ease;
 }
-.landing .row-hover:hover {
+.row-hover:hover {
   background: rgb(74 240 126 / 0.06);
   padding-left: 12px;
 }
 
 /* Waveform de la defensa: cada barra late con su propio desfase. */
-.landing .wave-bar {
+.wave-bar {
   opacity: 0.35;
   transform-origin: center;
 }
-.landing .wave-bar.wave-live {
+.wave-bar.wave-live {
   animation: wave 1.4s ease-in-out infinite alternate;
 }
 @keyframes wave {
@@ -517,18 +583,20 @@ body {
   .cursor-block {
     animation: none;
   }
-  .landing .btn,
-  .landing .card,
-  .landing .tilt {
+  /* El kit ya no está scopeado: estas reglas tienen que alcanzar también a
+     las cards y botones de las vistas de la app, no solo a la portada. */
+  .btn,
+  .card,
+  .tilt {
     transition: none;
   }
-  .landing .tilt {
+  .tilt {
     transform: none;
   }
-  .landing .parallax {
+  .parallax {
     transform: none;
   }
-  .landing .wave-bar {
+  .wave-bar {
     animation: none;
   }
 }

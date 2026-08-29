@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 
-/** Streak indicator: flame + day count. */
+/** Racha: llama + días, en el cian del CRT para no competir con el fósforo. */
 export function StreakPill({
   days,
   className,
@@ -11,11 +12,12 @@ export function StreakPill({
   return (
     <span
       className={cn(
-        "font-display text-terra inline-flex items-center gap-1.5 text-[13px] font-extrabold",
+        "data inline-flex items-center gap-1.5 text-[13px] font-bold text-[var(--cyan)] tabular-nums",
         className,
       )}
     >
-      🔥 {days}
+      <PixelIcon name="fire" size={13} />
+      {days}
     </span>
   );
 }

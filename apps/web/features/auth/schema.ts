@@ -36,13 +36,13 @@ export type StartupProfileInput = z.infer<typeof startupProfileInput>;
 export const ROLE_META = [
   {
     value: "builder",
-    emoji: "🛠",
+    icon: "wrench",
     title: "Builder",
     desc: "Resuelve retos, consigue trabajo.",
   },
   {
     value: "startup",
-    emoji: "🏢",
+    icon: "building",
     title: "Startup",
     desc: "Publica tu reto, contrata.",
   },

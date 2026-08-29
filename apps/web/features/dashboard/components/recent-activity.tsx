@@ -1,3 +1,7 @@
+import {
+  PixelIcon,
+  type PixelIconName,
+} from "@/components/craft/pixel-icon";
 import { SectionTitle } from "./section-title";
 import type { ActivityItem } from "../schema";
 
@@ -6,27 +10,40 @@ export function RecentActivity({ items }: { items: ActivityItem[] }) {
   return (
     <section>
       <SectionTitle>Actividad reciente</SectionTitle>
-      {items.length === 0 ? (
-        <div className="rounded-xl border border-line bg-ink-2 p-4 text-[13px] text-muted-foreground">
-          Aún no hay actividad. Toma un reto y empieza a shipear.
+      <div className="term">
+        <div className="term-bar">
+          activity ~ tu historial
+          <span className="term-hint">{items.length} eventos</span>
         </div>
-      ) : (
-        <div className="flex flex-col gap-2.5">
-          {items.map((a) => (
-            <div
-              key={a.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-line bg-ink-2 px-4 py-3"
-            >
-              <span className="text-sm text-foreground">
-                {a.icon} {a.text}
-              </span>
-              {a.when ? (
-                <span className="text-xs text-muted-foreground">{a.when}</span>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      )}
+        {items.length === 0 ? (
+          <p className="term-body text-[13px] text-muted-foreground">
+            Aún no hay actividad. Toma un reto y empieza a shipear.
+          </p>
+        ) : (
+          <div className="divide-y divide-[var(--line)]">
+            {items.map((a) => (
+              <div
+                key={a.id}
+                className="flex items-center justify-between gap-3 px-4 py-3"
+              >
+                <span className="text-sm text-foreground">
+                  <PixelIcon
+                    name={a.icon as PixelIconName}
+                    size={12}
+                    className="mr-2 text-[var(--phos)]"
+                  />
+                  {a.text}
+                </span>
+                {a.when ? (
+                  <span className="data text-xs text-muted-foreground">
+                    {a.when}
+                  </span>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 }

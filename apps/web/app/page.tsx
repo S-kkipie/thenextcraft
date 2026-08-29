@@ -1,16 +1,17 @@
 import Link from "next/link";
 
-import { AuthorshipDiff } from "@/components/craft/authorship-diff";
 import { Beto } from "@/components/craft/beto";
+import { BrandMark } from "@/components/craft/brand-mark";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 import { HeroType } from "@/components/craft/hero-type";
 import { LiquidShader } from "@/components/craft/liquid-shader";
 import {
   JobPostingStrike,
   RecordingPrompt,
-  RefusingConsole,
 } from "@/components/craft/manifesto-asides";
 import { Reveal } from "@/components/craft/reveal";
 import { ShortlistCanvas } from "@/components/craft/shortlist-canvas";
+import { SubmissionFeedback } from "@/components/craft/submission-feedback";
 import { TiltCard } from "@/components/craft/tilt-card";
 
 /*
@@ -32,7 +33,7 @@ import { TiltCard } from "@/components/craft/tilt-card";
  */
 
 export const metadata = {
-  title: "thenextcraft · Resuelve el reto. Consigue el trabajo.",
+  title: "The Next Ship · Resuelve el reto. Consigue el trabajo.",
   description:
     "Las startups publican su problema de negocio. Shipeas una solución pública. La IA filtra y rankea, tú defiendes tu autoría, la startup contrata.",
 };
@@ -73,13 +74,8 @@ function Nav() {
   return (
     <div className="sticky top-0 z-30 border-b border-[var(--line)] bg-[rgb(11_14_11_/_0.78)] backdrop-blur-[14px]">
       <div className={`${WRAP} flex h-[60px] items-center gap-6`}>
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 text-[15px] leading-[1.4] font-bold"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          <span className="size-[11px] rounded-[3px] bg-[var(--phos)] shadow-[0_0_14px_rgb(74_240_126_/_0.6)]" />
-          thenextcraft
+        <Link href="/">
+          <BrandMark />
         </Link>
 
         <nav className="hidden gap-[18px] text-sm font-semibold text-[var(--muted)] md:flex">
@@ -102,7 +98,7 @@ function Nav() {
             href="/challenges"
             className="btn btn-secondary btn-sm hidden sm:inline-flex"
           >
-            Explorar retos →
+            Explorar retos <PixelIcon name="arrowRight" size={12} />
           </Link>
         </div>
       </div>
@@ -140,17 +136,10 @@ const CLAIMS = [
     aside: <JobPostingStrike />,
   },
   {
-    label: "El entregable",
-    line: "La plataforma nunca corre tu código.",
-    tail: "El entregable es un link público. Un repo, un deploy — algo que existe.",
-    bg: "bg-[var(--panel)]",
-    aside: <RefusingConsole />,
-  },
-  {
     label: "La autoría",
     line: "La defensa de tu código es tuya. En video.",
     tail: "La IA saca las preguntas de tu propio diff. Respondes tú. Eso no se genera.",
-    bg: "bg-[var(--ink-2)]",
+    bg: "bg-[var(--panel)]",
     aside: <RecordingPrompt />,
   },
 ];
@@ -159,7 +148,7 @@ function Manifesto() {
   return (
     <section id="manifiesto" className="scroll-mt-16">
       {CLAIMS.map((claim, i) => {
-        // La banda del medio invierte el orden: el texto salta al otro lado.
+        // Las bandas impares invierten el orden: el texto salta al otro lado.
         const flipped = i % 2 === 1;
         return (
           <div
@@ -320,10 +309,18 @@ function Loop() {
                 puntos: son eventos que ocurrieron.
               </p>
               <div className="mt-6 flex flex-wrap gap-2.5">
-                <span className="badge b-first">✦ First ship</span>
-                <span className="badge b-ship">🚀 Shipped</span>
-                <span className="badge b-approved">✓ Startup-approved</span>
-                <span className="badge b-auth">🧬 Autoría verificada</span>
+                <span className="badge b-first">
+                <PixelIcon name="spark" size={12} /> First ship
+              </span>
+                <span className="badge b-ship">
+                <PixelIcon name="ship" size={12} /> Shipped
+              </span>
+                <span className="badge b-approved">
+                <PixelIcon name="check" size={12} /> Startup-approved
+              </span>
+                <span className="badge b-auth">
+                <PixelIcon name="dna" size={12} /> Autoría verificada
+              </span>
               </div>
             </div>
           </Reveal>
@@ -378,18 +375,21 @@ function ExampleChallenge() {
 
         <div className="my-3.5 flex flex-wrap gap-4 text-[12.5px] font-semibold text-[var(--faint)]">
           <span>
-            👥 <b className="text-[var(--text)]">42</b> participantes
+            <PixelIcon name="users" size={12} />{" "}
+            <b className="text-[var(--text)]">42</b> participantes
           </span>
           <span>
-            ⏱ <b className="text-[var(--text)]">10</b> días
+            <PixelIcon name="clock" size={12} />{" "}
+            <b className="text-[var(--text)]">10</b> días
           </span>
           <span>
-            🎯 <b className="text-[var(--text)]">4</b> criterios
+            <PixelIcon name="target" size={12} />{" "}
+            <b className="text-[var(--text)]">4</b> criterios
           </span>
         </div>
 
         <span className="btn btn-secondary w-full justify-center">
-          Participar →
+          Participar <PixelIcon name="arrowRight" size={12} />
         </span>
         <p className="mt-3 text-center text-[11px] text-[var(--faint)]">
           Reto de ejemplo — así se ve la pieza core del loop.
@@ -458,7 +458,9 @@ function Evaluation() {
                     style={{ fontFamily: "var(--font-display)" }}
                   >
                     {criterion.n}
-                    {criterion.primary && " ★"}
+                    {criterion.primary && (
+                      <PixelIcon name="star" size={11} className="ml-1.5" />
+                    )}
                   </span>
                 </div>
                 <h3 className="mt-3 text-[clamp(15px,2vw,21px)] font-bold">
@@ -493,15 +495,16 @@ function Defense() {
                 El diff que te defiende
               </h2>
             </div>
-            <p className="max-w-[38ch] text-sm text-[var(--muted)] sm:text-right">
-              Cualquiera puede generar código. Nadie puede generar las razones por
-              las que lo escribió así. Ahí es donde se cae el AI-slop.
+            <p className="max-w-[40ch] text-sm text-[var(--muted)] sm:text-right">
+              El feedback no es un score suelto ni un lint: cada línea se lee
+              contra los criterios de éxito que escribió la startup. Cambia el
+              reto, cambia lo que se te dice.
             </p>
           </div>
         </Reveal>
 
         <Reveal delay={120} className="mt-10">
-          <AuthorshipDiff />
+          <SubmissionFeedback />
         </Reveal>
       </div>
     </section>
@@ -587,7 +590,7 @@ function ForStartups() {
                 rel="noreferrer"
                 className="btn btn-secondary mt-8"
               >
-                Hablar con el equipo →
+                Hablar con el equipo <PixelIcon name="arrowRight" size={12} />
               </a>
             </div>
           </Reveal>
@@ -638,7 +641,7 @@ function FinalCta() {
             </span>
           </h2>
           <Link href="/challenges" className="btn btn-primary mt-8">
-            Ver los desafíos abiertos →
+            Ver los desafíos abiertos <PixelIcon name="arrowRight" size={12} />
           </Link>
         </Reveal>
         <Beto variant="build" className="size-32 shrink-0 sm:size-40" />

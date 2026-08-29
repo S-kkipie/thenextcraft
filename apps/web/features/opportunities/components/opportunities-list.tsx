@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Id } from "@thenextcraft/backend/dataModel";
 import { useOpportunities, useRespondToOpportunity } from "../hooks";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 import type { OpportunityResponse } from "../schema";
 import { OpportunityCard } from "./opportunity-card";
 
@@ -25,10 +26,10 @@ export function OpportunitiesList() {
   return (
     <section className="flex flex-col gap-6">
       <header className="flex flex-col gap-3">
-        <span className="text-sand text-xs font-extrabold uppercase tracking-[0.14em]">
+        <span className="eyebrow text-[var(--phos)]">
           Te descubrieron
         </span>
-        <h1 className="text-4xl font-extrabold">Oportunidades</h1>
+        <h1 className="text-4xl font-bold">Oportunidades</h1>
         <p className="text-muted-foreground max-w-[56ch]">
           Startups que vieron tu proof-of-work y quieren hablar contigo. Acepta
           la conversación para dar el siguiente paso.
@@ -36,8 +37,8 @@ export function OpportunitiesList() {
       </header>
 
       {userId === null ? (
-        <div className="border-line bg-panel rounded-2xl border p-8 text-center">
-          <h2 className="font-display text-foreground text-2xl font-black">
+        <div className="card p-8 text-center">
+          <h2 className="font-display text-foreground text-2xl font-bold">
             Entra para ver quién te busca
           </h2>
           <p className="text-muted-foreground mx-auto mt-2 max-w-md text-sm">
@@ -57,8 +58,8 @@ export function OpportunitiesList() {
           ))}
         </div>
       ) : opportunities.length === 0 ? (
-        <div className="border-line bg-panel rounded-2xl border p-10 text-center">
-          <div className="mb-3 text-3xl">📡</div>
+        <div className="card p-10 text-center">
+          <PixelIcon name="signal" size={34} className="mx-auto mb-3 text-[var(--faint)]" />
           <p className="text-muted-foreground mx-auto max-w-md text-sm">
             Cuando una startup te contacte por tu trabajo, aparecerá aquí.
           </p>

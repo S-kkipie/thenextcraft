@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/form";
 import { useCurrentUser } from "@/lib/current-user";
 import type { Id } from "@thenextcraft/backend/dataModel";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 
 import { shipInput, type ShipInput, TECH_SUGGESTIONS } from "../schema";
 import { useShip } from "../hooks";
@@ -57,7 +58,7 @@ export function ShipForm({ challengeId }: { challengeId: Id<"challenges"> }) {
         demoUrl: values.demoUrl || undefined,
         pitch: values.description || undefined,
       });
-      toast.success("¡Shipeado! ✦ La IA rankea, la startup decide.");
+      toast.success("¡Shipeado! La IA rankea, la startup decide.");
       router.push(`/submissions/${submissionId}`);
     } catch {
       toast.error("No se pudo shipear. Intenta de nuevo.");
@@ -178,7 +179,7 @@ export function ShipForm({ challengeId }: { challengeId: Id<"challenges"> }) {
                             className="border-line-2 bg-panel-2 hover:border-tan inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs"
                           >
                             {t}
-                            <span className="text-faint">✕</span>
+                            <PixelIcon name="cross" size={9} className="text-faint" />
                           </button>
                         ))}
                       </div>
@@ -210,7 +211,7 @@ export function ShipForm({ challengeId }: { challengeId: Id<"challenges"> }) {
               className="w-full"
               disabled={form.formState.isSubmitting}
             >
-              SHIP IT ✦
+              SHIP IT <PixelIcon name="spark" size={13} />
             </Button>
           </div>
         </Card>

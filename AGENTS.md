@@ -1,6 +1,6 @@
-# thenextcraft — conventions (rules)
+# The Next Ship — conventions (rules)
 
-Project-specific rules a contributor (human or agent) enforces on `thenextcraft`.
+Project-specific rules a contributor (human or agent) enforces on The Next Ship.
 Adapted from `hackaton-starter/docs/code-review`, ported to our stack: **Turborepo
 monorepo · Next 16 (App Router) · Convex · shadcn/ui · zod**.
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { useParallax } from "./reveal";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 
 /**
  * Bloque tipográfico del hero.
@@ -50,7 +51,7 @@ export function HeroType() {
 
       <div className="mt-9 flex flex-wrap gap-3.5">
         <Link href="/desafios" className="btn btn-primary">
-          Explorar retos →
+          Explorar retos <PixelIcon name="arrowRight" size={12} />
         </Link>
         <a href="#startups" className="btn btn-ghost">
           Publicar reto

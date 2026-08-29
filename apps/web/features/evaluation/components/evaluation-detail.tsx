@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { Id } from "@thenextcraft/backend/dataModel";
 import { ScoreBar, StatusPill } from "@/components/craft";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 import { useEvaluation, useSubmission } from "@/features/evaluation/hooks";
 
 // Color del chip por severidad del hallazgo.
@@ -57,7 +58,7 @@ export function EvaluationDetail({
       </nav>
 
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-heading text-3xl font-extrabold tracking-tight">
+        <h1 className="font-heading text-3xl font-bold">
           Evaluación de la submission
         </h1>
         {scored ? (
@@ -101,9 +102,9 @@ export function EvaluationDetail({
             <RecommendationsCard recommendations={recommendations} />
           )}
           {scored && (
-            <div className="rounded-xl border border-sage/30 bg-card px-5 py-4">
+            <div className="card border-[var(--phos)]/30 px-5 py-4">
               <div className="flex items-start gap-2">
-                <span className="text-sage">🌿</span>
+                <PixelIcon name="trophy" size={14} className="text-[var(--phos)]" />
                 <p className="text-sm">
                   Feedback generado por el AI Judge (análisis estático). Nunca
                   ejecuta tu código — solo lee el repo.
@@ -136,9 +137,9 @@ function ScoreCard({
   security?: number;
 }) {
   return (
-    <section className="rounded-xl border border-border bg-card p-6">
+    <section className="card">
       <div className="flex items-start justify-between gap-4">
-        <div className="font-heading text-6xl font-extrabold tabular-nums leading-none">
+        <div className="font-heading text-6xl font-bold tabular-nums leading-none">
           {total}
           <span className="text-2xl text-muted-foreground">/100</span>
         </div>
@@ -154,7 +155,7 @@ function ScoreCard({
       </div>
 
       <div className="mt-5 flex flex-col gap-3">
-        <ScoreBar label="Fit al reto ★" value={fit ?? 0} primary />
+        <ScoreBar label="Fit al reto" value={fit ?? 0} primary />
         <ScoreBar label="Calidad del build" value={quality ?? 0} />
         <ScoreBar label="Arquitectura" value={architecture ?? 0} />
         <ScoreBar label="Seguridad" value={security ?? 0} />
@@ -185,7 +186,7 @@ function FeedbackPendingCard({ status }: { status: string }) {
             body: "El feedback line-level se genera cuando la startup finaliza (cierra) el reto. Se corre el AI Judge sobre todas las submissions a la vez.",
           };
   return (
-    <section className="rounded-xl border border-border bg-card p-6">
+    <section className="card">
       <h2 className="font-heading text-lg font-bold">{copy.title}</h2>
       <p className="mt-2 text-sm text-muted-foreground">{copy.body}</p>
     </section>
@@ -201,17 +202,17 @@ function JudgeReading({
   issues?: string[];
 }) {
   return (
-    <section className="rounded-xl border border-border bg-card p-6">
+    <section className="card">
       <h2 className="mb-4 font-heading text-lg font-bold">Lectura del juez</h2>
       <div className="grid gap-8 sm:grid-cols-2">
         <div>
-          <div className="mb-3 text-xs font-extrabold uppercase tracking-widest text-sage">
+          <div className="mb-3 eyebrow text-[var(--phos)]">
             Fuerte
           </div>
           <ul className="flex flex-col gap-2.5 text-sm">
             {(strengths ?? []).map((s, i) => (
               <li key={i} className="flex items-start gap-2.5">
-                <span className="text-sage">✓</span>
+                <PixelIcon name="check" size={12} className="text-[var(--phos)]" />
                 <span>{s}</span>
               </li>
             ))}
@@ -221,7 +222,7 @@ function JudgeReading({
           </ul>
         </div>
         <div>
-          <div className="mb-3 text-xs font-extrabold uppercase tracking-widest text-destructive">
+          <div className="mb-3 eyebrow text-[var(--rust)]">
             A revisar
           </div>
           <ul className="flex flex-col gap-2.5 text-sm">
@@ -259,7 +260,7 @@ function FeedbackFindings({
   }[];
 }) {
   return (
-    <section className="rounded-xl border border-border bg-card p-6">
+    <section className="card">
       <h2 className="mb-1 font-heading text-lg font-bold">Feedback del código</h2>
       <p className="mb-5 text-xs text-muted-foreground">
         Qué estuvo mal y dónde — con las líneas exactas que el juez citó.
@@ -321,7 +322,7 @@ function PeerReferences({
   }[];
 }) {
   return (
-    <section className="rounded-xl border border-sand/30 bg-card p-6">
+    <section className="card border-[var(--phos)]/30">
       <h2 className="mb-1 font-heading text-lg font-bold">
         Comparado con otras soluciones
       </h2>
@@ -359,7 +360,7 @@ function RecommendationsCard({
   recommendations: { priority: string; title: string; description: string }[];
 }) {
   return (
-    <section className="rounded-xl border border-line-2 bg-panel-2 p-6">
+    <section className="card card-raised">
       <h2 className="mb-4 font-heading text-lg font-bold">Qué mejorar</h2>
       <ul className="flex flex-col gap-3">
         {recommendations.map((r, i) => (
@@ -390,7 +391,7 @@ function DetailSkeleton() {
 
 function EmptyState({ title, body }: { title: string; body: string }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-10 text-center">
+    <div className="card p-10 text-center">
       <h1 className="font-heading text-xl font-bold">{title}</h1>
       <p className="mt-2 text-sm text-muted-foreground">{body}</p>
       <div className="mt-5">

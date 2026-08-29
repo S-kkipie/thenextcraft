@@ -56,7 +56,7 @@ export function ShipView({ challengeId }: { challengeId: Id<"challenges"> }) {
             <span className="text-foreground">Shipear</span>
           </nav>
 
-          <h1 className="mt-3 text-3xl font-black">Shipear tu solución</h1>
+          <h1 className="mt-3 text-3xl font-bold">Shipear tu solución</h1>
           <p className="text-muted-foreground mt-2 mb-6">
             {challenge?.title
               ? `Reto: ${challenge.title}`

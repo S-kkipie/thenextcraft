@@ -10,7 +10,7 @@ export function ProgressPanel({
   stats: DashboardStats;
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-panel p-[22px] shadow-[0_12px_32px_-20px_rgba(0,0,0,0.85)]">
+    <div className="card card-raised">
       <div className="flex flex-wrap items-center gap-7">
         <ProgressCluster
           level={progress.level}

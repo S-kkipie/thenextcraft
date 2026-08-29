@@ -21,7 +21,7 @@ export function ProgressCluster({
     <div className={cn("flex items-center gap-4", className)}>
       <LevelRing level={level} progress={progress} />
       <div className="flex-1">
-        <div className="text-faint mb-1.5 flex justify-between font-mono text-xs tabular-nums">
+        <div className="text-faint mb-1.5 flex justify-between data text-xs tabular-nums">
           <span>{xp.value} XP</span>
           <span>{xp.max}</span>
         </div>

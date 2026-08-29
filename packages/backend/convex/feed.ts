@@ -12,7 +12,13 @@ export const recent = query({
     const items: {
       id: string;
       type: "ship" | "badge";
-      user: { name: string; handle: string | null; initials: string };
+      user: {
+        name: string;
+        handle: string | null;
+        initials: string;
+        /** Foto de GitHub; la UI cae a las iniciales si falta. */
+        avatarUrl: string | null;
+      };
       text: string;
       meta: string | null;
       ts: number;
@@ -30,6 +36,7 @@ export const recent = query({
           name: u?.name ?? "?",
           handle: u?.githubHandle ?? null,
           initials: (u?.name?.[0] ?? "?").toUpperCase(),
+          avatarUrl: u?.avatarUrl ?? null,
         },
         text: `shipeó para ${st?.companyName ?? st?.name ?? "una startup"}`,
         meta: ch?.title ?? null,
@@ -46,6 +53,7 @@ export const recent = query({
           name: u?.name ?? "?",
           handle: u?.githubHandle ?? null,
           initials: (u?.name?.[0] ?? "?").toUpperCase(),
+          avatarUrl: u?.avatarUrl ?? null,
         },
         text: `ganó la badge ${b.type}`,
         meta: null,

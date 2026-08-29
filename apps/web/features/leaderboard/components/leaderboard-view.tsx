@@ -5,6 +5,7 @@ import { useQuery } from "convex/react";
 import { api } from "@thenextcraft/backend/api";
 import { useCurrentUser } from "@/lib/current-user";
 import { StatTile } from "@/components/craft";
+import { AvatarFrame } from "@/components/craft/avatar-frame";
 import {
   Table,
   TableBody,
@@ -29,7 +30,7 @@ export function LeaderboardView() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-black">Ranking</h1>
+        <h1 className="text-2xl font-bold">Ranking</h1>
         <p className="text-muted-foreground text-sm">
           Derivado de ships, aprobaciones y AI Judge — no es solo XP.
         </p>
@@ -41,10 +42,10 @@ export function LeaderboardView() {
             key={s}
             onClick={() => setSkill(s)}
             className={cn(
-              "rounded-full border px-3 py-1 text-xs font-bold transition-colors",
+              "rounded-[10px] border px-3 py-2 text-[12.5px] font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--phos)]",
               skill === s
-                ? "border-sand text-sand"
-                : "border-line-2 text-muted-foreground hover:text-foreground",
+                ? "border-[var(--phos)] bg-[var(--phos-dark)] text-[var(--phos)]"
+                : "border-line-2 text-muted-foreground hover:border-[var(--phos)] hover:text-foreground",
             )}
           >
             {s}
@@ -60,8 +61,15 @@ export function LeaderboardView() {
         </div>
       )}
 
-      <div className="border-line overflow-x-auto rounded-2xl border">
-        <Table>
+      <div className="term">
+        <div className="term-bar">
+          leaderboard ~ {skill.toLowerCase()}
+          <span className="term-hint">
+            {rows === undefined ? "cargando…" : `${rows.length} builders`}
+          </span>
+        </div>
+        <div className="overflow-x-auto">
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-12">#</TableHead>
@@ -89,35 +97,33 @@ export function LeaderboardView() {
                   key={r.userId}
                   className={r.userId === userId ? "bg-panel-2" : undefined}
                 >
-                  <TableCell className="font-display text-sand font-black tabular-nums">
+                  <TableCell className="font-display text-sand font-bold tabular-nums">
                     {r.rank}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <span
-                        className="text-ink font-display grid size-8 place-items-center rounded-full text-xs font-black"
-                        style={{
-                          backgroundImage:
-                            "linear-gradient(135deg,var(--tan),var(--sand))",
-                        }}
-                      >
-                        {r.initials}
-                      </span>
+                      <AvatarFrame
+                        name={r.name}
+                        src={r.avatarUrl}
+                        size={32}
+                        brackets={r.userId === userId}
+                      />
                       <div>
                         <div className="font-semibold">{r.name}</div>
                         {r.handle && (
-                          <div className="text-faint font-mono text-xs">@{r.handle}</div>
+                          <div className="text-faint data text-xs">@{r.handle}</div>
                         )}
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="text-right tabular-nums">{r.level}</TableCell>
-                  <TableCell className="text-right font-mono tabular-nums">{r.xp}</TableCell>
+                  <TableCell className="text-right data tabular-nums">{r.xp}</TableCell>
                 </TableRow>
               ))
             )}
-          </TableBody>
-        </Table>
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

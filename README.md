@@ -1,4 +1,4 @@
-# thenextcraft
+# The Next Ship
 
 **Plataforma de hiring por proof-of-work.** No es freelance, no es hackathon-evento: es un puente directo de *un problema real de negocio → una contratación*.
 
@@ -32,7 +32,7 @@ reto de negocio  →  build  →  ship (link público)  →  AI evalúa + rankea
 
 ## Qué nos diferencia
 
-| | Otros | thenextcraft |
+| | Otros | The Next Ship |
 |---|---|---|
 | **Forke** | micro-tasks + payout instantáneo, 1 dev ↔ 1 task | reto de negocio, **hire**, N devs **ranked** |
 | **Kaggle** | accuracy de un modelo | solución de **negocio** juzgada por fit |
@@ -65,21 +65,46 @@ packages/backend/  Convex (schema + funciones)             → Convex Cloud
 
 ## Setup local
 
+`pnpm` puede no estar en el PATH: Node 20+ trae `corepack`, que lo resuelve sin
+instalar nada (`corepack pnpm …`). Con `corepack enable` una vez, `pnpm` queda
+disponible a secas.
+
 ```bash
-pnpm install
-
-# 1) backend: login Convex + genera _generated + levanta deployment dev
-pnpm --filter @thenextcraft/backend dev      # = npx convex dev
-
-# 2) copia la URL que imprime Convex a apps/web/.env.local
-cp apps/web/.env.local.example apps/web/.env.local
-#   NEXT_PUBLIC_CONVEX_URL=<url del deployment>
-
-# 3) frontend (o `pnpm dev` para todo con turbo)
-pnpm --filter web dev
+corepack pnpm install
 ```
+
+**1) Backend — login de Convex + `_generated` + deployment dev.**
+`npx convex dev` desde la raíz falla (`add convex to your package.json
+dependencies`): `convex` es dependencia de `packages/backend`, no del root.
+Ejecútalo desde ahí, y deja la terminal abierta.
+
+```bash
+cd packages/backend
+npx convex dev
+```
+
+**2) La URL que imprime Convex va a `apps/web/.env.local`** (el archivo no está
+en el repo; créalo). Sin esta variable las vistas bajo `(app)` fallan: el
+provider no monta `CurrentUserProvider` y `next build` muere prerenderizando
+`/challenges`.
+
+```bash
+echo "NEXT_PUBLIC_CONVEX_URL=<url del deployment>" > apps/web/.env.local
+```
+
+**3) Frontend**, en otra terminal:
+
+```bash
+corepack pnpm --filter web dev
+```
+
+Para el login con GitHub hacen falta además `AUTH_GITHUB_ID` y
+`AUTH_GITHUB_SECRET` en el deployment (`npx convex env set …` desde
+`packages/backend`). Sin ellos la app levanta, pero el botón de GitHub no
+completa el OAuth.
 
 ## Estado
 
 Concepto lockeado. **Scaffold listo** (monorepo, Next + Convex, schema MVP, landing).
-Pendiente: auth (Convex Auth + GitHub OAuth), pantallas del flujo, pipeline AI de evaluación.
+Auth real con Convex Auth + GitHub OAuth ya integrada.
+Pendiente: pantallas del flujo, pipeline AI de evaluación.

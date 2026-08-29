@@ -30,7 +30,7 @@ export function StatTile({
       <b className={cn("font-display block text-[22px] tabular-nums", accents[accent])}>
         {value}
       </b>
-      <span className="text-faint text-[11px] font-semibold">{label}</span>
+      <span className="eyebrow text-[11px]">{label}</span>
     </div>
   );
 }

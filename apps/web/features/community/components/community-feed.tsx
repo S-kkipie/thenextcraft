@@ -5,16 +5,18 @@ import Link from "next/link";
 import { CraftBadge } from "@/components/craft";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFeed, type FeedItem } from "../hooks";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 import { FEED_FILTERS, type FeedFilter } from "../schema";
 import { badgeMeta, relativeTime } from "../utils";
+import { AvatarFrame } from "@/components/craft/avatar-frame";
 
 const ROW =
-  "flex items-center gap-3 rounded-2xl border border-line bg-card px-4 py-3.5 transition-all hover:-translate-y-0.5 hover:border-line-2";
+  "card card-hover flex items-center gap-3 px-4 py-3.5";
 
 /** Una fila del feed: avatar · evento · contexto · tiempo relativo. Enlaza al detalle. */
 function FeedRow({ item, now }: { item: FeedItem; now: number }) {
   const isShip = item.type === "ship";
-  const icon = isShip ? "🚀" : "🏅";
+  const icon = isShip ? ("ship" as const) : ("medal" as const);
   const badge = isShip ? null : badgeMeta(item.meta ?? "");
   // Ship → detalle del ship; badge → passport del builder (si tiene handle).
   const href = isShip
@@ -25,14 +27,14 @@ function FeedRow({ item, now }: { item: FeedItem; now: number }) {
 
   const inner = (
     <>
-      <div className="font-display bg-tan text-cream grid size-10 flex-none place-items-center rounded-[10px] text-sm font-black">
-        {item.user.initials}
-      </div>
+      <AvatarFrame name={item.user.name} src={item.user.avatarUrl} size={40} brackets={false} />
       <div className="min-w-0 flex-1">
         <p className="text-foreground text-sm">
-          <span aria-hidden className="mr-1">
-            {icon}
-          </span>
+          <PixelIcon
+            name={icon}
+            size={12}
+            className="mr-1.5 text-[var(--phos)]"
+          />
           {item.text}
         </p>
         {badge ? (
@@ -82,10 +84,10 @@ export function CommunityFeed() {
   return (
     <section className="flex flex-col gap-6">
       <header className="flex flex-col gap-2">
-        <span className="text-sand text-xs font-extrabold uppercase tracking-[0.14em]">
+        <span className="eyebrow text-[var(--phos)]">
           Proof-of-work en vivo
         </span>
-        <h1 className="font-display text-4xl font-black">Comunidad</h1>
+        <h1 className="font-display text-4xl font-bold">Comunidad</h1>
         <p className="text-muted-foreground max-w-[56ch]">
           Cada ship y cada badge de la comunidad, en tiempo real.
         </p>
@@ -101,9 +103,9 @@ export function CommunityFeed() {
               onClick={() => setFilter(f.value)}
               aria-pressed={active}
               className={
-                "rounded-full border px-3.5 py-1.5 text-sm font-bold transition-colors " +
+                "rounded-[10px] border px-3 py-2 text-[12.5px] font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--phos)] " +
                 (active
-                  ? "border-sand text-sand bg-sand/10"
+                  ? "border-[var(--phos)] bg-[var(--phos-dark)] text-[var(--phos)]"
                   : "border-line text-muted-foreground hover:text-foreground hover:border-line-2")
               }
             >

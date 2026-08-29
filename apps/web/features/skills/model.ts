@@ -96,7 +96,7 @@ export function deriveSkillMap(
     return {
       key,
       label: meta.label,
-      emoji: meta.emoji,
+      icon: meta.icon,
       blurb: meta.blurb,
       value,
       level,
