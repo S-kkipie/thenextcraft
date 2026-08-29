@@ -15,12 +15,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CraftBadge, StatusPill } from "@/components/craft";
+import { StatusPill } from "@/components/craft";
+import type { ChallengeStatus } from "@/components/craft/status-pill";
 
 type ShortlistRow = FunctionReturnType<typeof api.shortlist.ranked>[number];
 
 // Umbral para pintar el "AI Match" con el acento amber (matches fuertes).
 const STRONG_MATCH = 85;
+
+// Estado del feedback → chip (color vía status del StatusPill + label propio).
+const FEEDBACK_PILL: Record<string, { status: ChallengeStatus; label: string }> = {
+  ready: { status: "open", label: "Feedback listo" },
+  generating: { status: "review", label: "Generando…" },
+  pending: { status: "closed", label: "Pendiente" },
+  failed: { status: "closed", label: "Sin repo" },
+};
 
 export function ShortlistTable({ rows }: { rows: ShortlistRow[] }) {
   const router = useRouter();
@@ -43,7 +52,7 @@ export function ShortlistTable({ rows }: { rows: ShortlistRow[] }) {
             <TableHead>Builder</TableHead>
             <TableHead>AI Match</TableHead>
             <TableHead>Score</TableHead>
-            <TableHead>Autoría</TableHead>
+            <TableHead>Feedback</TableHead>
             <TableHead>Fortaleza</TableHead>
             <TableHead className="text-right" />
           </TableRow>
@@ -83,11 +92,10 @@ export function ShortlistTable({ rows }: { rows: ShortlistRow[] }) {
                 {row.score}
               </TableCell>
               <TableCell>
-                {row.authorshipStatus === "approved" ? (
-                  <CraftBadge variant="auth">🧬 Verificada</CraftBadge>
-                ) : (
-                  <StatusPill status="review">Pendiente</StatusPill>
-                )}
+                {(() => {
+                  const p = FEEDBACK_PILL[row.feedbackStatus] ?? FEEDBACK_PILL.pending;
+                  return <StatusPill status={p.status}>{p.label}</StatusPill>;
+                })()}
               </TableCell>
               <TableCell className="text-muted-foreground">
                 {row.strength}
@@ -96,9 +104,9 @@ export function ShortlistTable({ rows }: { rows: ShortlistRow[] }) {
                 <Button
                   variant="craftSecondary"
                   size="sm"
-                  onClick={() => router.push(`/u/${row.builder.handle}`)}
+                  onClick={() => router.push(`/submissions/${row.submissionId}`)}
                 >
-                  Contactar
+                  Ver feedback
                 </Button>
               </TableCell>
             </TableRow>

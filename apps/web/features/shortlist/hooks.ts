@@ -11,6 +11,11 @@ export function useShortlistSummary(challengeId: Id<"challenges">) {
   return useQuery(api.shortlist.summary, { challengeId });
 }
 
+// Galería de ships del reto (todas las submissions + URLs para preview/visitar).
+export function useChallengeShips(challengeId: Id<"challenges">) {
+  return useQuery(api.shortlist.ships, { challengeId });
+}
+
 // Cerrar el reto (dominio canónico de challenges; requiere el startup dueño).
 export function useCloseChallenge() {
   return useMutation(api.challenges.close);

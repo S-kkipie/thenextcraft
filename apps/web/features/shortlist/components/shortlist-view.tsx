@@ -22,6 +22,7 @@ import {
   useShortlistSummary,
 } from "@/features/shortlist/hooks";
 import { ShortlistTable } from "@/features/shortlist/components/shortlist-table";
+import { ShipsGrid } from "@/features/shortlist/components/ships-grid";
 import { useCurrentUser } from "@/lib/current-user";
 
 export function ShortlistView({
@@ -79,8 +80,8 @@ export function ShortlistView({
             <AlertDialogHeader>
               <AlertDialogTitle>¿Cerrar el reto?</AlertDialogTitle>
               <AlertDialogDescription>
-                Dejará de recibir submissions. Esta acción no se puede
-                deshacer.
+                Dejará de recibir submissions y se generará el feedback del AI
+                Judge para todas. Esta acción no se puede deshacer.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -106,9 +107,23 @@ export function ShortlistView({
           <b className="text-sand">
             {stats.submissions} → {stats.shortlisted}
           </b>{" "}
-          con un score comparable y verificó autoría. La decisión final de
-          contratación es <b className="text-foreground">tuya</b>.
+          con un score comparable. Al finalizar el reto se genera feedback
+          line-level para cada builder. La decisión final de contratación es{" "}
+          <b className="text-foreground">tuya</b>.
         </p>
+      </div>
+
+      {/* ── Galería de ships: preview de cada app + click para visitar ──── */}
+      <div className="mb-3 flex items-baseline justify-between gap-3">
+        <h2 className="text-xs font-extrabold uppercase tracking-[0.14em] text-faint">
+          Ships enviados
+        </h2>
+        <span className="text-faint text-[11px]">
+          Preview en vivo · click para visitar
+        </span>
+      </div>
+      <div className="mb-8">
+        <ShipsGrid challengeId={challengeId} />
       </div>
 
       <h2 className="mb-3 text-xs font-extrabold uppercase tracking-[0.14em] text-faint">
@@ -118,8 +133,8 @@ export function ShortlistView({
       <ShortlistTable rows={ranked} />
 
       <p className="mt-4 text-[12.5px] text-muted-foreground">
-        Ordenado por score. La IA filtra y verifica autoría; la contratación la
-        decides tú.
+        Ordenado por score. Al finalizar el reto, cada submission recibe feedback
+        del AI Judge; la contratación la decides tú.
       </p>
     </div>
   );
