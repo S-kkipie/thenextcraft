@@ -23,11 +23,11 @@ import * as React from "react";
 const COUNT = 120;
 const SHORTLIST = 10;
 
-// Tokens de docs/design-foundation.html. Fijos acá porque el canvas no cascada.
-const SAND = [198, 161, 91] as const;
-const TERRA = [197, 106, 61] as const;
-const FAINT = [85, 82, 74] as const;
-const MUTED = [111, 106, 93] as const;
+// Tokens de la landing. Fijos acá porque el canvas no cascada.
+const PHOS = [74, 240, 126] as const;
+const CYAN = [69, 224, 208] as const;
+const FAINT = [86, 99, 86] as const;
+const MUTED = [126, 143, 126] as const;
 
 type Particle = {
   score: number;
@@ -234,12 +234,12 @@ export function ShortlistCanvas({ header }: { header?: React.ReactNode }) {
         const alpha = (1 - dropped) * (top10 ? 0.7 + 0.3 * culling : 0.72);
         if (alpha <= 0.01) continue;
 
-        const color = top10 && culling > 0.3 ? SAND : MUTED;
+        const color = top10 && culling > 0.3 ? PHOS : MUTED;
         const radius = p.r * (top10 ? 1 + culling * 0.9 : 1);
 
         if (top10 && culling > 0.3) {
           ctx.shadowBlur = 14 * culling;
-          ctx.shadowColor = rgba(SAND, 0.7);
+          ctx.shadowColor = rgba(PHOS, 0.7);
         }
         ctx.fillStyle = rgba(color, alpha);
         ctx.beginPath();
@@ -250,7 +250,7 @@ export function ShortlistCanvas({ header }: { header?: React.ReactNode }) {
         // La #1: anillo latiendo. Es el hire.
         if (p.rank === 0 && culling > 0.55) {
           const pulse = 1 + Math.sin(time * 0.003) * 0.12;
-          ctx.strokeStyle = rgba(TERRA, 0.9 * culling);
+          ctx.strokeStyle = rgba(CYAN, 0.9 * culling);
           ctx.lineWidth = 2;
           ctx.beginPath();
           ctx.arc(p.x, p.y, (radius + 9) * pulse, 0, Math.PI * 2);
@@ -314,7 +314,7 @@ export function ShortlistCanvas({ header }: { header?: React.ReactNode }) {
           {/* La animación necesita pie de foto, no adivinanza. */}
           <div className="pointer-events-none mt-4 flex flex-wrap items-end gap-x-4 gap-y-1">
             <span
-              className="text-[clamp(38px,7vw,64px)] leading-none font-black text-[var(--sand)] tabular-nums"
+              className="text-[clamp(38px,7vw,64px)] leading-none font-bold tracking-[-0.06em] text-[var(--phos)] tabular-nums"
               style={{ fontFamily: "var(--font-display)" }}
             >
               {step.n}

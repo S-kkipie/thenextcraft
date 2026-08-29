@@ -225,34 +225,33 @@
 
 @layer components {
   .landing {
-    /* Tokens tal cual docs/design-foundation.html */
-    --ink: #1a1a17;
-    --ink-2: #131310;
-    --panel: #201f1b;
-    --panel-2: #272520;
-    --line: #33302a;
-    --line-2: #403c34;
-    --text: #f1ede4;
-    --muted: #6f6a5d;
-    --faint: #55524a;
-    --sand: #c6a15b;
-    --sand-edge: #8c6e33;
-    --tan: #5d5037;
-    --cream: #f1ede4;
-    --cream-edge: #c7c1b2;
-    --terra: #c56a3d;
-    --sage: #94a96b;
-    --rust: #c0554b;
+    /* Estructura de docs/design-foundation.html, paleta girada a fósforo verde:
+       el ground pierde el tinte marrón y el acento pasa de tan/amber a verde. */
+    --ink: #0b0e0b;
+    --ink-2: #060806;
+    --panel: #121712;
+    --panel-2: #182018;
+    --line: #1f2a20;
+    --line-2: #2d3d2f;
+    --text: #e6f0e4;
+    --muted: #7e8f7e;
+    --faint: #566356;
+    --phos: #4af07e; /* acento primario — verde de fósforo */
+    --phos-edge: #1e8f46; /* borde inferior 3d del verde */
+    --phos-dark: #1c3a25; /* superficie verde profunda */
+    --cream: #e6f0e4;
+    --cream-edge: #97ac96;
+    --cyan: #45e0d0; /* secundario: el otro fósforo del CRT */
+    --rust: #e5544b;
 
-    --font-display: var(--font-nunito), ui-rounded, "SF Pro Rounded", system-ui,
-      sans-serif;
-    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-display: var(--font-silkscreen), "Courier New", monospace;
+    --font-body: var(--font-plex-mono), ui-monospace, monospace;
     --font-data: var(--font-plex-mono), ui-monospace, monospace;
 
     /* Beto lee --brand y --warning; acá los apunta a la paleta craft para que
        la mascota no llegue con el ámbar de la app. */
-    --brand: var(--sand);
-    --warning: var(--terra);
+    --brand: var(--phos);
+    --warning: var(--cyan);
 
     background: var(--ink);
     color: var(--text);
@@ -260,11 +259,21 @@
     line-height: 1.5;
   }
 
+  /*
+   * Dos niveles tipográficos, a propósito:
+   *   Silkscreen (display) — solo mayúsculas y muy ancha, así que se reserva
+   *     para titulares cortos, eyebrows, números y botones.
+   *   Plex Mono (body) — todo lo que se lee en frases: las afirmaciones del
+   *     manifiesto van en <p>, no en <h2>, justamente para caer acá.
+   * Poner una frase larga en bitmap todo-caps la vuelve ilegible.
+   */
   .landing h1,
   .landing h2,
   .landing h3 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    /* Un bitmap no admite tracking negativo: los píxeles se pisan. */
+    letter-spacing: 0;
+    line-height: 1.25;
     text-wrap: balance;
     /* Gate 51: los display largos parten dentro de la palabra en móvil. */
     overflow-wrap: anywhere;
@@ -312,7 +321,7 @@
     transform: translateY(3px);
   }
   .landing .btn:focus-visible {
-    outline: 2px solid var(--sand);
+    outline: 2px solid var(--phos);
     outline-offset: 3px;
   }
   .landing .btn-primary {
@@ -327,15 +336,15 @@
     box-shadow: 0 1px 0 var(--cream-edge);
   }
   .landing .btn-secondary {
-    background: var(--sand);
+    background: var(--phos);
     color: var(--ink);
-    box-shadow: 0 4px 0 var(--sand-edge);
+    box-shadow: 0 4px 0 var(--phos-edge);
   }
   .landing .btn-secondary:hover {
-    box-shadow: 0 5px 0 var(--sand-edge);
+    box-shadow: 0 5px 0 var(--phos-edge);
   }
   .landing .btn-secondary:active {
-    box-shadow: 0 1px 0 var(--sand-edge);
+    box-shadow: 0 1px 0 var(--phos-edge);
   }
   .landing .btn-ghost {
     background: var(--panel-2);
@@ -344,7 +353,7 @@
     box-shadow: 0 4px 0 var(--ink-2);
   }
   .landing .btn-ghost:hover {
-    border-color: var(--tan);
+    border-color: var(--phos-dark);
     box-shadow: 0 5px 0 var(--ink-2);
   }
   .landing .btn-ghost:active {
@@ -399,24 +408,24 @@
     border: 1px solid transparent;
   }
   .landing .b-ship {
-    background: rgb(148 169 107 / 0.12);
-    color: var(--sage);
-    border-color: rgb(148 169 107 / 0.32);
+    background: rgb(74 240 126 / 0.12);
+    color: var(--phos);
+    border-color: rgb(74 240 126 / 0.32);
   }
   .landing .b-approved {
-    background: rgb(198 161 91 / 0.13);
-    color: var(--sand);
-    border-color: rgb(198 161 91 / 0.34);
+    background: rgb(69 224 208 / 0.13);
+    color: var(--phos);
+    border-color: rgb(69 224 208 / 0.34);
   }
   .landing .b-auth {
-    background: rgb(93 80 55 / 0.35);
-    color: #d9c79e;
-    border-color: var(--tan);
+    background: rgb(28 58 37 / 0.5);
+    color: #9fe0b6;
+    border-color: var(--phos-dark);
   }
   .landing .b-first {
-    background: rgb(197 106 61 / 0.13);
-    color: var(--terra);
-    border-color: rgb(197 106 61 / 0.32);
+    background: rgb(69 224 208 / 0.1);
+    color: var(--cyan);
+    border-color: rgb(69 224 208 / 0.3);
   }
 
   .landing .track {
@@ -445,7 +454,7 @@
   .landing .tilt-sheen {
     background: radial-gradient(
       circle at var(--mx, 50%) var(--my, 50%),
-      rgb(198 161 91 / 0.16),
+      rgb(74 240 126 / 0.14),
       transparent 55%
     );
   }
@@ -476,7 +485,7 @@
       padding-left 0.18s ease;
   }
   .landing .row-hover:hover {
-    background: rgb(198 161 91 / 0.05);
+    background: rgb(74 240 126 / 0.06);
     padding-left: 12px;
   }
 

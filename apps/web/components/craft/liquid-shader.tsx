@@ -54,13 +54,14 @@ void main(){
   );
   float f=fbm(p+2.4*r);
 
-  vec3 ink=vec3(0.102,0.102,0.090);
-  vec3 brown=vec3(0.180,0.156,0.113);
-  vec3 amber=vec3(0.776,0.631,0.356);
+  /* Fósforo verde: el ground casi negro, la veta en verde de CRT. */
+  vec3 ink=vec3(0.043,0.055,0.043);
+  vec3 deep=vec3(0.055,0.115,0.075);
+  vec3 phos=vec3(0.290,0.940,0.494);
 
-  vec3 col=mix(ink,brown,smoothstep(0.15,0.95,f));
+  vec3 col=mix(ink,deep,smoothstep(0.15,0.95,f));
   float sheen=pow(smoothstep(0.55,1.0,length(r)),2.0);
-  col=mix(col,amber,sheen*(0.22+0.16*pull));
+  col=mix(col,phos,sheen*(0.20+0.16*pull));
 
   float g=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453);
   col+=(g-0.5)*0.025;
@@ -72,7 +73,7 @@ void main(){
 
 /** Degradado estático para navegadores sin WebGL. Mismos tonos que el shader. */
 const FALLBACK =
-  "radial-gradient(60% 80% at 35% 25%, #2c2419, transparent), radial-gradient(50% 60% at 80% 40%, #241f16, transparent), #1A1A17";
+  "radial-gradient(60% 80% at 35% 25%, #14301f, transparent), radial-gradient(50% 60% at 80% 40%, #0f2417, transparent), #0B0E0B";
 
 export function LiquidShader({ className }: { className?: string }) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -110,7 +111,7 @@ export function LiquidShader({ className }: { className?: string }) {
     }
     gl.useProgram(program);
     // Un buffer sin dibujar debe verse como el ground, no como blanco.
-    gl.clearColor(0.102, 0.102, 0.09, 1);
+    gl.clearColor(0.043, 0.055, 0.043, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Un solo triángulo que cubre el clip space: más barato que dos.

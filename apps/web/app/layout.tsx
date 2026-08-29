@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Nunito } from "next/font/google";
+import { IBM_Plex_Mono, Silkscreen } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -7,9 +7,8 @@ import { Providers } from "./providers";
  * Dos sistemas tipográficos conviven a propósito:
  *
  *  - La app corre en IBM Plex Mono de punta a punta (ADN de thenextcraft.org).
- *  - La landing usa el display redondeado de docs/design-foundation.html. El
- *    archivo pide `ui-rounded`, que solo existe en Apple; Nunito es la
- *    equivalente real y se ve igual en Windows.
+ *  - La landing usa Silkscreen para display: bitmap de arcade. El body también
+ *    es Plex Mono, así que la landing entera queda en terminal.
  */
 const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
@@ -17,10 +16,10 @@ const plexMono = IBM_Plex_Mono({
   weight: ["400", "500", "600", "700"],
 });
 
-const nunito = Nunito({
-  variable: "--font-nunito",
+const silkscreen = Silkscreen({
+  variable: "--font-silkscreen",
   subsets: ["latin"],
-  weight: ["600", "700", "800", "900"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -33,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`dark ${plexMono.variable} ${nunito.variable} h-full antialiased`}
+      className={`dark ${plexMono.variable} ${silkscreen.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { AuthorshipDiff } from "@/components/craft/authorship-diff";
 import { Beto } from "@/components/craft/beto";
 import { HeroType } from "@/components/craft/hero-type";
 import { LiquidShader } from "@/components/craft/liquid-shader";
@@ -41,6 +42,7 @@ export default function Landing() {
         <Shortlist />
         <Loop />
         <Evaluation />
+        <Defense />
         <Difference />
         <ForStartups />
         <FinalCta />
@@ -58,19 +60,20 @@ const ANCHORS = [
   { href: "#manifiesto", label: "Manifiesto" },
   { href: "#filtro", label: "El filtro" },
   { href: "#loop", label: "El loop" },
+  { href: "#defensa", label: "La defensa" },
   { href: "#startups", label: "Startups" },
 ];
 
 function Nav() {
   return (
-    <div className="sticky top-0 z-30 border-b border-[var(--line)] bg-[rgb(26_26_23_/_0.72)] backdrop-blur-[14px]">
+    <div className="sticky top-0 z-30 border-b border-[var(--line)] bg-[rgb(11_14_11_/_0.78)] backdrop-blur-[14px]">
       <div className={`${WRAP} flex h-[60px] items-center gap-6`}>
         <Link
           href="/"
-          className="flex items-center gap-2.5 text-[19px] font-black tracking-[-0.03em]"
+          className="flex items-center gap-2.5 text-[15px] leading-[1.4] font-bold"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          <span className="size-[11px] rounded-[3px] bg-[var(--sand)] shadow-[0_0_14px_rgb(198_161_91_/_0.6)]" />
+          <span className="size-[11px] rounded-[3px] bg-[var(--phos)] shadow-[0_0_14px_rgb(74_240_126_/_0.6)]" />
           thenextcraft
         </Link>
 
@@ -162,10 +165,10 @@ function Manifesto() {
                       : "max-w-[700px] sm:ml-[4%]"
                   }
                 >
-                  <span className="eyebrow text-[var(--sand)]">
+                  <span className="eyebrow text-[var(--phos)]">
                     0{i + 1} — No negociable
                   </span>
-                  <p className="mt-4 text-[clamp(26px,4.4vw,50px)] leading-[1.06] font-black tracking-[-0.03em] text-balance">
+                  <p className="mt-4 text-[clamp(18px,3vw,34px)] leading-[1.35] font-bold text-balance">
                     {claim.line}
                   </p>
                   <p
@@ -197,9 +200,9 @@ function Shortlist() {
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div>
                 <span className="eyebrow">El filtro</span>
-                <h2 className="mt-2 max-w-[14ch] text-[clamp(30px,5vw,52px)] leading-[1.02] font-black tracking-[-0.03em]">
+                <h2 className="mt-2 max-w-[14ch] text-[clamp(18px,3vw,34px)] leading-[1.3] font-bold">
                   La IA rankea.{" "}
-                  <span className="bg-gradient-to-r from-[var(--sand)] to-[var(--terra)] bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-[var(--phos)] to-[var(--cyan)] bg-clip-text text-transparent">
                     La startup decide.
                   </span>
                 </h2>
@@ -251,8 +254,8 @@ function Loop() {
       <div className={WRAP}>
         <Reveal>
           <span className="eyebrow">El loop</span>
-          <h2 className="mt-2 text-[clamp(30px,5vw,52px)] leading-[1.02] font-black tracking-[-0.03em]">
-            Reto → build → ship → hire
+          <h2 className="mt-2 text-[clamp(18px,3vw,34px)] leading-[1.3] font-bold">
+            Reto &gt; build &gt; ship &gt; hire
           </h2>
         </Reveal>
       </div>
@@ -267,12 +270,12 @@ function Loop() {
             >
               <Reveal delay={i * 90}>
                 <span
-                  className="text-[13px] font-black tracking-[0.1em] text-[var(--sand)]"
+                  className="text-[13px] font-bold tracking-[0.1em] text-[var(--phos)]"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   {step.n}
                 </span>
-                <h3 className="mt-3 text-[19px] leading-tight font-extrabold">
+                <h3 className="mt-3 text-[15px] leading-[1.45] font-bold">
                   {step.title}
                 </h3>
                 <p className="mt-2.5 text-sm leading-relaxed text-[var(--muted)]">
@@ -293,7 +296,7 @@ function Loop() {
 
           <Reveal from="right" delay={120}>
             <div className="lg:pl-6">
-              <h3 className="max-w-[18ch] text-[clamp(22px,3.4vw,34px)] leading-[1.1] font-black tracking-[-0.02em]">
+              <h3 className="max-w-[18ch] text-[clamp(16px,2.4vw,26px)] leading-[1.35] font-bold">
                 El byproduct: un portfolio que nadie puede inflar.
               </h3>
               <p className="mt-4 max-w-[48ch] text-[var(--muted)]">
@@ -322,13 +325,13 @@ function ExampleChallenge() {
       <div className="card card-raised">
         <div className="mb-3.5 flex items-center gap-2.5">
           <span
-            className="grid size-[38px] place-items-center rounded-[10px] bg-gradient-to-br from-[var(--tan)] to-[#7a6844] text-sm font-black text-[var(--cream)]"
+            className="grid size-[38px] place-items-center rounded-[10px] bg-gradient-to-br from-[var(--phos-dark)] to-[#265c37] text-sm font-bold text-[var(--cream)]"
             style={{ fontFamily: "var(--font-display)" }}
           >
             NV
           </span>
           <div style={{ fontFamily: "var(--font-display)" }}>
-            <div className="text-sm font-extrabold">Novabank</div>
+            <div className="text-sm font-bold">Novabank</div>
             <div className="text-xs font-semibold text-[var(--faint)]">
               Fintech · 12 personas
             </div>
@@ -337,14 +340,14 @@ function ExampleChallenge() {
             className="ml-auto text-right"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            <b className="text-[15px] text-[var(--sand)]">$1,500</b>
+            <b className="text-[15px] text-[var(--phos)]">$1,500</b>
             <small className="block text-[11px] text-[var(--faint)]">
               + entrevista
             </small>
           </div>
         </div>
 
-        <h3 className="mb-2 text-[18px] font-extrabold">
+        <h3 className="mb-2 text-[15px] leading-[1.4] font-bold">
           Detectar transacciones fraudulentas en el dashboard
         </h3>
         <p className="mb-3.5 text-sm text-[var(--muted)]">
@@ -411,7 +414,7 @@ function Evaluation() {
         <div className="lg:sticky lg:top-24 lg:self-start">
           <Reveal from="left">
             <span className="eyebrow">Evaluación</span>
-            <h2 className="mt-2 text-[clamp(28px,4.4vw,44px)] leading-[1.04] font-black tracking-[-0.03em]">
+            <h2 className="mt-2 text-[clamp(18px,2.8vw,30px)] leading-[1.35] font-bold">
               En este orden,
               <br />
               no en otro.
@@ -432,9 +435,9 @@ function Evaluation() {
               <Reveal delay={i * 110}>
                 <div className="flex items-baseline gap-4">
                   <span
-                    className={`text-[13px] font-black tracking-[0.12em] uppercase ${
+                    className={`text-[13px] font-bold tracking-[0.12em] uppercase ${
                       criterion.primary
-                        ? "text-[var(--sand)]"
+                        ? "text-[var(--phos)]"
                         : "text-[var(--faint)]"
                     }`}
                     style={{ fontFamily: "var(--font-display)" }}
@@ -443,7 +446,7 @@ function Evaluation() {
                     {criterion.primary && " ★"}
                   </span>
                 </div>
-                <h3 className="mt-3 text-[clamp(20px,2.6vw,28px)] font-extrabold tracking-[-0.02em]">
+                <h3 className="mt-3 text-[clamp(15px,2vw,21px)] font-bold">
                   {criterion.title}
                 </h3>
                 <p className="mt-3 max-w-[54ch] leading-relaxed text-[var(--muted)]">
@@ -453,6 +456,38 @@ function Evaluation() {
             </li>
           ))}
         </ol>
+      </div>
+    </section>
+  );
+}
+
+/* ── La defensa · la prueba del tercer criterio ───────────────────────────── */
+
+function Defense() {
+  return (
+    <section
+      id="defensa"
+      className="scroll-mt-16 border-t border-[var(--line)] py-20 sm:py-28"
+    >
+      <div className={WRAP}>
+        <Reveal>
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <span className="eyebrow text-[var(--phos)]">La defensa</span>
+              <h2 className="mt-3 max-w-[20ch] text-[clamp(18px,3vw,34px)] leading-[1.3] font-bold">
+                El diff que te defiende
+              </h2>
+            </div>
+            <p className="max-w-[38ch] text-sm text-[var(--muted)] sm:text-right">
+              Cualquiera puede generar código. Nadie puede generar las razones por
+              las que lo escribió así. Ahí es donde se cae el AI-slop.
+            </p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={120} className="mt-10">
+          <AuthorshipDiff />
+        </Reveal>
       </div>
     </section>
   );
@@ -484,7 +519,7 @@ function Difference() {
       <div className={WRAP}>
         <Reveal>
           <div className="flex flex-wrap items-baseline justify-between gap-4">
-            <h2 className="text-[clamp(30px,5vw,52px)] leading-none font-black tracking-[-0.03em]">
+            <h2 className="text-[clamp(18px,3vw,34px)] leading-[1.3] font-bold">
               No es lo mismo
             </h2>
             <span className="eyebrow">04 — Posicionamiento</span>
@@ -496,7 +531,7 @@ function Difference() {
             <Reveal key={row.them} delay={i * 80}>
               <div className="row-hover grid gap-2 border-b border-[var(--line)] py-6 md:grid-cols-[190px_1fr_1fr] md:gap-8">
                 <dt
-                  className="text-sm font-black tracking-[-0.01em] text-[var(--faint)]"
+                  className="text-sm font-bold text-[var(--faint)]"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   {row.them}
@@ -521,8 +556,8 @@ function ForStartups() {
         <div className="flex items-center bg-[var(--panel)] px-6 py-20 sm:py-28 lg:justify-end">
           <Reveal from="left">
             <div className="w-full max-w-[520px] lg:pr-12">
-              <span className="eyebrow text-[var(--sand)]">Para startups</span>
-              <h2 className="mt-3 text-[clamp(26px,3.8vw,42px)] leading-[1.06] font-black tracking-[-0.03em]">
+              <span className="eyebrow text-[var(--phos)]">Para startups</span>
+              <h2 className="mt-3 text-[clamp(17px,2.6vw,28px)] leading-[1.35] font-bold">
                 Publica el problema que ya tienes.
               </h2>
               <p className="mt-5 text-[var(--muted)]">
@@ -555,9 +590,9 @@ function ForStartups() {
                     ["Con autoría probada", "Sabes quién escribió qué, y por qué."],
                   ].map(([title, tail]) => (
                     <li key={title} className="flex gap-3">
-                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--sand)]" />
+                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--phos)]" />
                       <span>
-                        <b className="block font-extrabold">{title}</b>
+                        <b className="block font-bold">{title}</b>
                         <span className="text-[var(--muted)]">{tail}</span>
                       </span>
                     </li>
@@ -581,9 +616,9 @@ function FinalCta() {
         className={`${WRAP} flex flex-wrap items-center justify-between gap-10 py-20 sm:py-24`}
       >
         <Reveal from="left">
-          <h2 className="max-w-[16ch] text-[clamp(30px,5.5vw,56px)] leading-[1.02] font-black tracking-[-0.03em]">
+          <h2 className="max-w-[16ch] text-[clamp(20px,3.4vw,40px)] leading-[1.3] font-bold">
             Deja de postular.{" "}
-            <span className="bg-gradient-to-r from-[var(--sand)] to-[var(--terra)] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[var(--phos)] to-[var(--cyan)] bg-clip-text text-transparent">
               Empieza a shipear.
             </span>
           </h2>
@@ -606,7 +641,7 @@ function Footer() {
         className={`${WRAP} flex flex-wrap items-center justify-between gap-6 py-10 text-[13px] text-[var(--faint)]`}
       >
         <span
-          className="text-base font-black text-[var(--text)]"
+          className="text-base font-bold text-[var(--text)]"
           style={{ fontFamily: "var(--font-display)" }}
         >
           Menos escuela, más hacer.
