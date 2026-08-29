@@ -205,6 +205,24 @@ export const schema = defineSchema({
     result: v.optional(v.any()),
     usage: v.optional(v.any()),
   }).index("by_request_id", ["requestId"]),
+
+  // Ofertas de trabajo scrapeadas de LinkedIn vía Apify (action jobs.scrapeCompany).
+  // `company` = clave normalizada (lowercase) para agrupar por empresa.
+  jobListings: defineTable({
+    company: v.string(),
+    title: v.string(),
+    companyName: v.string(),
+    location: v.optional(v.string()),
+    url: v.string(),
+    externalId: v.string(),
+    source: v.literal("linkedin"),
+    postedAt: v.optional(v.number()),
+    snippet: v.optional(v.string()),
+    scrapedAt: v.number(),
+    scrapedBy: v.optional(v.id("users")),
+  })
+    .index("by_company_and_scrapedAt", ["company", "scrapedAt"])
+    .index("by_company_and_externalId", ["company", "externalId"]),
 });
 
 export default schema;

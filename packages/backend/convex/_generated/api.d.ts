@@ -15,6 +15,7 @@ import type * as domain from "../domain.js";
 import type * as evaluations from "../evaluations.js";
 import type * as feed from "../feed.js";
 import type * as http from "../http.js";
+import type * as jobs from "../jobs.js";
 import type * as leaderboard from "../leaderboard.js";
 import type * as opportunities from "../opportunities.js";
 import type * as rankings from "../rankings.js";
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   evaluations: typeof evaluations;
   feed: typeof feed;
   http: typeof http;
+  jobs: typeof jobs;
   leaderboard: typeof leaderboard;
   opportunities: typeof opportunities;
   rankings: typeof rankings;
