@@ -19,3 +19,6 @@ dist
 packages/backend/.claude/
 
 .DS_Store
+
+# git worktrees created under .claude
+.claude/worktrees/
