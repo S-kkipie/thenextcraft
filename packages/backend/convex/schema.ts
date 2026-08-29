@@ -172,6 +172,34 @@ export const schema = defineSchema({
   })
     .index("by_builderId", ["builderId"])
     .index("by_startupId", ["startupId"]),
+
+  // AI Technical Judge (static repo review). Self-contained; bridged into
+  // `evaluations` on completion so the app UI + shortlist see the scores.
+  technicalReviews: defineTable({
+    requestId: v.string(),
+    repoUrl: v.string(),
+    owner: v.string(),
+    repo: v.string(),
+    status: v.union(
+      v.literal("queued"),
+      v.literal("validating_repository"),
+      v.literal("reading_repository"),
+      v.literal("selecting_files"),
+      v.literal("reviewing_code"),
+      v.literal("finalizing"),
+      v.literal("completed"),
+      v.literal("failed"),
+    ),
+    startedAt: v.number(),
+    updatedAt: v.number(),
+    completedAt: v.optional(v.number()),
+    failureCode: v.optional(v.string()),
+    failureMessage: v.optional(v.string()),
+    repository: v.optional(v.any()),
+    coverage: v.optional(v.any()),
+    result: v.optional(v.any()),
+    usage: v.optional(v.any()),
+  }).index("by_request_id", ["requestId"]),
 });
 
 export default schema;

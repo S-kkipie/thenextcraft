@@ -1,33 +1,23 @@
 import { action, mutation } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { api } from "./_generated/api";
 import { v } from "convex/values";
 import { authorshipStatusValidator } from "./schema";
 
-// MOCK static AI Judge — deterministic scores derived from the submission id.
-// TODO real: call Claude (Anthropic) for the static review and persist via
-// internalMutation. Needs env ANTHROPIC_API_KEY (do NOT hardcode a key).
-// The platform NEVER runs code: this is a static review, no latency/throughput.
+// Real AI Technical Judge (static repo review). Kicks off the technicalJudge
+// pipeline for the submission's repo; on completion it writes the scores back
+// into this submission's `evaluations` row (see technicalJudge.complete bridge).
+// The platform NEVER runs code — the judge only reads repo files.
 export const evaluate = action({
   args: { submissionId: v.id("submissions") },
   returns: v.null(),
   handler: async (ctx, { submissionId }) => {
-    let h = 0;
-    for (let i = 0; i < submissionId.length; i++) {
-      h = (h * 31 + submissionId.charCodeAt(i)) & 0xffff;
-    }
-    const fit = 72 + (h % 24); // 72..95
-    const quality = 66 + ((h >> 3) % 28); // 66..93
-    const total = Math.round(fit * 0.5 + quality * 0.5);
-    const review =
-      "Prioriza el reto de negocio y la solución es legible. A revisar: estados vacíos y cobertura de pruebas.";
-    await ctx.runMutation(internal.rankings.markStarted, { submissionId });
-    await ctx.runMutation(internal.rankings.complete, {
+    const submission = await ctx.runQuery(api.submissions.get, { submissionId });
+    const repoUrl = submission?.repositoryUrl;
+    if (!repoUrl) return null;
+    await ctx.runMutation(api.technicalJudge.start, {
+      repoUrl,
+      requestId: submissionId,
       submissionId,
-      fitScore: fit,
-      qualityScore: quality,
-      totalScore: total,
-      rankedReview: review,
-      aiEvidence: "Revisión estática (mock).",
     });
     return null;
   },

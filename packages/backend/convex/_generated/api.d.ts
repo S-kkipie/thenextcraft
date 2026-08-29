@@ -19,6 +19,7 @@ import type * as rankings from "../rankings.js";
 import type * as shortlist from "../shortlist.js";
 import type * as startup from "../startup.js";
 import type * as submissions from "../submissions.js";
+import type * as technicalJudge from "../technicalJudge.js";
 import type * as users from "../users.js";
 import type * as views from "../views.js";
 
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   shortlist: typeof shortlist;
   startup: typeof startup;
   submissions: typeof submissions;
+  technicalJudge: typeof technicalJudge;
   users: typeof users;
   views: typeof views;
 }>;

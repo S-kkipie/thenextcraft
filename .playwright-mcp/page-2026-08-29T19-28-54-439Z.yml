@@ -1,0 +1,75 @@
+- generic [ref=f9e1]:
+  - generic [ref=f9e2]:
+    - banner [ref=f9e3]:
+      - generic [ref=f9e4]:
+        - link "The Next Ship" [ref=f9e5] [cursor=pointer]:
+          - /url: /home
+        - navigation [ref=f9e8]:
+          - link "Retos" [ref=f9e9] [cursor=pointer]:
+            - /url: /challenges
+          - link "Ranking" [ref=f9e10] [cursor=pointer]:
+            - /url: /leaderboard
+          - link "Comunidad" [ref=f9e11] [cursor=pointer]:
+            - /url: /community
+        - generic [ref=f9e12]:
+          - generic [ref=f9e26]: 🔥 0
+          - button "Menú de cuenta" [expanded] [ref=f9e28] [cursor=pointer]: A
+          - menu "Menú de cuenta" [active] [ref=f9e32]:
+            - generic [ref=f9e33]:
+              - generic [ref=f9e34]: Adrian Test
+              - generic [ref=f9e35]: "@adriantest"
+            - separator [ref=f9e36]
+            - menuitem "🪪 Passport" [ref=f9e37]
+            - menuitem "🗺️ Skill Map" [ref=f9e38]
+            - menuitem "💼 Oportunidades" [ref=f9e39]
+            - menuitem "🔥 Recompensas" [ref=f9e40]
+            - separator [ref=f9e41]
+            - menuitem "Salir" [ref=f9e42]
+    - generic [ref=f9e45]:
+      - generic [ref=f9e46]:
+        - generic [ref=f9e47]: Tu carrera
+        - heading "Hola, Adrian Test 👋" [level=1] [ref=f9e48]
+      - generic [ref=f9e50]:
+        - generic [ref=f9e51]:
+          - generic [ref=f9e56]:
+            - text: "1"
+            - generic [ref=f9e57]: NIVEL
+          - generic [ref=f9e58]:
+            - generic [ref=f9e59]:
+              - generic [ref=f9e60]: 0 XP
+              - generic [ref=f9e61]: "250"
+            - generic [ref=f9e63]: 🔥 0
+        - generic [ref=f9e65]:
+          - generic [ref=f9e66]:
+            - generic [ref=f9e67]: "0"
+            - text: SHIPPED
+          - generic [ref=f9e68]:
+            - generic [ref=f9e69]: "0"
+            - text: APPROVED
+          - generic [ref=f9e70]:
+            - generic [ref=f9e71]: —
+            - text: AVG JUDGE
+      - generic [ref=f9e73]:
+        - generic [ref=f9e74]:
+          - generic [ref=f9e75]: Próximo paso
+          - generic [ref=f9e76]: Toma tu primer reto
+          - paragraph [ref=f9e77]: Elige un problema de negocio real, shipea tu solución y deja que tu trabajo hable por ti.
+        - link "Ver retos" [ref=f9e78] [cursor=pointer]:
+          - /url: /challenges
+      - generic [ref=f9e79]:
+        - heading "Retos para ti" [level=2] [ref=f9e80]
+        - generic [ref=f9e81]: No hay retos abiertos ahora mismo. Vuelve pronto.
+      - generic [ref=f9e82]:
+        - heading "Actividad reciente" [level=2] [ref=f9e83]
+        - generic [ref=f9e84]: Aún no hay actividad. Toma un reto y empieza a shipear.
+  - region "Notifications alt+T"
+  - generic [ref=f9e21] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=f9e22]
+    - generic [ref=f9e85]:
+      - button "Open issues overlay" [ref=f9e86]:
+        - generic [ref=f9e87]:
+          - generic [ref=f9e88]: "0"
+          - generic [ref=f9e89]: "1"
+        - generic [ref=f9e90]: Issue
+      - button "Collapse issues badge" [ref=f9e91]
+  - alert [ref=f9e94]
