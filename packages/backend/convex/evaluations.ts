@@ -6,6 +6,10 @@ import { v } from "convex/values";
 // via internalMutation. La etapa 3 (autoría) es humana → video/audio/entrevista.
 export const evaluate = action({
   args: { submissionId: v.id("submissions") },
+  returns: v.object({
+    submissionId: v.id("submissions"),
+    status: v.literal("not_implemented"),
+  }),
   handler: async (_ctx, args) => {
     return {
       submissionId: args.submissionId,
