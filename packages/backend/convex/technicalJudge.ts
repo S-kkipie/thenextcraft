@@ -12,6 +12,7 @@ import { z } from "zod";
 import { v } from "convex/values";
 
 import { internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import {
   internalAction,
   internalMutation,
@@ -736,8 +737,44 @@ export const complete = internalMutation({
           rankedReview: args.result.summary,
           aiEvidence: `Veredicto: ${args.result.verdict}.`,
           // Feedback line-level: findings completos (con evidencia archivo:línea)
-          // + recomendaciones. Los ve el builder (su submission) y la startup.
+          // + recomendaciones + el "porqué" (veredicto, rationale por dimensión,
+          // limitaciones). Los ve el builder (su submission) y la startup.
           feedbackStatus: "ready",
+          verdict: args.result.verdict,
+          summary: args.result.summary,
+          limitations: args.result.limitations,
+          dimensionNotes: [
+            {
+              key: "fit",
+              label: "Fit al reto",
+              score: d.correctness.score,
+              rationale: d.correctness.rationale,
+            },
+            {
+              key: "quality",
+              label: "Calidad del build",
+              score: d.codeQuality.score,
+              rationale: d.codeQuality.rationale,
+            },
+            {
+              key: "architecture",
+              label: "Arquitectura",
+              score: d.architecture.score,
+              rationale: d.architecture.rationale,
+            },
+            {
+              key: "security",
+              label: "Seguridad",
+              score: d.security.score,
+              rationale: d.security.rationale,
+            },
+            {
+              key: "performance",
+              label: "Rendimiento",
+              score: d.performance.score,
+              rationale: d.performance.rationale,
+            },
+          ],
           findings: args.result.findings.map((f) => ({
             title: f.title,
             severity: f.severity,
@@ -778,6 +815,7 @@ export const fail = internalMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const now = Date.now();
+    const review = await ctx.db.get(args.reviewId);
     await ctx.db.patch(args.reviewId, {
       status: "failed",
       failureCode: args.code,
@@ -785,6 +823,24 @@ export const fail = internalMutation({
       updatedAt: now,
       completedAt: now,
     });
+    // Desatasca el feedback: si el review pertenece a una submission, marca su
+    // eval como `failed` (si seguía `generating`) y reevalúa el pase comparativo.
+    if (review?.requestId) {
+      const ev = await ctx.db
+        .query("evaluations")
+        .withIndex("by_submissionId", (q) =>
+          q.eq("submissionId", review.requestId as Id<"submissions">),
+        )
+        .unique();
+      if (ev && ev.feedbackStatus === "generating") {
+        await ctx.db.patch(ev._id, { feedbackStatus: "failed", updatedAt: now });
+        await ctx.scheduler.runAfter(
+          0,
+          internal.evaluations.maybeGeneratePeerReferences,
+          { challengeId: ev.challengeId },
+        );
+      }
+    }
     return null;
   },
 });

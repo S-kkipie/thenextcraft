@@ -44,6 +44,10 @@ export function EvaluationDetail({
   const findings = scored?.findings ?? [];
   const recommendations = scored?.recommendations ?? [];
   const peerReferences = scored?.peerReferences ?? [];
+  const dimensionNotes = scored?.dimensionNotes ?? [];
+  const limitations = scored?.limitations ?? [];
+  const summary = scored?.summary ?? scored?.rankedReview ?? null;
+  const verdict = scored?.verdict ?? null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -85,11 +89,21 @@ export function EvaluationDetail({
             <FeedbackPendingCard status={feedbackStatus} />
           )}
 
+          {scored && summary && (
+            <VerdictCard verdict={verdict} summary={summary} />
+          )}
+
+          {dimensionNotes.length > 0 && (
+            <DimensionRationales notes={dimensionNotes} />
+          )}
+
           {scored && (
             <JudgeReading strengths={scored.strengths} issues={scored.issues} />
           )}
 
           {findings.length > 0 && <FeedbackFindings findings={findings} />}
+
+          {limitations.length > 0 && <Limitations items={limitations} />}
 
           {peerReferences.length > 0 && (
             <PeerReferences references={peerReferences} />
@@ -164,6 +178,95 @@ function ScoreCard({
       <p className="mt-4 text-xs text-muted-foreground">
         El AI Judge es estático — analiza el repo/link, nunca ejecuta tu código.
       </p>
+    </section>
+  );
+}
+
+// ── Veredicto + resumen (el "porqué" global) ────────────────────────────────
+const VERDICT: Record<string, { label: string; cls: string }> = {
+  excelente: { label: "Excelente", cls: "bg-sage/15 text-sage" },
+  solido: { label: "Sólido", cls: "bg-sage/15 text-sage" },
+  prometedor: { label: "Prometedor", cls: "bg-sand/15 text-sand" },
+  arriesgado: { label: "Arriesgado", cls: "bg-terra/15 text-terra" },
+  critico: { label: "Crítico", cls: "bg-destructive/15 text-destructive" },
+};
+function VerdictCard({
+  verdict,
+  summary,
+}: {
+  verdict: string | null;
+  summary: string;
+}) {
+  const v = verdict ? VERDICT[verdict] : null;
+  return (
+    <section className="rounded-xl border border-border bg-card p-6">
+      <div className="mb-2 flex items-center gap-2">
+        <h2 className="font-heading text-lg font-bold">Veredicto del juez</h2>
+        {v && (
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${v.cls}`}
+          >
+            {v.label}
+          </span>
+        )}
+      </div>
+      <p className="text-sm leading-relaxed text-muted-foreground">{summary}</p>
+    </section>
+  );
+}
+
+// ── Por qué cada score (rationale por dimensión) ────────────────────────────
+function DimensionRationales({
+  notes,
+}: {
+  notes: { key: string; label: string; score: number; rationale: string }[];
+}) {
+  return (
+    <section className="rounded-xl border border-border bg-card p-6">
+      <h2 className="mb-1 font-heading text-lg font-bold">
+        Por qué estos scores
+      </h2>
+      <p className="mb-5 text-xs text-muted-foreground">
+        El razonamiento del juez detrás de cada dimensión.
+      </p>
+      <div className="flex flex-col gap-4">
+        {notes.map((n) => (
+          <div key={n.key} className="border-l-2 border-line-2 pl-3.5">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="font-display text-sm font-bold">{n.label}</span>
+              <span className="font-heading tabular-nums text-sm font-extrabold">
+                {n.score}
+                <span className="text-faint text-xs">/100</span>
+              </span>
+            </div>
+            <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+              {n.rationale}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ── Limitaciones (qué no se pudo evaluar / qué falta) ───────────────────────
+function Limitations({ items }: { items: string[] }) {
+  return (
+    <section className="rounded-xl border border-line-2 bg-panel-2/40 p-6">
+      <h2 className="mb-1 font-heading text-lg font-bold">
+        Qué no se pudo evaluar
+      </h2>
+      <p className="mb-4 text-xs text-muted-foreground">
+        El juez es estático (no ejecuta el código). Esto quedó fuera de alcance.
+      </p>
+      <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
+        {items.map((s, i) => (
+          <li key={i} className="flex items-start gap-2.5">
+            <span className="text-faint">•</span>
+            <span>{s}</span>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

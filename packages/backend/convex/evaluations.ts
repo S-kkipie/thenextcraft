@@ -222,6 +222,109 @@ export const generatePeerReferences = internalAction({
   },
 });
 
+// Backfill: reconstruye el feedback (findings/rationale/verdict/limitations) de
+// las evaluaciones a partir de reviews `technicalReviews` YA completados. No
+// llama a OpenAI — reutiliza el resultado del juez que ya existe. Útil para
+// evals escritas por el bridge viejo o que quedaron `generating` por rate-limit.
+export const backfillFromReviews = internalMutation({
+  args: { challengeId: v.optional(v.id("challenges")) },
+  returns: v.object({ patched: v.number(), missing: v.number() }),
+  handler: async (ctx, { challengeId }) => {
+    const evals = challengeId
+      ? await ctx.db
+          .query("evaluations")
+          .withIndex("by_challengeId_and_status_and_totalScore", (q) =>
+            q.eq("challengeId", challengeId),
+          )
+          .collect()
+      : await ctx.db.query("evaluations").collect();
+
+    let patched = 0;
+    let missing = 0;
+    for (const ev of evals) {
+      // El review usa requestId = submissionId.
+      const reviews = await ctx.db
+        .query("technicalReviews")
+        .withIndex("by_request_id", (q) =>
+          q.eq("requestId", ev.submissionId),
+        )
+        .collect();
+      const done = reviews
+        .filter((r) => r.status === "completed" && r.result)
+        .sort((a, b) => (b.completedAt ?? 0) - (a.completedAt ?? 0))[0];
+      if (!done || !done.result) {
+        missing++;
+        continue;
+      }
+      const r = done.result as {
+        dimensions: Record<string, { score: number; rationale: string }>;
+        overallScore: number;
+        summary: string;
+        verdict: string;
+        strengths: string[];
+        findings: {
+          title: string;
+          severity: string;
+          dimension: string;
+          description: string;
+          evidence: {
+            path: string;
+            startLine: number;
+            endLine: number;
+            snippet: string;
+          }[];
+        }[];
+        recommendations: { priority: string; title: string; description: string }[];
+        limitations: string[];
+      };
+      const d = r.dimensions;
+      await ctx.db.patch("evaluations", ev._id, {
+        status: "completed",
+        feedbackStatus: "ready",
+        fitScore: d.correctness.score,
+        qualityScore: d.codeQuality.score,
+        architectureScore: d.architecture.score,
+        securityScore: d.security.score,
+        totalScore: r.overallScore,
+        strengths: r.strengths.slice(0, 5),
+        issues: r.findings.slice(0, 5).map((f) => f.title),
+        rankedReview: r.summary,
+        summary: r.summary,
+        verdict: r.verdict,
+        aiEvidence: `Veredicto: ${r.verdict}.`,
+        limitations: r.limitations,
+        dimensionNotes: [
+          { key: "fit", label: "Fit al reto", score: d.correctness.score, rationale: d.correctness.rationale },
+          { key: "quality", label: "Calidad del build", score: d.codeQuality.score, rationale: d.codeQuality.rationale },
+          { key: "architecture", label: "Arquitectura", score: d.architecture.score, rationale: d.architecture.rationale },
+          { key: "security", label: "Seguridad", score: d.security.score, rationale: d.security.rationale },
+          { key: "performance", label: "Rendimiento", score: d.performance.score, rationale: d.performance.rationale },
+        ],
+        findings: r.findings.map((f) => ({
+          title: f.title,
+          severity: f.severity,
+          dimension: f.dimension,
+          description: f.description,
+          evidence: f.evidence.map((e) => ({
+            path: e.path,
+            startLine: e.startLine,
+            endLine: e.endLine,
+            snippet: e.snippet,
+          })),
+        })),
+        recommendations: r.recommendations.map((rec) => ({
+          priority: rec.priority,
+          title: rec.title,
+          description: rec.description,
+        })),
+        updatedAt: Date.now(),
+      });
+      patched++;
+    }
+    return { patched, missing };
+  },
+});
+
 export const savePeerReferences = internalMutation({
   args: {
     submissionId: v.id("submissions"),

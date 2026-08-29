@@ -78,6 +78,14 @@ export const peerReferenceValidator = v.object({
   note: v.string(), // qué hizo el peer y cómo se compara con esta submission
 });
 
+// El "porque sí/porque no" de cada dimensión: score + razonamiento del juez.
+export const dimensionNoteValidator = v.object({
+  key: v.string(),
+  label: v.string(),
+  score: v.number(),
+  rationale: v.string(),
+});
+
 export const badgeTypeValidator = v.union(
   v.literal("first-ship"),
   v.literal("shipped"),
@@ -183,6 +191,11 @@ export const schema = defineSchema({
     findings: v.optional(v.array(feedbackFindingValidator)),
     recommendations: v.optional(v.array(feedbackRecommendationValidator)),
     peerReferences: v.optional(v.array(peerReferenceValidator)),
+    // El "porqué": veredicto global, razonamiento por dimensión, limitaciones.
+    verdict: v.optional(v.string()),
+    summary: v.optional(v.string()),
+    dimensionNotes: v.optional(v.array(dimensionNoteValidator)),
+    limitations: v.optional(v.array(v.string())),
     // LEGACY: viva de autoría, ya no se usa en el flujo.
     authorshipStatus: v.optional(authorshipStatusValidator),
     aiEvidence: v.optional(v.string()),
