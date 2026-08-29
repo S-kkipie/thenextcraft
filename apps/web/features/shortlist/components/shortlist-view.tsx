@@ -2,6 +2,17 @@
 
 import type { Id } from "@thenextcraft/backend/dataModel";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatTile } from "@/components/craft";
@@ -39,11 +50,8 @@ export function ShortlistView({
   const { challenge, stats } = summary;
   const closed = challenge.status === "closed";
 
-  const onClose = () => {
-    if (closed) return;
-    if (!window.confirm("¿Cerrar el reto? Dejará de recibir submissions."))
-      return;
-    if (!userId) return;
+  const confirmClose = () => {
+    if (closed || !userId) return;
     void close({ startupId: userId, challengeId });
   };
 
@@ -59,9 +67,30 @@ export function ShortlistView({
             {closed ? "cerrado" : "en revisión"}
           </p>
         </div>
-        <Button variant="craftGhost" onClick={onClose} disabled={closed}>
-          {closed ? "Reto cerrado" : "Cerrar reto"}
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger
+            render={
+              <Button variant="craftGhost" disabled={closed}>
+                {closed ? "Reto cerrado" : "Cerrar reto"}
+              </Button>
+            }
+          />
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>¿Cerrar el reto?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Dejará de recibir submissions. Esta acción no se puede
+                deshacer.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction variant="destructive" onClick={confirmClose}>
+                Cerrar reto
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
