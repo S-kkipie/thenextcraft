@@ -3,15 +3,14 @@ import Link from "next/link";
 import { Beto } from "@/components/craft/beto";
 
 /*
- * Landing · macrostructure Manifesto.
+ * Landing · macrostructure Manifesto, piel retro-terminal.
  *
- * ADN tomado de thenextcraft.org/es: prompt `READY.`, imperativos en mayúsculas,
- * voz que declara antes de vender. La paleta NO se copia (allá es fósforo verde,
- * acá violeta) porque la landing entrega a una app que ya tiene su sistema.
+ * ADN muestreado en vivo de thenextcraft.org/es: IBM Plex Mono en todo, papel
+ * #1A1A17 sobre tinta crema, wordmark manuscrito, números de línea BASIC como
+ * etiquetas de sección, botones-bloque con sombra dura, retícula CRT, dither.
+ * Sin boot sequence: el jurado entra directo al contenido.
  *
- * Regla de copy: cero métricas inventadas. Todo lo afirmado acá sale del README
- * — el loop, los tres criterios de evaluación, el posicionamiento. Cuando haya
- * builders y contrataciones reales, este es el lugar donde van los números.
+ * Regla de copy: cero métricas inventadas. Todo sale del README.
  */
 
 export const metadata = {
@@ -23,6 +22,7 @@ export const metadata = {
 export default function Landing() {
   return (
     <>
+      <Ticker />
       <Nav />
       <main className="flex-1">
         <Hero />
@@ -38,39 +38,65 @@ export default function Landing() {
   );
 }
 
-/* ── N5 · pill flotante ───────────────────────────────────────────────────── */
+/* ── Piezas del sistema retro ─────────────────────────────────────────────── */
+
+/** Etiqueta de sección como una línea de BASIC. El número va en bitmap. */
+function BasicLine({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <p className="flex items-baseline gap-3 text-sm tracking-wider text-muted-foreground uppercase">
+      <span className="font-pixel text-brand">{n}</span>
+      <span>{children}</span>
+    </p>
+  );
+}
+
+/** Banda dithered de 1 bit: el divisor entre secciones. */
+function DitherRule() {
+  return <div className="dither h-2 w-full opacity-25" aria-hidden />;
+}
+
+const BLOCK_BUTTON =
+  "shadow-hard inline-flex items-center gap-2 border border-foreground bg-primary px-6 py-3 text-sm font-semibold tracking-widest whitespace-nowrap text-primary-foreground uppercase transition-[transform,box-shadow] hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_0_var(--dim)] active:translate-x-1 active:translate-y-1 active:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
+const GHOST_BUTTON =
+  "shadow-hard-sm inline-flex items-center gap-2 border border-foreground/50 px-5 py-2.5 text-sm font-semibold tracking-widest whitespace-nowrap uppercase transition-[transform,box-shadow] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
+/* ── Ticker + nav N8 terminal ─────────────────────────────────────────────── */
+
+function Ticker() {
+  return (
+    <div className="border-b border-border">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 overflow-hidden px-5 py-1.5 text-[11px] tracking-widest text-dim uppercase">
+        <span className="whitespace-nowrap">
+          Proof-of-work hiring · Lima · Remoto
+        </span>
+        <span className="font-pixel whitespace-nowrap">0 00 00111</span>
+      </div>
+    </div>
+  );
+}
 
 const ANCHORS = [
+  { href: "#manifiesto", label: "Manifiesto" },
   { href: "#loop", label: "El loop" },
-  { href: "#evaluacion", label: "Cómo se evalúa" },
-  { href: "#startups", label: "Para startups" },
+  { href: "#evaluacion", label: "Rúbrica" },
+  { href: "#startups", label: "Startups" },
 ];
 
 function Nav() {
   return (
-    <header className="sticky top-4 z-50 flex justify-center px-4">
-      <nav className="flex items-center gap-1 rounded-full border border-white/10 bg-background/80 p-1.5 pl-4 backdrop-blur-md">
-        <Link href="/" className="flex items-center gap-2 pr-2">
-          <svg viewBox="0 0 24 24" className="size-4 text-primary" aria-hidden>
-            <path
-              d="M3 6l9 5 9-5M3 6v12l9 5 9-5V6M3 6l9-5 9 5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="font-mono text-sm font-medium tracking-tight">
-            thenextcraft
-          </span>
+    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-sm">
+      <nav className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-3">
+        <Link href="/" className="font-script text-xl leading-none">
+          thenextcraft
         </Link>
 
-        <div className="hidden items-center sm:flex">
+        <div className="hidden flex-1 items-center gap-5 md:flex">
           {ANCHORS.map((anchor) => (
             <a
               key={anchor.href}
               href={anchor.href}
-              className="rounded-full px-3 py-1.5 text-sm whitespace-nowrap text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="text-xs tracking-widest whitespace-nowrap text-muted-foreground uppercase transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               {anchor.label}
             </a>
@@ -79,52 +105,56 @@ function Nav() {
 
         <Link
           href="/home"
-          className="rounded-full bg-primary px-4 py-1.5 text-sm font-medium whitespace-nowrap text-primary-foreground transition-[background-color,transform] hover:bg-primary/85 active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="ml-auto border border-foreground/50 px-3 py-1.5 text-xs tracking-widest whitespace-nowrap uppercase transition-colors hover:bg-foreground hover:text-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:ml-0"
         >
           Entrar
+        </Link>
+        <Link href="/desafios" className={`${BLOCK_BUTTON} hidden sm:inline-flex`}>
+          Postular →
         </Link>
       </nav>
     </header>
   );
 }
 
-/* ── Hero · el Manifesto no pone botones sobre la línea de flotación ──────── */
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
 
 function Hero() {
   return (
-    <section className="mx-auto max-w-5xl px-5 pt-24 pb-28 sm:pt-32 sm:pb-36">
-      {/* El prompt de thenextcraft.org, intacto. */}
-      <p className="font-mono text-sm text-brand-soft">
-        READY.
-        <span className="cursor-block ml-0.5 inline-block h-[1em] w-[0.6em] translate-y-[0.12em] bg-brand-soft" />
-      </p>
+    <section className="crt-grid relative">
+      <div className="mx-auto max-w-6xl px-5 pt-20 pb-24 sm:pt-28 sm:pb-32">
+        <p className="text-sm tracking-widest text-brand">
+          READY.
+          <span className="cursor-block ml-0.5 inline-block h-[1em] w-[0.55em] translate-y-[0.1em] bg-brand" />
+        </p>
 
-      <h1 className="display mt-8 -rotate-[1.5deg] text-[clamp(2.75rem,11vw,7rem)] leading-[0.92] font-semibold tracking-[-0.03em] uppercase">
-        Tu CV no
-        <br />
-        prueba nada.
-        <br />
-        <span className="bg-primary px-2 text-primary-foreground">
-          Tu código sí.
-        </span>
-      </h1>
+        <h1 className="display mt-10 text-[clamp(2.25rem,8.5vw,5.5rem)] leading-[1.02] font-bold tracking-[-0.02em] uppercase">
+          Tu CV no
+          <br />
+          prueba nada.
+          <br />
+          <span className="bg-foreground px-2 text-background">Tu código sí.</span>
+        </h1>
 
-      <p className="mt-12 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-        Las startups publican su problema de negocio real. Shipeas una solución
-        pública. La IA rankea las submissions. Ellas contratan.
-      </p>
+        <p className="mt-12 max-w-lg leading-relaxed text-muted-foreground">
+          Las startups publican su problema de negocio real. Shipeas una solución
+          pública. La IA rankea las submissions. Ellas contratan.
+        </p>
 
-      <a
-        href="#loop"
-        className="mt-10 inline-block font-mono text-sm text-brand-soft underline underline-offset-4 hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-      >
-        ↓ Cómo funciona
-      </a>
+        <div className="mt-12 flex flex-wrap items-center gap-4">
+          <Link href="/desafios" className={BLOCK_BUTTON}>
+            Ver desafíos →
+          </Link>
+          <a href="#loop" className={GHOST_BUTTON}>
+            Cómo funciona ↓
+          </a>
+        </div>
+      </div>
     </section>
   );
 }
 
-/* ── Bandas a sangre · una afirmación por banda ───────────────────────────── */
+/* ── 10 · El manifiesto, una afirmación por banda ─────────────────────────── */
 
 const CLAIMS = [
   {
@@ -137,31 +167,35 @@ const CLAIMS = [
   },
   {
     line: "La defensa de tu código es tuya. En video.",
-    tail: "La IA saca las preguntas de tu propio diff. Respondes tú. Eso no se puede generar.",
+    tail: "La IA saca las preguntas de tu propio diff. Respondes tú. Eso no se genera.",
   },
 ];
 
 function Claims() {
   return (
-    <section className="space-y-px">
-      {CLAIMS.map((claim, i) => (
-        <div
-          key={claim.line}
-          className={i % 2 === 0 ? "bg-elev" : "bg-primary/10"}
-        >
-          <div className="mx-auto max-w-5xl px-5 py-14 sm:py-20">
-            <p className="display max-w-3xl text-[clamp(1.5rem,4.5vw,2.75rem)] leading-[1.1] font-medium tracking-tight">
-              {claim.line}
-            </p>
-            <p className="mt-4 max-w-xl text-muted-foreground">{claim.tail}</p>
-          </div>
-        </div>
-      ))}
+    <section id="manifiesto" className="scroll-mt-16 border-y border-border bg-elev">
+      <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
+        <BasicLine n={10}>{'PRINT "MANIFIESTO"'}</BasicLine>
+
+        <ul className="mt-12 space-y-12">
+          {CLAIMS.map((claim) => (
+            <li key={claim.line} className="border-l-2 border-brand pl-6">
+              <p className="display max-w-3xl text-[clamp(1.25rem,3.6vw,2.25rem)] leading-[1.2] font-semibold tracking-tight">
+                {claim.line}
+              </p>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                {claim.tail}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <DitherRule />
     </section>
   );
 }
 
-/* ── El loop ──────────────────────────────────────────────────────────────── */
+/* ── 20 · El loop ─────────────────────────────────────────────────────────── */
 
 const LOOP = [
   {
@@ -188,17 +222,21 @@ const LOOP = [
 
 function Loop() {
   return (
-    <section id="loop" className="mx-auto max-w-5xl scroll-mt-24 px-5 py-24 sm:py-32">
-      <h2 className="display text-[clamp(2rem,6vw,3.5rem)] leading-[1] font-semibold tracking-tight uppercase">
+    <section id="loop" className="mx-auto max-w-6xl scroll-mt-16 px-5 py-24 sm:py-32">
+      <BasicLine n={20}>{"GOSUB EL LOOP"}</BasicLine>
+
+      <h2 className="display mt-8 text-[clamp(1.5rem,5vw,3rem)] leading-[1.05] font-bold tracking-tight uppercase">
         Reto → build → ship → hire
       </h2>
 
-      <ol className="mt-14 grid gap-x-10 gap-y-12 sm:grid-cols-2">
+      <ol className="mt-14 grid gap-x-10 gap-y-10 sm:grid-cols-2">
         {LOOP.map((step) => (
-          <li key={step.n}>
-            <span className="font-mono text-sm text-brand-soft">{step.n}</span>
-            <h3 className="mt-2 text-xl font-medium">{step.title}</h3>
-            <p className="mt-2 leading-relaxed text-muted-foreground">{step.body}</p>
+          <li key={step.n} className="border-t border-border pt-5">
+            <span className="font-pixel text-sm text-brand">{step.n}</span>
+            <h3 className="mt-3 font-semibold tracking-tight">{step.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {step.body}
+            </p>
           </li>
         ))}
       </ol>
@@ -206,7 +244,7 @@ function Loop() {
   );
 }
 
-/* ── Evaluación · los tres criterios, en orden de prioridad ───────────────── */
+/* ── 30 · Rúbrica ─────────────────────────────────────────────────────────── */
 
 const CRITERIA = [
   {
@@ -228,23 +266,28 @@ const CRITERIA = [
 
 function Evaluation() {
   return (
-    <section id="evaluacion" className="scroll-mt-24 bg-elev">
-      <div className="mx-auto max-w-5xl px-5 py-24 sm:py-32">
-        <h2 className="display text-[clamp(2rem,6vw,3.5rem)] leading-[1] font-semibold tracking-tight uppercase">
+    <section id="evaluacion" className="scroll-mt-16 border-y border-border bg-elev">
+      <div className="mx-auto max-w-6xl px-5 py-24 sm:py-32">
+        <BasicLine n={30}>{"IF RESUELVE THEN HIRE"}</BasicLine>
+
+        <h2 className="display mt-8 text-[clamp(1.5rem,5vw,3rem)] leading-[1.05] font-bold tracking-tight uppercase">
           Cómo se evalúa
         </h2>
-        <p className="mt-5 max-w-xl text-muted-foreground">
+        <p className="mt-5 max-w-xl text-sm text-muted-foreground">
           En este orden. El tercero es el que ningún competidor tiene.
         </p>
 
-        <div className="mt-14 grid gap-10 md:grid-cols-3">
+        <div className="mt-14 grid gap-8 md:grid-cols-3">
           {CRITERIA.map((criterion) => (
-            <div key={criterion.title} className="border-t-2 border-primary pt-5">
-              <span className="font-mono text-xs tracking-wider text-brand-soft uppercase">
+            <div
+              key={criterion.title}
+              className="border border-border bg-background p-6"
+            >
+              <span className="font-pixel text-xs text-brand uppercase">
                 {criterion.label}
               </span>
-              <h3 className="mt-2 text-xl font-medium">{criterion.title}</h3>
-              <p className="mt-2 leading-relaxed text-muted-foreground">
+              <h3 className="mt-4 font-semibold tracking-tight">{criterion.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {criterion.body}
               </p>
             </div>
@@ -255,27 +298,46 @@ function Evaluation() {
   );
 }
 
-/* ── Diferenciación · posicionamiento real, sin métricas inventadas ───────── */
+/* ── 40 · Posicionamiento ─────────────────────────────────────────────────── */
 
 const COMPARISON = [
-  { them: "Forke", theirs: "Micro-tasks con payout instantáneo. Un dev, una task.", ours: "Un reto de negocio, N devs rankeados, y un hire al final." },
-  { them: "Kaggle", theirs: "Gana el accuracy de un modelo.", ours: "Gana la solución que le sirve al negocio." },
-  { them: "DoraHacks · Devpost", theirs: "Un evento, premios, jurado humano.", ours: "Continuo, con shortlist de IA y contratación." },
+  {
+    them: "Forke",
+    theirs: "Micro-tasks con payout instantáneo. Un dev, una task.",
+    ours: "Un reto de negocio, N devs rankeados, y un hire al final.",
+  },
+  {
+    them: "Kaggle",
+    theirs: "Gana el accuracy de un modelo.",
+    ours: "Gana la solución que le sirve al negocio.",
+  },
+  {
+    them: "DoraHacks · Devpost",
+    theirs: "Un evento, premios, jurado humano.",
+    ours: "Continuo, con shortlist de IA y contratación.",
+  },
 ];
 
 function Difference() {
   return (
-    <section className="mx-auto max-w-5xl px-5 py-24 sm:py-32">
-      <h2 className="display text-[clamp(2rem,6vw,3.5rem)] leading-[1] font-semibold tracking-tight uppercase">
+    <section className="mx-auto max-w-6xl px-5 py-24 sm:py-32">
+      <BasicLine n={40}>{"REM NO ES LO MISMO"}</BasicLine>
+
+      <h2 className="display mt-8 text-[clamp(1.5rem,5vw,3rem)] leading-[1.05] font-bold tracking-tight uppercase">
         No es lo mismo
       </h2>
 
-      <dl className="mt-14 divide-y divide-border">
+      <dl className="mt-12 divide-y divide-border border-y border-border">
         {COMPARISON.map((row) => (
-          <div key={row.them} className="grid gap-2 py-7 md:grid-cols-[180px_1fr_1fr] md:gap-8">
-            <dt className="font-mono text-sm text-muted-foreground">{row.them}</dt>
-            <dd className="text-muted-foreground">{row.theirs}</dd>
-            <dd className="font-medium">{row.ours}</dd>
+          <div
+            key={row.them}
+            className="grid gap-2 py-6 md:grid-cols-[180px_1fr_1fr] md:gap-8"
+          >
+            <dt className="text-xs tracking-widest text-brand uppercase">
+              {row.them}
+            </dt>
+            <dd className="text-sm text-muted-foreground">{row.theirs}</dd>
+            <dd className="text-sm font-semibold">{row.ours}</dd>
           </div>
         ))}
       </dl>
@@ -283,17 +345,18 @@ function Difference() {
   );
 }
 
-/* ── El otro lado del marketplace ─────────────────────────────────────────── */
+/* ── 50 · El otro lado del marketplace ────────────────────────────────────── */
 
 function ForStartups() {
   return (
-    <section id="startups" className="scroll-mt-24 bg-primary/10">
-      <div className="mx-auto max-w-5xl px-5 py-24 sm:py-32">
-        <span className="font-mono text-sm text-brand-soft">{"// para startups"}</span>
-        <h2 className="display mt-4 max-w-3xl text-[clamp(1.75rem,5vw,3rem)] leading-[1.05] font-semibold tracking-tight">
+    <section id="startups" className="scroll-mt-16 border-y border-border bg-elev">
+      <div className="mx-auto max-w-6xl px-5 py-24 sm:py-32">
+        <BasicLine n={50}>{"INPUT TU PROBLEMA"}</BasicLine>
+
+        <h2 className="display mt-8 max-w-3xl text-[clamp(1.35rem,4.2vw,2.5rem)] leading-[1.12] font-bold tracking-tight">
           Publica el problema que ya tienes. Recibe soluciones, no CVs.
         </h2>
-        <p className="mt-6 max-w-xl leading-relaxed text-muted-foreground">
+        <p className="mt-6 max-w-xl text-sm leading-relaxed text-muted-foreground">
           Escribe el reto una vez, con tus criterios de éxito. Muchos builders lo
           resuelven en paralelo y tú ves código que corre — rankeado, con la
           autoría ya verificada. Te quedas con la solución y, si quieres, con
@@ -303,32 +366,29 @@ function ForStartups() {
           href="https://github.com/S-kkipie/thenextcraft"
           target="_blank"
           rel="noreferrer"
-          className="mt-10 inline-block border-2 border-primary px-6 py-3 font-medium whitespace-nowrap transition-[background-color,transform] hover:bg-primary hover:text-primary-foreground active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className={`${GHOST_BUTTON} mt-10`}
         >
-          Hablar con el equipo
+          Hablar con el equipo →
         </a>
       </div>
     </section>
   );
 }
 
-/* ── CTA final · el bloque sólido sobredimensionado del Manifesto ─────────── */
+/* ── CTA final ────────────────────────────────────────────────────────────── */
 
 function FinalCta() {
   return (
-    <section className="mx-auto max-w-5xl px-5 py-28 sm:py-36">
-      <div className="flex flex-wrap items-end justify-between gap-8">
+    <section className="crt-grid">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-10 px-5 py-28 sm:py-36">
         <div>
-          <h2 className="display max-w-2xl text-[clamp(2rem,7vw,4.5rem)] leading-[0.95] font-semibold tracking-[-0.02em] uppercase">
+          <h2 className="display max-w-2xl text-[clamp(1.75rem,6.5vw,4rem)] leading-[1.02] font-bold tracking-[-0.02em] uppercase">
             Deja de postular.
             <br />
-            <span className="text-brand-soft">Empieza a shipear.</span>
+            <span className="text-brand">Empieza a shipear.</span>
           </h2>
-          <Link
-            href="/desafios"
-            className="mt-10 inline-block bg-primary px-8 py-5 text-lg font-medium whitespace-nowrap text-primary-foreground transition-[background-color,transform] hover:bg-primary/85 active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            Ver los desafíos abiertos
+          <Link href="/desafios" className={`${BLOCK_BUTTON} mt-10 px-8 py-4`}>
+            Ver los desafíos abiertos →
           </Link>
         </div>
         <Beto variant="build" className="size-32 shrink-0 sm:size-40" />
@@ -342,12 +402,12 @@ function FinalCta() {
 function Footer() {
   return (
     <footer className="border-t border-border">
-      <div className="mx-auto max-w-5xl px-5 py-16">
-        <p className="display max-w-2xl text-2xl leading-snug font-medium tracking-tight sm:text-3xl">
+      <div className="mx-auto max-w-6xl px-5 py-16">
+        <p className="font-script text-3xl leading-tight sm:text-4xl">
           Menos escuela, más hacer.
         </p>
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-6 font-mono text-sm text-muted-foreground">
-          <span>thenextcraft</span>
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-6 text-xs tracking-widest text-muted-foreground uppercase">
+          <span className="font-pixel">thenextcraft</span>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             <Link href="/desafios" className="whitespace-nowrap hover:text-foreground">
               Desafíos

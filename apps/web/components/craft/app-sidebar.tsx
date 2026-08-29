@@ -97,7 +97,7 @@ export function AppSidebar() {
         className="mx-2 flex flex-col items-center gap-2 rounded-xl px-2 py-3 text-center transition-colors hover:bg-sidebar-accent/50"
       >
         <Avatar size="lg">
-          <AvatarFallback className="bg-primary/20 text-xs font-medium text-primary-foreground">
+          <AvatarFallback className="bg-brand/20 text-xs font-medium text-foreground">
             AR
           </AvatarFallback>
         </Avatar>

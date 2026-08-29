@@ -53,7 +53,7 @@ export default function PassportPage() {
       <Card>
         <CardContent className="flex flex-wrap items-center gap-5">
           <Avatar className="size-20">
-            <AvatarFallback className="bg-primary/20 text-lg font-medium">
+            <AvatarFallback className="bg-brand/20 text-lg font-medium">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -194,7 +194,7 @@ const ACHIEVEMENT_ICONS: Record<string, LucideIcon> = {
 };
 
 const ACHIEVEMENT_TINTS: Record<string, string> = {
-  brand: "bg-primary",
+  brand: "bg-brand",
   success: "bg-success",
   warning: "bg-warning",
   gem: "bg-gem",

@@ -52,7 +52,7 @@ export function HexBadge({
   return (
     <div className="flex w-14 flex-col items-center gap-1.5">
       <div className={cn("clip-hex grid size-12 place-items-center", accent)}>
-        <Icon className="size-5 text-white" aria-hidden />
+        <Icon className="size-5 text-background" aria-hidden />
       </div>
       <span className="text-center text-[10px] leading-tight text-muted-foreground">
         {label}

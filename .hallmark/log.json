@@ -2,11 +2,11 @@
   {
     "date": "2026-08-29",
     "macrostructure": "Manifesto",
-    "theme": "studied-DNA (thenextcraft.org/es) anclado en tokens del proyecto",
-    "theme_axes": "dark / grotesk-sans + mono / cool-violeta",
-    "nav": "N5 floating pill",
+    "theme": "studied-DNA (thenextcraft.org/es, muestreado en vivo)",
+    "theme_axes": "dark / mono (IBM Plex Mono) / neutral cálido + ámbar de fósforo",
+    "nav": "N8 terminal",
     "footer": "Ft5 statement",
-    "enrichment": "none",
-    "brief": "thenextcraft — landing one-pager, builders primero + bloque startups"
+    "enrichment": "E-CSS (retícula CRT + dither)",
+    "brief": "thenextcraft — landing one-pager + re-skin retro de todo el producto"
   }
 ]
