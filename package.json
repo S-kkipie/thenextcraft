@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@11.24.0",
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "node scripts/dev.mjs",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "backend": "pnpm --filter @thenextcraft/backend dev"

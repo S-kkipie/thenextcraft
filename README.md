@@ -79,7 +79,47 @@ cp apps/web/.env.local.example apps/web/.env.local
 pnpm --filter web dev
 ```
 
+## Demo: AI Technical Judge
+
+La ruta [`/judge`](http://localhost:3000/judge) permite pegar la URL raíz de un
+repositorio público de GitHub y observar una revisión técnica estática en tiempo
+real. No requiere GitHub OAuth, no clona ni ejecuta el proyecto y no evalúa
+business fit ni autoría.
+
+Esta primera versión es una demo local/privada. La mutación de inicio no exige
+login y puede consumir créditos de OpenAI; no publiques el deployment hasta
+agregar autenticación y rate limiting.
+
+Configura los secretos únicamente en el deployment de Convex:
+
+```bash
+# requerido
+pnpm --filter @thenextcraft/backend exec convex env set OPENAI_API_KEY
+
+# opcionales
+pnpm --filter @thenextcraft/backend exec convex env set OPENAI_MODEL gpt-5.6-terra
+pnpm --filter @thenextcraft/backend exec convex env set GITHUB_TOKEN
+```
+
+`OPENAI_MODEL` usa `gpt-5.6-terra` por defecto. `GITHUB_TOKEN` no se envía al
+navegador ni otorga acceso a repos privados; solo eleva el límite de lectura de
+la API pública de GitHub. Nunca agregues `OPENAI_API_KEY` a un archivo `.env` del
+frontend.
+
+La demo analiza un snapshot del branch principal con límites transparentes: 40
+archivos de texto, 30.000 caracteres por archivo y 180.000 caracteres totales.
+El reporte conserva metadata, cobertura, scores, uso y evidencia validada, pero
+no almacena el código fuente.
+
+```bash
+pnpm --filter @thenextcraft/backend test
+pnpm --filter @thenextcraft/backend typecheck
+pnpm --filter web lint
+pnpm --filter web build
+```
+
 ## Estado
 
-Concepto lockeado. **Scaffold listo** (monorepo, Next + Convex, schema MVP, landing).
-Pendiente: auth (Convex Auth + GitHub OAuth), pantallas del flujo, pipeline AI de evaluación.
+Concepto lockeado. **Demo funcional del AI Technical Judge** sobre repositorios
+públicos. Pendiente: auth real (Convex Auth + GitHub OAuth), business-quality
+scoring, ranking entre submissions y proof of authorship.
