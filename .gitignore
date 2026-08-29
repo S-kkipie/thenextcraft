@@ -14,4 +14,8 @@ dist
 # shares the typed api via git so nobody else needs a Convex login to build).
 .convex
 
+# convex ai-files skill payloads (reinstall: npx convex ai-files install)
+.agents/
+packages/backend/.claude/
+
 .DS_Store
