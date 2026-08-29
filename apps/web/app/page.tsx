@@ -1,21 +1,28 @@
 import Link from "next/link";
 
 import { Beto } from "@/components/craft/beto";
+import { HeroType } from "@/components/craft/hero-type";
 import { LiquidShader } from "@/components/craft/liquid-shader";
+import { Reveal } from "@/components/craft/reveal";
+import { ShortlistCanvas } from "@/components/craft/shortlist-canvas";
 import { TiltCard } from "@/components/craft/tilt-card";
 
 /*
- * Landing · arte de docs/design-foundation.html.
+ * Landing · arte de docs/design-foundation.html, estructura editorial asimétrica.
  *
- * Tokens, escala tipográfica, profundidad 3D de los botones, radios, badges y
- * el shader líquido salen tal cual de ese archivo. Lo único que sobrevive de la
- * pasada retro es el prompt READY., como guiño a thenextcraft.org.
+ * La versión anterior repetía el mismo compás cinco veces (eyebrow → h2 → fila
+ * de cards iguales), que es la firma más reconocible de una página generada.
+ * Acá cada sección tiene una forma distinta a propósito:
  *
- * Todo va scopeado bajo `.landing`: la app corre en el tema mono y no hereda
- * nada de acá.
+ *   manifiesto     bandas a sangre, tipografía enorme, alineación alternada
+ *   shortlist      canvas de partículas a todo el ancho
+ *   loop           riel horizontal + bloque desbalanceado
+ *   evaluación     díptico con columna izquierda pegajosa
+ *   posicionamiento tabla desnuda, sin cards
+ *   startups       panel desplazado a media sangre
  *
- * Regla de copy: cero métricas inventadas. El reto de Novabank va rotulado como
- * ejemplo porque lo es — viene del propio design foundation.
+ * Todo scopeado bajo `.landing`: la app corre en el tema mono y no hereda nada.
+ * Regla de copy: cero métricas inventadas.
  */
 
 export const metadata = {
@@ -30,13 +37,12 @@ export default function Landing() {
       <Nav />
       <main className="flex-1">
         <Hero />
-        <div className="mx-auto w-full max-w-[1080px] px-6">
-          <Manifesto />
-          <Loop />
-          <Evaluation />
-          <Difference />
-          <ForStartups />
-        </div>
+        <Manifesto />
+        <Shortlist />
+        <Loop />
+        <Evaluation />
+        <Difference />
+        <ForStartups />
         <FinalCta />
       </main>
       <Footer />
@@ -44,53 +50,21 @@ export default function Landing() {
   );
 }
 
-/* ── Piezas compartidas ───────────────────────────────────────────────────── */
-
-function SectionHead({
-  n,
-  title,
-  children,
-}: {
-  n: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="mb-7">
-      <div className="eyebrow">
-        {n} — {title}
-      </div>
-      <h2 className="mt-1.5 text-[26px] font-extrabold sm:text-[30px]">
-        {children}
-      </h2>
-    </div>
-  );
-}
-
-function Section({ id, children }: { id?: string; children: React.ReactNode }) {
-  return (
-    <section
-      id={id}
-      className="scroll-mt-20 border-t border-[var(--line)] py-14 first:border-t-0"
-    >
-      {children}
-    </section>
-  );
-}
+const WRAP = "mx-auto w-full max-w-[1120px] px-6";
 
 /* ── Nav ──────────────────────────────────────────────────────────────────── */
 
 const ANCHORS = [
   { href: "#manifiesto", label: "Manifiesto" },
+  { href: "#filtro", label: "El filtro" },
   { href: "#loop", label: "El loop" },
-  { href: "#evaluacion", label: "Evaluación" },
   { href: "#startups", label: "Startups" },
 ];
 
 function Nav() {
   return (
-    <div className="sticky top-0 z-20 border-b border-[var(--line)] bg-[rgb(26_26_23_/_0.72)] backdrop-blur-[14px]">
-      <div className="mx-auto flex h-[60px] max-w-[1080px] items-center gap-6 px-6">
+    <div className="sticky top-0 z-30 border-b border-[var(--line)] bg-[rgb(26_26_23_/_0.72)] backdrop-blur-[14px]">
+      <div className={`${WRAP} flex h-[60px] items-center gap-6`}>
         <Link
           href="/"
           className="flex items-center gap-2.5 text-[19px] font-black tracking-[-0.03em]"
@@ -134,7 +108,6 @@ function Hero() {
   return (
     <header className="relative overflow-hidden">
       <LiquidShader className="absolute inset-0 block size-full" />
-      {/* Funde el shader contra el ground para que el texto no pelee con él. */}
       <div
         aria-hidden
         className="absolute inset-0"
@@ -143,114 +116,127 @@ function Hero() {
             "radial-gradient(120% 90% at 50% 0%, transparent 42%, var(--ink) 94%), linear-gradient(180deg, rgb(19 19 16 / 0.2), rgb(19 19 16 / 0.05) 40%, var(--ink))",
         }}
       />
-
-      <div className="relative mx-auto max-w-[1080px] px-6 pt-[92px] pb-24">
-        {/* Lo único que queda del referente C64. */}
-        <a
-          href="https://thenextcraft.org/es"
-          target="_blank"
-          rel="noreferrer"
-          className="data inline-flex items-center text-[13px] text-[var(--muted)] transition-colors hover:text-[var(--sand)]"
-        >
-          READY.
-          <span className="cursor-block ml-1 inline-block h-[0.9em] w-[0.55em] translate-y-[0.05em] bg-[var(--sand)]" />
-        </a>
-
-        <div className="eyebrow mt-6 text-[var(--sand)]">Proof-of-work hiring</div>
-
-        <h1 className="mt-3.5 text-[clamp(38px,7vw,74px)] leading-[1.02] font-black">
-          Resuelve el reto real
-          <br />
-          de una startup.
-          <br />
-          <span className="bg-gradient-to-r from-[var(--sand)] to-[var(--terra)] bg-clip-text text-transparent">
-            Consigue el trabajo.
-          </span>
-        </h1>
-
-        <p className="mt-5 max-w-[52ch] text-[clamp(16px,2vw,20px)] text-[#C9C3B4]">
-          Las startups publican su problema de negocio. Tú shipeas una solución
-          pública. La IA filtra y rankea, tú defiendes tu autoría, la startup
-          contrata.
-        </p>
-
-        <div className="mt-[34px] flex flex-wrap gap-3.5">
-          <Link href="/desafios" className="btn btn-primary">
-            Explorar retos →
-          </Link>
-          <a href="#startups" className="btn btn-ghost">
-            Publicar reto
-          </a>
-        </div>
-
-        <p className="mt-[26px] max-w-[60ch] text-[13px] text-[var(--muted)]">
-          Streak · Nivel · XP = capa de progreso sobre señales{" "}
-          <b className="text-[var(--text)]">reales</b> (shipped · startup-approved
-          · AI review · autoría verificada).
-        </p>
-      </div>
+      <HeroType />
     </header>
   );
 }
 
-/* ── 01 · Manifiesto ──────────────────────────────────────────────────────── */
+/* ── Manifiesto · bandas a sangre, alineación alternada ───────────────────── */
 
 const CLAIMS = [
   {
     line: "El reto no es un ejercicio. Es su problema de negocio.",
     tail: "Criterios de éxito medibles, escritos por la startup que los tiene.",
+    bg: "bg-[var(--ink-2)]",
   },
   {
     line: "La plataforma nunca corre tu código.",
     tail: "El entregable es un link público. Un repo, un deploy — algo que existe.",
+    bg: "bg-[var(--panel)]",
   },
   {
     line: "La defensa de tu código es tuya. En video.",
     tail: "La IA saca las preguntas de tu propio diff. Respondes tú. Eso no se genera.",
+    bg: "bg-[var(--ink-2)]",
   },
 ];
 
 function Manifesto() {
   return (
-    <Section id="manifiesto">
-      <SectionHead n="01" title="Manifiesto">
-        Tres cosas que no negociamos
-      </SectionHead>
-
-      <ul className="grid gap-5 md:grid-cols-3">
-        {CLAIMS.map((claim) => (
-          <li key={claim.line} className="card card-hover">
-            <p className="text-[19px] leading-snug font-extrabold tracking-[-0.02em]">
-              {claim.line}
-            </p>
-            <p className="mt-2.5 text-sm text-[var(--muted)]">{claim.tail}</p>
-          </li>
-        ))}
-      </ul>
-    </Section>
+    <section id="manifiesto" className="scroll-mt-16">
+      {CLAIMS.map((claim, i) => {
+        const right = i % 2 === 1;
+        return (
+          <div
+            key={claim.line}
+            className={`${claim.bg} border-t border-[var(--line)]`}
+          >
+            <div className={`${WRAP} py-16 sm:py-20`}>
+              <Reveal from={right ? "right" : "left"}>
+                <div
+                  /* Ancho en px, no en `ch`: la unidad se resolvería con el
+                     font-size del contenedor (16px), no con el del titular. */
+                  className={
+                    right
+                      ? "ml-auto max-w-[700px] text-right sm:mr-[4%]"
+                      : "max-w-[700px] sm:ml-[4%]"
+                  }
+                >
+                  <span className="eyebrow text-[var(--sand)]">
+                    0{i + 1} — No negociable
+                  </span>
+                  <p className="mt-4 text-[clamp(26px,4.4vw,50px)] leading-[1.06] font-black tracking-[-0.03em] text-balance">
+                    {claim.line}
+                  </p>
+                  <p
+                    className={`mt-5 max-w-[46ch] text-[var(--muted)] ${right ? "ml-auto" : ""}`}
+                  >
+                    {claim.tail}
+                  </p>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        );
+      })}
+    </section>
   );
 }
 
-/* ── 02 · El loop + el reto de ejemplo ────────────────────────────────────── */
+/* ── El filtro · la pieza estrella ────────────────────────────────────────── */
+
+function Shortlist() {
+  return (
+    <section
+      id="filtro"
+      className="scroll-mt-16 border-t border-[var(--line)] bg-[var(--ink)]"
+    >
+      <div className={WRAP}>
+        <ShortlistCanvas
+          header={
+            <div className="flex flex-wrap items-end justify-between gap-6">
+              <div>
+                <span className="eyebrow">El filtro</span>
+                <h2 className="mt-2 max-w-[14ch] text-[clamp(30px,5vw,52px)] leading-[1.02] font-black tracking-[-0.03em]">
+                  La IA rankea.{" "}
+                  <span className="bg-gradient-to-r from-[var(--sand)] to-[var(--terra)] bg-clip-text text-transparent">
+                    La startup decide.
+                  </span>
+                </h2>
+              </div>
+              <p className="max-w-[34ch] text-sm text-[var(--muted)] sm:text-right">
+                Cien personas resuelven el mismo problema de negocio. Nadie tiene
+                tiempo de leer cien repos — ese es el trabajo que hace la IA, y
+                solo ese.
+              </p>
+            </div>
+          }
+        />
+      </div>
+    </section>
+  );
+}
+
+/* ── El loop · riel horizontal + bloque desbalanceado ─────────────────────── */
 
 const LOOP = [
   {
-    n: "1",
+    n: "01",
     title: "La startup publica su reto",
-    body: "Un problema real de su negocio, con criterios de éxito medibles.",
+    body: "Un problema real de su negocio, con criterios de éxito medibles. No un enunciado de examen.",
   },
   {
-    n: "2",
+    n: "02",
     title: "Muchos builders shipean",
-    body: "Cada uno entrega un link público. Repo, deploy, lo que pruebe que existe.",
+    body: "Cada uno entrega un link público. Un repo, un deploy — lo que pruebe que existe.",
   },
   {
-    n: "3",
+    n: "03",
     title: "La IA rankea, no decide",
-    body: "Hace el filtro pesado. La startup elige entre los que quedan arriba.",
+    body: "Hace el filtro pesado con un score comparable. La startup elige entre los que quedan arriba.",
   },
   {
-    n: "4",
+    n: "04",
     title: "Te contratan",
     body: "Por haber resuelto su problema. De regalo queda un portfolio verificable.",
   },
@@ -258,38 +244,74 @@ const LOOP = [
 
 function Loop() {
   return (
-    <Section id="loop">
-      <SectionHead n="02" title="El loop">
-        Reto → build → ship → hire
-      </SectionHead>
+    <section
+      id="loop"
+      className="scroll-mt-16 border-t border-[var(--line)] py-20 sm:py-28"
+    >
+      <div className={WRAP}>
+        <Reveal>
+          <span className="eyebrow">El loop</span>
+          <h2 className="mt-2 text-[clamp(30px,5vw,52px)] leading-[1.02] font-black tracking-[-0.03em]">
+            Reto → build → ship → hire
+          </h2>
+        </Reveal>
+      </div>
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_minmax(0,400px)] lg:items-start">
-        <ol className="grid gap-5 sm:grid-cols-2">
-          {LOOP.map((step) => (
-            <li key={step.n} className="card card-hover">
-              <span
-                className="grid size-8 place-items-center rounded-[10px] bg-[var(--tan)] text-sm font-black text-[var(--cream)]"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                {step.n}
-              </span>
-              <h3 className="mt-3.5 text-[17px] font-extrabold">{step.title}</h3>
-              <p className="mt-1.5 text-sm text-[var(--muted)]">{step.body}</p>
+      {/* Riel: los pasos avanzan en una línea, no en una rejilla. */}
+      <div className="rail mt-12 overflow-x-auto pb-4">
+        <ol className="flex min-w-max gap-0 px-6 lg:justify-center">
+          {LOOP.map((step, i) => (
+            <li
+              key={step.n}
+              className="relative w-[260px] shrink-0 border-l border-[var(--line)] px-6 sm:w-[290px]"
+            >
+              <Reveal delay={i * 90}>
+                <span
+                  className="text-[13px] font-black tracking-[0.1em] text-[var(--sand)]"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {step.n}
+                </span>
+                <h3 className="mt-3 text-[19px] leading-tight font-extrabold">
+                  {step.title}
+                </h3>
+                <p className="mt-2.5 text-sm leading-relaxed text-[var(--muted)]">
+                  {step.body}
+                </p>
+              </Reveal>
             </li>
           ))}
         </ol>
-
-        <ExampleChallenge />
       </div>
 
-      <div className="mt-8 flex flex-wrap items-center gap-2.5">
-        <span className="eyebrow mr-1">Byproduct verificable</span>
-        <span className="badge b-first">✦ First ship</span>
-        <span className="badge b-ship">🚀 Shipped</span>
-        <span className="badge b-approved">✓ Startup-approved</span>
-        <span className="badge b-auth">🧬 Autoría verificada</span>
+      {/* Bloque desbalanceado: la card pesa a un lado, el texto al otro. */}
+      <div className={`${WRAP} mt-16`}>
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,400px)_1fr]">
+          <Reveal from="left">
+            <ExampleChallenge />
+          </Reveal>
+
+          <Reveal from="right" delay={120}>
+            <div className="lg:pl-6">
+              <h3 className="max-w-[18ch] text-[clamp(22px,3.4vw,34px)] leading-[1.1] font-black tracking-[-0.02em]">
+                El byproduct: un portfolio que nadie puede inflar.
+              </h3>
+              <p className="mt-4 max-w-[48ch] text-[var(--muted)]">
+                Cada ship deja rastro verificable — el repo, el review de la IA, la
+                aprobación de la startup y tu defensa en video. Los badges no son
+                puntos: son eventos que ocurrieron.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-2.5">
+                <span className="badge b-first">✦ First ship</span>
+                <span className="badge b-ship">🚀 Shipped</span>
+                <span className="badge b-approved">✓ Startup-approved</span>
+                <span className="badge b-auth">🧬 Autoría verificada</span>
+              </div>
+            </div>
+          </Reveal>
+        </div>
       </div>
-    </Section>
+    </section>
   );
 }
 
@@ -359,23 +381,23 @@ function ExampleChallenge() {
   );
 }
 
-/* ── 03 · Evaluación ──────────────────────────────────────────────────────── */
+/* ── Evaluación · díptico con columna pegajosa ────────────────────────────── */
 
 const CRITERIA = [
   {
-    order: "Primero ★",
+    n: "Primero",
     title: "¿Resuelve el problema?",
     body: "Se juzga como producto, no como código. La IA evalúa contra los criterios de la startup; la startup confirma.",
     primary: true,
   },
   {
-    order: "Segundo",
+    n: "Segundo",
     title: "Calidad de build",
     body: "Revisión estática: arquitectura, seguridad, legibilidad. Un score comparable entre todas las submissions.",
     primary: false,
   },
   {
-    order: "Tercero",
+    n: "Tercero",
     title: "Autoría y entendimiento",
     body: "Humano. Defiendes tu diff en video o audio, o escalas a entrevista con la startup. No es un quiz automático.",
     primary: false,
@@ -384,41 +406,59 @@ const CRITERIA = [
 
 function Evaluation() {
   return (
-    <Section id="evaluacion">
-      <SectionHead n="03" title="Evaluación">
-        En este orden, no en otro
-      </SectionHead>
-      <p className="mb-7 max-w-[60ch] text-[var(--muted)]">
-        Review estático — la plataforma nunca corre tu código. El tercer criterio
-        es el que ningún competidor tiene.
-      </p>
+    <section className="border-t border-[var(--line)] bg-[var(--ink-2)] py-20 sm:py-28">
+      <div className={`${WRAP} grid gap-12 lg:grid-cols-[minmax(0,360px)_1fr]`}>
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <Reveal from="left">
+            <span className="eyebrow">Evaluación</span>
+            <h2 className="mt-2 text-[clamp(28px,4.4vw,44px)] leading-[1.04] font-black tracking-[-0.03em]">
+              En este orden,
+              <br />
+              no en otro.
+            </h2>
+            <p className="mt-5 max-w-[38ch] text-[var(--muted)]">
+              Review estático — la plataforma nunca corre tu código. El tercer
+              criterio es el que ningún competidor tiene.
+            </p>
+          </Reveal>
+        </div>
 
-      <div className="grid gap-5 md:grid-cols-3">
-        {CRITERIA.map((criterion) => (
-          <div
-            key={criterion.title}
-            className={
-              criterion.primary
-                ? "card card-hover card-raised"
-                : "card card-hover"
-            }
-          >
-            <div
-              className="eyebrow"
-              style={criterion.primary ? { color: "var(--sand)" } : undefined}
+        <ol>
+          {CRITERIA.map((criterion, i) => (
+            <li
+              key={criterion.title}
+              className="border-t border-[var(--line)] py-8 first:border-t-0 first:pt-0"
             >
-              {criterion.order}
-            </div>
-            <h3 className="mt-3 text-[17px] font-extrabold">{criterion.title}</h3>
-            <p className="mt-2 text-sm text-[var(--muted)]">{criterion.body}</p>
-          </div>
-        ))}
+              <Reveal delay={i * 110}>
+                <div className="flex items-baseline gap-4">
+                  <span
+                    className={`text-[13px] font-black tracking-[0.12em] uppercase ${
+                      criterion.primary
+                        ? "text-[var(--sand)]"
+                        : "text-[var(--faint)]"
+                    }`}
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {criterion.n}
+                    {criterion.primary && " ★"}
+                  </span>
+                </div>
+                <h3 className="mt-3 text-[clamp(20px,2.6vw,28px)] font-extrabold tracking-[-0.02em]">
+                  {criterion.title}
+                </h3>
+                <p className="mt-3 max-w-[54ch] leading-relaxed text-[var(--muted)]">
+                  {criterion.body}
+                </p>
+              </Reveal>
+            </li>
+          ))}
+        </ol>
       </div>
-    </Section>
+    </section>
   );
 }
 
-/* ── 04 · Posicionamiento ─────────────────────────────────────────────────── */
+/* ── Posicionamiento · tabla desnuda ──────────────────────────────────────── */
 
 const COMPARISON = [
   {
@@ -440,58 +480,95 @@ const COMPARISON = [
 
 function Difference() {
   return (
-    <Section>
-      <SectionHead n="04" title="Posicionamiento">
-        No es lo mismo
-      </SectionHead>
-
-      <dl className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
-        {COMPARISON.map((row) => (
-          <div
-            key={row.them}
-            className="grid gap-2 py-5 md:grid-cols-[170px_1fr_1fr] md:gap-8"
-          >
-            <dt
-              className="text-sm font-extrabold text-[var(--faint)]"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              {row.them}
-            </dt>
-            <dd className="text-sm text-[var(--muted)]">{row.theirs}</dd>
-            <dd className="text-sm font-semibold">{row.ours}</dd>
+    <section className="border-t border-[var(--line)] py-20 sm:py-28">
+      <div className={WRAP}>
+        <Reveal>
+          <div className="flex flex-wrap items-baseline justify-between gap-4">
+            <h2 className="text-[clamp(30px,5vw,52px)] leading-none font-black tracking-[-0.03em]">
+              No es lo mismo
+            </h2>
+            <span className="eyebrow">04 — Posicionamiento</span>
           </div>
-        ))}
-      </dl>
-    </Section>
+        </Reveal>
+
+        <dl className="mt-10 border-t border-[var(--line)]">
+          {COMPARISON.map((row, i) => (
+            <Reveal key={row.them} delay={i * 80}>
+              <div className="row-hover grid gap-2 border-b border-[var(--line)] py-6 md:grid-cols-[190px_1fr_1fr] md:gap-8">
+                <dt
+                  className="text-sm font-black tracking-[-0.01em] text-[var(--faint)]"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {row.them}
+                </dt>
+                <dd className="text-sm text-[var(--muted)]">{row.theirs}</dd>
+                <dd className="text-sm font-bold">{row.ours}</dd>
+              </div>
+            </Reveal>
+          ))}
+        </dl>
+      </div>
+    </section>
   );
 }
 
-/* ── 05 · Startups ────────────────────────────────────────────────────────── */
+/* ── Startups · panel desplazado a media sangre ───────────────────────────── */
 
 function ForStartups() {
   return (
-    <Section id="startups">
-      <SectionHead n="05" title="Para startups">
-        Publica el problema que ya tienes
-      </SectionHead>
+    <section id="startups" className="scroll-mt-16 border-t border-[var(--line)]">
+      <div className="grid lg:grid-cols-2">
+        <div className="flex items-center bg-[var(--panel)] px-6 py-20 sm:py-28 lg:justify-end">
+          <Reveal from="left">
+            <div className="w-full max-w-[520px] lg:pr-12">
+              <span className="eyebrow text-[var(--sand)]">Para startups</span>
+              <h2 className="mt-3 text-[clamp(26px,3.8vw,42px)] leading-[1.06] font-black tracking-[-0.03em]">
+                Publica el problema que ya tienes.
+              </h2>
+              <p className="mt-5 text-[var(--muted)]">
+                Escríbelo una vez, con tus criterios de éxito. Muchos builders lo
+                resuelven en paralelo y tú ves código que corre — rankeado, con la
+                autoría ya verificada. Te quedas con la solución y, si quieres, con
+                quien la construyó.
+              </p>
+              <a
+                href="https://github.com/S-kkipie/thenextcraft"
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-secondary mt-8"
+              >
+                Hablar con el equipo →
+              </a>
+            </div>
+          </Reveal>
+        </div>
 
-      <div className="card card-raised">
-        <p className="max-w-[62ch] text-[var(--muted)]">
-          Escribe el reto una vez, con tus criterios de éxito. Muchos builders lo
-          resuelven en paralelo y tú ves código que corre — rankeado, con la
-          autoría ya verificada. Te quedas con la solución y, si quieres, con
-          quien la construyó.
-        </p>
-        <a
-          href="https://github.com/S-kkipie/thenextcraft"
-          target="_blank"
-          rel="noreferrer"
-          className="btn btn-secondary mt-6"
-        >
-          Hablar con el equipo →
-        </a>
+        <div className="flex items-center px-6 py-16 lg:py-28">
+          <Reveal from="right" className="w-full">
+            <div className="w-full max-w-[460px] lg:pl-4">
+              <div className="card">
+                <span className="eyebrow">Lo que recibes</span>
+                <ul className="mt-5 space-y-4 text-sm">
+                  {[
+                    ["Soluciones, no CVs", "Código público que puedes abrir hoy."],
+                    ["Ya rankeadas", "El review estático llega hecho."],
+                    ["Con autoría probada", "Sabes quién escribió qué, y por qué."],
+                  ].map(([title, tail]) => (
+                    <li key={title} className="flex gap-3">
+                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--sand)]" />
+                      <span>
+                        <b className="block font-extrabold">{title}</b>
+                        <span className="text-[var(--muted)]">{tail}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </Reveal>
+        </div>
       </div>
-    </Section>
+    </section>
   );
 }
 
@@ -500,9 +577,11 @@ function ForStartups() {
 function FinalCta() {
   return (
     <section className="border-t border-[var(--line)] bg-[var(--ink-2)]">
-      <div className="mx-auto flex max-w-[1080px] flex-wrap items-center justify-between gap-10 px-6 py-20">
-        <div>
-          <h2 className="max-w-[16ch] text-[clamp(28px,5vw,48px)] leading-[1.05] font-black">
+      <div
+        className={`${WRAP} flex flex-wrap items-center justify-between gap-10 py-20 sm:py-24`}
+      >
+        <Reveal from="left">
+          <h2 className="max-w-[16ch] text-[clamp(30px,5.5vw,56px)] leading-[1.02] font-black tracking-[-0.03em]">
             Deja de postular.{" "}
             <span className="bg-gradient-to-r from-[var(--sand)] to-[var(--terra)] bg-clip-text text-transparent">
               Empieza a shipear.
@@ -511,7 +590,7 @@ function FinalCta() {
           <Link href="/desafios" className="btn btn-primary mt-8">
             Ver los desafíos abiertos →
           </Link>
-        </div>
+        </Reveal>
         <Beto variant="build" className="size-32 shrink-0 sm:size-40" />
       </div>
     </section>
@@ -523,7 +602,9 @@ function FinalCta() {
 function Footer() {
   return (
     <footer className="border-t border-[var(--line)]">
-      <div className="mx-auto flex max-w-[1080px] flex-wrap items-center justify-between gap-6 px-6 py-10 text-[13px] text-[var(--faint)]">
+      <div
+        className={`${WRAP} flex flex-wrap items-center justify-between gap-6 py-10 text-[13px] text-[var(--faint)]`}
+      >
         <span
           className="text-base font-black text-[var(--text)]"
           style={{ fontFamily: "var(--font-display)" }}

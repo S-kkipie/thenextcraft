@@ -450,6 +450,36 @@
     );
   }
 
+  /* El hook `useParallax` escribe --py; acá se consume una sola vez por frame. */
+  .landing .parallax {
+    transform: translate3d(0, var(--py, 0px), 0);
+    will-change: transform;
+  }
+
+  /* Riel horizontal del loop: se desliza en móvil sin romper la página. */
+  .landing .rail {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-2) transparent;
+  }
+  .landing .rail::-webkit-scrollbar {
+    height: 6px;
+  }
+  .landing .rail::-webkit-scrollbar-thumb {
+    background: var(--line-2);
+    border-radius: 999px;
+  }
+
+  /* Filas de la tabla desnuda: el hover ilumina la fila entera. */
+  .landing .row-hover {
+    transition:
+      background-color 0.18s ease,
+      padding-left 0.18s ease;
+  }
+  .landing .row-hover:hover {
+    background: rgb(198 161 91 / 0.05);
+    padding-left: 12px;
+  }
+
   /* El cursor de bloque del prompt C64 — único resto del guiño retro. */
   .cursor-block {
     animation: cursor-blink 1.1s steps(1) infinite;
@@ -475,6 +505,9 @@
       transition: none;
     }
     .landing .tilt {
+      transform: none;
+    }
+    .landing .parallax {
       transform: none;
     }
   }
