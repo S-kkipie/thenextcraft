@@ -82,4 +82,22 @@ export default defineSchema({
     type: v.string(), // first-ship | shipped | startup-approved | top-10 | authorship-verified
     challengeId: v.optional(v.id("challenges")),
   }).index("by_user", ["userId"]),
+
+  // "Te descubrieron": una startup contacta a un builder por su trabajo.
+  opportunities: defineTable({
+    builderId: v.id("users"),
+    startupId: v.id("users"),
+    challengeId: v.optional(v.id("challenges")),
+    role: v.string(), // puesto ofrecido
+    matchPct: v.optional(v.number()),
+    reason: v.optional(v.string()),
+    status: v.union(
+      v.literal("sent"),
+      v.literal("accepted"),
+      v.literal("declined"),
+    ),
+    createdAt: v.number(),
+  })
+    .index("by_builder", ["builderId"])
+    .index("by_startup", ["startupId"]),
 });

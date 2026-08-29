@@ -16,12 +16,15 @@ export function TopNav() {
   return (
     <header className="border-line bg-background/70 sticky top-0 z-20 border-b backdrop-blur-md">
       <div className="mx-auto flex h-[60px] w-full max-w-5xl items-center gap-6 px-6">
-        <Link href="/home">
+        <Link href={role === "startup" ? "/startup" : "/home"}>
           <BrandMark />
         </Link>
 
         {role === "startup" ? (
           <nav className="text-muted-foreground flex gap-4 text-sm font-semibold">
+            <Link href="/startup" className="hover:text-foreground">
+              Home
+            </Link>
             <Link href="/challenges" className="hover:text-foreground">
               Retos
             </Link>
@@ -33,6 +36,12 @@ export function TopNav() {
           <nav className="text-muted-foreground flex gap-4 text-sm font-semibold">
             <Link href="/challenges" className="hover:text-foreground">
               Retos
+            </Link>
+            <Link href="/leaderboard" className="hover:text-foreground">
+              Ranking
+            </Link>
+            <Link href="/community" className="hover:text-foreground">
+              Comunidad
             </Link>
             {handle && (
               <Link href={`/u/${handle}`} className="hover:text-foreground">
