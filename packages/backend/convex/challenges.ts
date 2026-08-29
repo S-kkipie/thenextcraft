@@ -3,6 +3,7 @@ import {
   paginationResultValidator,
 } from "convex/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
 import {
   cleanOptionalText,
@@ -80,12 +81,16 @@ export const create = mutation({
     businessProblem: v.string(),
     successCriteria: v.array(v.string()),
     reward: v.optional(v.string()),
+    tech: v.optional(v.array(v.string())),
     deadline: v.optional(v.number()),
   },
   returns: v.id("challenges"),
   handler: async (ctx, args) => {
     await requireRole(ctx, args.startupId, "startup");
     const now = Date.now();
+    const tech = args.tech
+      ?.map((t) => t.trim())
+      .filter(Boolean);
     return await ctx.db.insert("challenges", {
       startupId: args.startupId,
       title: cleanRequiredText(args.title, "title", 3, 120),
@@ -97,6 +102,7 @@ export const create = mutation({
       ),
       successCriteria: cleanSuccessCriteria(args.successCriteria),
       reward: cleanOptionalText(args.reward, "reward", 500) ?? undefined,
+      tech: tech && tech.length > 0 ? tech : undefined,
       deadline: ensureFutureDeadline(args.deadline) ?? undefined,
       status: "draft",
       updatedAt: now,
@@ -210,6 +216,11 @@ export const close = mutation({
       status: "closed",
       closedAt: now,
       updatedAt: now,
+    });
+    // Finalizar = cerrar + generar feedback: corre el AI Technical Judge sobre
+    // TODAS las submissions y, al terminar, el pase comparativo (peer refs).
+    await ctx.scheduler.runAfter(0, internal.evaluations.startChallengeFeedback, {
+      challengeId: args.challengeId,
     });
     const closed = await ctx.db.get("challenges", args.challengeId);
     if (!closed) fail("CHALLENGE_NOT_FOUND", "Challenge not found");

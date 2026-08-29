@@ -1,6 +1,6 @@
 "use client";
 
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "@thenextcraft/backend/api";
 import type { Id } from "@thenextcraft/backend/dataModel";
 
@@ -20,13 +20,4 @@ export function useSubmission(submissionId: Id<"submissions"> | undefined) {
     api.views.submissionDetail,
     submissionId ? { submissionId } : "skip",
   );
-}
-
-export function useSetAuthorship() {
-  return useMutation(api.evaluations.setAuthorship);
-}
-
-// Dispara el pipeline estático del juez (mock por ahora).
-export function useRunJudge() {
-  return useAction(api.evaluations.evaluate);
 }

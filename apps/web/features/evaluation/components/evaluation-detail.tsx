@@ -1,31 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import type { Id } from "@thenextcraft/backend/dataModel";
-import { Button } from "@/components/ui/button";
-import { ScoreBar, StatusPill, CraftBadge } from "@/components/craft";
-import {
-  useEvaluation,
-  useRunJudge,
-  useSetAuthorship,
-  useSubmission,
-} from "@/features/evaluation/hooks";
-import type { AuthorshipStatus } from "@/features/evaluation/schema";
+import { ScoreBar, StatusPill } from "@/components/craft";
+import { useEvaluation, useSubmission } from "@/features/evaluation/hooks";
 
-// Copia por estado de autoría (viva humana). `pending` = inicial.
-const AUTHORSHIP_LABEL: Record<AuthorshipStatus, string> = {
-  pending: "Pendiente",
-  video: "Video enviado",
-  interview: "Entrevista agendada",
-  approved: "Autoría verificada",
-};
-// Estado de autoría → `status` del StatusPill del Kit (review=amber, open=sage).
-const AUTHORSHIP_STATUS: Record<AuthorshipStatus, "review" | "open"> = {
-  pending: "review",
-  video: "review",
-  interview: "review",
-  approved: "open",
+// Color del chip por severidad del hallazgo.
+const SEVERITY: Record<string, { label: string; cls: string }> = {
+  critical: { label: "Crítico", cls: "bg-destructive/15 text-destructive" },
+  high: { label: "Alto", cls: "bg-terra/15 text-terra" },
+  medium: { label: "Medio", cls: "bg-sand/15 text-sand" },
+  low: { label: "Bajo", cls: "bg-panel-2 text-muted-foreground" },
 };
 
 export function EvaluationDetail({
@@ -36,11 +21,6 @@ export function EvaluationDetail({
   const view = useSubmission(submissionId);
   const evalResult = useEvaluation(submissionId);
 
-  const setAuthorship = useSetAuthorship();
-  const runJudge = useRunJudge();
-  const [running, setRunning] = useState(false);
-
-  // Loading: cualquiera de las dos consultas aún sin resolver.
   if (view === undefined || evalResult === undefined) {
     return <DetailSkeleton />;
   }
@@ -54,45 +34,36 @@ export function EvaluationDetail({
   }
 
   const { challenge } = view;
-  // `ship` no siembra evaluación → la fila puede no existir todavía. Sin fila o
-  // sin total ⇒ aún no evaluado (se puede disparar el juez). `scored` narrowea
-  // la evaluación a no-nula para el render del resultado.
   const evaluation = evalResult?.evaluation ?? null;
   const scored =
     evaluation && typeof evaluation.totalScore === "number" ? evaluation : null;
+  const feedbackStatus = evaluation?.feedbackStatus ?? "pending";
   const cohortSize = evalResult?.cohort;
   const rank = evalResult?.rank ?? undefined;
-
-  const handleRun = async () => {
-    setRunning(true);
-    try {
-      await runJudge({ submissionId });
-    } finally {
-      setRunning(false);
-    }
-  };
+  const findings = scored?.findings ?? [];
+  const recommendations = scored?.recommendations ?? [];
+  const peerReferences = scored?.peerReferences ?? [];
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Breadcrumb */}
       <nav className="text-sm text-muted-foreground">
         <Link href="/challenges" className="hover:text-foreground">
           Retos
         </Link>
         <span className="px-1.5 text-faint">/</span>
         <span className="text-foreground">
-          {challenge?.title ?? "Tu submission"}
+          {challenge?.title ?? "Submission"}
         </span>
       </nav>
 
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="font-heading text-3xl font-extrabold tracking-tight">
-          Evaluación de tu submission
+          Evaluación de la submission
         </h1>
         {scored ? (
           <StatusPill status="review">Evaluado</StatusPill>
         ) : (
-          <StatusPill status="closed">En cola</StatusPill>
+          <StatusPill status="closed">Sin feedback</StatusPill>
         )}
       </div>
 
@@ -110,34 +81,32 @@ export function EvaluationDetail({
               security={scored.securityScore}
             />
           ) : (
-            <PendingScoreCard running={running} onRun={handleRun} />
+            <FeedbackPendingCard status={feedbackStatus} />
           )}
 
           {scored && (
-            <JudgeReading
-              strengths={scored.strengths}
-              issues={scored.issues}
-            />
+            <JudgeReading strengths={scored.strengths} issues={scored.issues} />
+          )}
+
+          {findings.length > 0 && <FeedbackFindings findings={findings} />}
+
+          {peerReferences.length > 0 && (
+            <PeerReferences references={peerReferences} />
           )}
         </div>
 
         {/* ── RIGHT sidebar ────────────────────────────────────── */}
         <aside className="flex flex-col gap-6">
-          {evaluation !== null && (
-            <AuthorshipCard
-              status={evaluation.authorshipStatus}
-              onSet={(status) =>
-                setAuthorship({ submissionId, authorshipStatus: status })
-              }
-            />
+          {recommendations.length > 0 && (
+            <RecommendationsCard recommendations={recommendations} />
           )}
           {scored && (
             <div className="rounded-xl border border-sage/30 bg-card px-5 py-4">
               <div className="flex items-start gap-2">
                 <span className="text-sage">🌿</span>
                 <p className="text-sm">
-                  <b className="text-sage">Estás en el shortlist</b>. La decisión
-                  final es de la startup.
+                  Feedback generado por el AI Judge (análisis estático). Nunca
+                  ejecuta tu código — solo lee el repo.
                 </p>
               </div>
             </div>
@@ -198,35 +167,32 @@ function ScoreCard({
   );
 }
 
-// ── Estado sin evaluar ──────────────────────────────────────────────────────
-function PendingScoreCard({
-  running,
-  onRun,
-}: {
-  running: boolean;
-  onRun: () => void;
-}) {
+// ── Feedback aún no disponible ──────────────────────────────────────────────
+function FeedbackPendingCard({ status }: { status: string }) {
+  const copy =
+    status === "generating"
+      ? {
+          title: "Generando feedback…",
+          body: "La startup finalizó el reto. El AI Judge está revisando esta submission — el feedback aparecerá aquí en breve.",
+        }
+      : status === "failed"
+        ? {
+            title: "No se pudo generar feedback",
+            body: "El repositorio no pudo analizarse (privado o inaccesible). Revisa que el link sea público.",
+          }
+        : {
+            title: "Feedback pendiente",
+            body: "El feedback line-level se genera cuando la startup finaliza (cierra) el reto. Se corre el AI Judge sobre todas las submissions a la vez.",
+          };
   return (
     <section className="rounded-xl border border-border bg-card p-6">
-      <h2 className="font-heading text-lg font-bold">Evaluación pendiente</h2>
-      <p className="mt-2 text-sm text-muted-foreground">
-        El AI Judge todavía no ha analizado esta submission. Es un análisis
-        estático del repo/link — nunca ejecuta tu código.
-      </p>
-      <div className="mt-4">
-        <Button
-          variant="craftSecondary"
-          onClick={onRun}
-          disabled={running}
-        >
-          {running ? "Analizando…" : "Ejecutar AI Judge"}
-        </Button>
-      </div>
+      <h2 className="font-heading text-lg font-bold">{copy.title}</h2>
+      <p className="mt-2 text-sm text-muted-foreground">{copy.body}</p>
     </section>
   );
 }
 
-// ── Lectura del juez ──────────────────────────────────────────────────────
+// ── Lectura del juez (resumen) ──────────────────────────────────────────────
 function JudgeReading({
   strengths,
   issues,
@@ -275,57 +241,136 @@ function JudgeReading({
   );
 }
 
-// ── Prueba de autoría ─────────────────────────────────────────────────────
-function AuthorshipCard({
-  status,
-  onSet,
+// ── Feedback line-level: hallazgos con código citado ────────────────────────
+function FeedbackFindings({
+  findings,
 }: {
-  status: AuthorshipStatus;
-  onSet: (status: "video" | "interview" | "approved") => void;
+  findings: {
+    title: string;
+    severity: string;
+    dimension: string;
+    description: string;
+    evidence: {
+      path: string;
+      startLine: number;
+      endLine: number;
+      snippet: string;
+    }[];
+  }[];
 }) {
-  const verified = status === "approved";
+  return (
+    <section className="rounded-xl border border-border bg-card p-6">
+      <h2 className="mb-1 font-heading text-lg font-bold">Feedback del código</h2>
+      <p className="mb-5 text-xs text-muted-foreground">
+        Qué estuvo mal y dónde — con las líneas exactas que el juez citó.
+      </p>
+      <div className="flex flex-col gap-5">
+        {findings.map((f, i) => {
+          const sev = SEVERITY[f.severity] ?? SEVERITY.low;
+          return (
+            <div
+              key={i}
+              className="rounded-lg border border-line-2 bg-panel-2/40 p-4"
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${sev.cls}`}
+                >
+                  {sev.label}
+                </span>
+                <span className="text-faint text-[11px] font-semibold uppercase tracking-wide">
+                  {f.dimension}
+                </span>
+                <span className="font-display text-sm font-bold">{f.title}</span>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">{f.description}</p>
+              <div className="mt-3 flex flex-col gap-3">
+                {f.evidence.map((e, j) => (
+                  <figure key={j} className="overflow-hidden rounded-md border border-line-2">
+                    <figcaption className="bg-ink-2 text-faint flex items-center justify-between px-3 py-1.5 font-mono text-[11px]">
+                      <span className="truncate">{e.path}</span>
+                      <span className="shrink-0 pl-2">
+                        L{e.startLine}
+                        {e.endLine !== e.startLine ? `–${e.endLine}` : ""}
+                      </span>
+                    </figcaption>
+                    <pre className="overflow-x-auto bg-background px-3 py-2.5 font-mono text-[12.5px] leading-relaxed">
+                      <code>{e.snippet}</code>
+                    </pre>
+                  </figure>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+// ── Peer references (comparativa con otras submissions del mismo reto) ──────
+function PeerReferences({
+  references,
+}: {
+  references: {
+    builderName: string;
+    builderHandle: string | null;
+    path: string;
+    startLine: number;
+    note: string;
+  }[];
+}) {
+  return (
+    <section className="rounded-xl border border-sand/30 bg-card p-6">
+      <h2 className="mb-1 font-heading text-lg font-bold">
+        Comparado con otras soluciones
+      </h2>
+      <p className="mb-5 text-xs text-muted-foreground">
+        Cómo otros builders del mismo reto resolvieron partes parecidas.
+      </p>
+      <div className="flex flex-col gap-3">
+        {references.map((r, i) => (
+          <div key={i} className="rounded-lg border border-line-2 bg-panel-2/40 p-4">
+            <div className="flex items-center gap-2">
+              <span className="font-display text-sm font-bold">
+                {r.builderName}
+              </span>
+              {r.builderHandle && (
+                <span className="text-faint font-mono text-xs">
+                  @{r.builderHandle}
+                </span>
+              )}
+              <span className="text-faint ml-auto font-mono text-[11px]">
+                {r.path}:{r.startLine}
+              </span>
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground">{r.note}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ── Recomendaciones ─────────────────────────────────────────────────────────
+function RecommendationsCard({
+  recommendations,
+}: {
+  recommendations: { priority: string; title: string; description: string }[];
+}) {
   return (
     <section className="rounded-xl border border-line-2 bg-panel-2 p-6">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="font-heading text-lg font-bold">Prueba de autoría</h2>
-        <StatusPill status={AUTHORSHIP_STATUS[status]}>
-          {AUTHORSHIP_LABEL[status]}
-        </StatusPill>
-      </div>
-      <p className="mb-4 text-sm text-muted-foreground">
-        El fit y la calidad ya pasaron. Ahora defiende tu autoría (humano):
-      </p>
-
-      <div className="flex flex-col gap-2.5">
-        <Button
-          variant="craftSecondary"
-          className="w-full"
-          aria-pressed={status === "video"}
-          onClick={() => onSet("video")}
-        >
-          🎥 Grabar video/audio
-        </Button>
-        <Button
-          variant="craftGhost"
-          className="w-full"
-          aria-pressed={status === "interview"}
-          onClick={() => onSet("interview")}
-        >
-          📅 Entrevista con la startup
-        </Button>
-      </div>
-
-      <div className="mt-4 rounded-lg bg-ink-2 p-4 text-center">
-        <CraftBadge
-          variant="auth"
-          className={verified ? undefined : "opacity-50"}
-        >
-          🧬 Autoría verificada
-        </CraftBadge>
-        <div className="mt-2 text-xs text-faint">
-          {verified ? "Conseguida" : "La meta al defender tu autoría"}
-        </div>
-      </div>
+      <h2 className="mb-4 font-heading text-lg font-bold">Qué mejorar</h2>
+      <ul className="flex flex-col gap-3">
+        {recommendations.map((r, i) => (
+          <li key={i} className="text-sm">
+            <div className="font-display font-bold">{r.title}</div>
+            <p className="text-muted-foreground mt-0.5 text-[13px]">
+              {r.description}
+            </p>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -349,9 +394,7 @@ function EmptyState({ title, body }: { title: string; body: string }) {
       <h1 className="font-heading text-xl font-bold">{title}</h1>
       <p className="mt-2 text-sm text-muted-foreground">{body}</p>
       <div className="mt-5">
-        <Link href="/challenges">
-          <Button variant="craftGhost">Volver a retos</Button>
-        </Link>
+        <Link href="/challenges">Volver a retos</Link>
       </div>
     </div>
   );

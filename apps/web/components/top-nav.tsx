@@ -34,10 +34,7 @@ export function TopNav() {
         {role === "startup" ? (
           <nav className="text-muted-foreground flex gap-4 text-sm font-semibold">
             <Link href="/startup" className="hover:text-foreground">
-              Home
-            </Link>
-            <Link href="/challenges" className="hover:text-foreground">
-              Retos
+              Mis retos
             </Link>
             <Link href="/startup/publicar" className="hover:text-foreground">
               Publicar

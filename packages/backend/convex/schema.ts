@@ -32,12 +32,51 @@ export const evaluationStatusValidator = v.union(
   v.literal("cancelled"),
 );
 
+// LEGACY: la viva de autoría (video/entrevista) fue reemplazada por feedback.
+// Se mantiene opcional para no romper datos/consumidores antiguos.
 export const authorshipStatusValidator = v.union(
   v.literal("pending"),
   v.literal("video"),
   v.literal("interview"),
   v.literal("approved"),
 );
+
+// Feedback del reto: se genera en batch al FINALIZAR (cerrar) el reto, corriendo
+// el AI Technical Judge sobre cada submission. `ready` cuando su review terminó.
+export const feedbackStatusValidator = v.union(
+  v.literal("pending"), // shipeado, aún sin feedback (reto abierto)
+  v.literal("generating"), // reto cerrado, judge corriendo
+  v.literal("ready"), // feedback disponible
+  v.literal("failed"),
+);
+
+// Un hallazgo del judge con evidencia a nivel de línea (archivo + rango + snippet).
+export const feedbackEvidenceValidator = v.object({
+  path: v.string(),
+  startLine: v.number(),
+  endLine: v.number(),
+  snippet: v.string(),
+});
+export const feedbackFindingValidator = v.object({
+  title: v.string(),
+  severity: v.string(), // critical | high | medium | low
+  dimension: v.string(),
+  description: v.string(),
+  evidence: v.array(feedbackEvidenceValidator),
+});
+export const feedbackRecommendationValidator = v.object({
+  priority: v.string(),
+  title: v.string(),
+  description: v.string(),
+});
+// Cita comparativa a otra submission del MISMO reto (peer reference).
+export const peerReferenceValidator = v.object({
+  builderName: v.string(),
+  builderHandle: v.union(v.string(), v.null()),
+  path: v.string(),
+  startLine: v.number(),
+  note: v.string(), // qué hizo el peer y cómo se compara con esta submission
+});
 
 export const badgeTypeValidator = v.union(
   v.literal("first-ship"),
@@ -63,6 +102,9 @@ export const schema = defineSchema({
     skills: v.optional(v.array(v.string())),
     companyName: v.optional(v.string()),
     sector: v.optional(v.string()),
+    // Company LinkedIn page. Optional at onboarding; if empty, the submission
+    // copilot asks the builder which company the challenge is from.
+    linkedinUrl: v.optional(v.string()),
     updatedAt: v.number(),
     email: v.optional(v.string()),
     onboarded: v.optional(v.boolean()),
@@ -121,7 +163,8 @@ export const schema = defineSchema({
       "updatedAt",
     ]),
 
-  // Score comparable: (1) fit vs criterios, (2) calidad build (estático), (3) autoría humana.
+  // Score comparable + feedback line-level. El feedback (findings + peer refs) se
+  // genera al FINALIZAR el reto corriendo el AI Technical Judge sobre cada submission.
   evaluations: defineTable({
     challengeId: v.id("challenges"),
     submissionId: v.id("submissions"),
@@ -135,7 +178,13 @@ export const schema = defineSchema({
     strengths: v.optional(v.array(v.string())),
     issues: v.optional(v.array(v.string())),
     rankedReview: v.optional(v.string()),
-    authorshipStatus: authorshipStatusValidator,
+    // Feedback line-level (reemplaza la viva de autoría).
+    feedbackStatus: v.optional(feedbackStatusValidator),
+    findings: v.optional(v.array(feedbackFindingValidator)),
+    recommendations: v.optional(v.array(feedbackRecommendationValidator)),
+    peerReferences: v.optional(v.array(peerReferenceValidator)),
+    // LEGACY: viva de autoría, ya no se usa en el flujo.
+    authorshipStatus: v.optional(authorshipStatusValidator),
     aiEvidence: v.optional(v.string()),
     failureReason: v.optional(v.string()),
     updatedAt: v.number(),

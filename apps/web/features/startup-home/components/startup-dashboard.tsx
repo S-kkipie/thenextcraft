@@ -9,6 +9,14 @@ import { StatTile, StatusPill } from "@/components/craft";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+// Etiqueta + color por estado del feedback (se genera al finalizar el reto).
+const FEEDBACK: Record<string, { label: string; cls: string }> = {
+  pending: { label: "Sin feedback", cls: "bg-panel-2 text-muted-foreground" },
+  generating: { label: "Generando…", cls: "bg-sand/15 text-sand" },
+  ready: { label: "Feedback listo", cls: "bg-sage/15 text-sage" },
+  failed: { label: "Sin repo", cls: "bg-panel-2 text-muted-foreground" },
+};
+
 export function StartupDashboard() {
   const { user, userId } = useCurrentUser();
   const data = useQuery(
@@ -32,6 +40,10 @@ export function StartupDashboard() {
 
   const stats = data?.stats;
   const challenges = data?.challenges ?? [];
+  const pendingActions = data?.pendingActions ?? [];
+  const pipeline = data?.pipeline;
+  const topCandidates = data?.topCandidates ?? [];
+  const recentSubmissions = data?.recentSubmissions ?? [];
 
   return (
     <div className="flex flex-col gap-8">
@@ -58,8 +70,64 @@ export function StartupDashboard() {
         <StatTile value={stats?.shortlisted ?? "—"} label="EN SHORTLIST" accent="sage" />
       </div>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-display text-[15px] font-extrabold">Tus retos</h2>
+      {/* ── Acciones pendientes ─────────────────────────────────────────── */}
+      {pendingActions.length > 0 && (
+        <Section title="Acciones pendientes">
+          <div className="flex flex-col gap-2">
+            {pendingActions.map((a, i) => (
+              <Link
+                key={i}
+                href={a.href}
+                className="border-line bg-card hover:border-line-2 flex items-center gap-3 rounded-2xl border p-3.5 transition-all hover:-translate-y-0.5"
+              >
+                <span
+                  className={cn(
+                    "grid size-7 shrink-0 place-items-center rounded-full text-sm",
+                    a.kind === "feedback"
+                      ? "bg-sage/15 text-sage"
+                      : "bg-sand/15 text-sand",
+                  )}
+                >
+                  {a.kind === "feedback" ? "🧪" : "🏁"}
+                </span>
+                <span className="flex-1 text-sm">{a.label}</span>
+                <span className="text-faint text-xs">→</span>
+              </Link>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* ── Pipeline de hiring ──────────────────────────────────────────── */}
+      {pipeline && (
+        <Section
+          title="Pipeline"
+          hint="Rankeas con la IA; al finalizar el reto se genera el feedback line-level."
+        >
+          <div className="grid grid-cols-3 gap-3">
+            <PipelineTile
+              value={pipeline.shortlisted}
+              label="SHORTLISTED"
+              sub="rankeados por la IA"
+            />
+            <PipelineTile
+              value={pipeline.feedbackReady}
+              label="CON FEEDBACK"
+              sub="review line-level lista"
+              accent="sage"
+            />
+            <PipelineTile
+              value={pipeline.closedRetos}
+              label="RETOS CERRADOS"
+              sub="finalizados"
+              accent="sand"
+            />
+          </div>
+        </Section>
+      )}
+
+      {/* ── Tus retos ───────────────────────────────────────────────────── */}
+      <Section title="Tus retos">
         {data === undefined ? (
           <p className="text-muted-foreground text-sm">Cargando…</p>
         ) : challenges.length === 0 ? (
@@ -73,26 +141,163 @@ export function StartupDashboard() {
             </Link>
           </div>
         ) : (
-          challenges.map((c) => (
-            <Link
-              key={c._id}
-              href={`/startup/shortlist/${c._id}`}
-              className="border-line bg-card hover:border-line-2 flex items-center gap-4 rounded-2xl border p-4 transition-all hover:-translate-y-0.5"
-            >
-              <div className="flex-1">
-                <div className="font-display font-extrabold">{c.title}</div>
-                <div className="text-faint text-xs">
-                  {c.submissionsCount} submissions · {c.shortlistedCount} en shortlist
+          <div className="flex flex-col gap-3">
+            {challenges.map((c) => (
+              <Link
+                key={c._id}
+                href={`/startup/shortlist/${c._id}`}
+                className="border-line bg-card hover:border-line-2 flex items-center gap-4 rounded-2xl border p-4 transition-all hover:-translate-y-0.5"
+              >
+                <div className="flex-1">
+                  <div className="font-display font-extrabold">{c.title}</div>
+                  <div className="text-faint text-xs">
+                    {c.submissionsCount} submissions · {c.shortlistedCount} en shortlist
+                  </div>
                 </div>
-              </div>
-              <StatusPill status={c.status === "open" ? "live" : "closed"} />
-              {c.reward && (
-                <div className="font-display text-sand text-sm">{c.reward}</div>
-              )}
-            </Link>
-          ))
+                <StatusPill status={c.status === "open" ? "live" : "closed"} />
+                {c.reward && (
+                  <div className="font-display text-sand text-sm">{c.reward}</div>
+                )}
+              </Link>
+            ))}
+          </div>
         )}
-      </section>
+      </Section>
+
+      {/* ── Top candidatos ──────────────────────────────────────────────── */}
+      {topCandidates.length > 0 && (
+        <Section
+          title="Top candidatos"
+          hint="Mejores builders across tus retos, rankeados por la IA."
+        >
+          <div className="flex flex-col gap-2">
+            {topCandidates.map((cand) => {
+              const fb = FEEDBACK[cand.feedbackStatus] ?? FEEDBACK.pending;
+              return (
+                <Link
+                  key={cand.submissionId}
+                  href={`/startup/shortlist/${cand.challengeId}`}
+                  className="border-line bg-card hover:border-line-2 flex items-center gap-4 rounded-2xl border p-4 transition-all hover:-translate-y-0.5"
+                >
+                  <div className="font-display bg-ink-2 text-foreground grid size-9 shrink-0 place-items-center rounded-full text-sm font-black">
+                    {(cand.builderName[0] ?? "?").toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-display truncate font-bold">
+                      {cand.builderName}
+                      {cand.builderHandle && (
+                        <span className="text-faint ml-1.5 font-mono text-xs font-normal">
+                          @{cand.builderHandle}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-faint truncate text-xs">
+                      {cand.challengeTitle}
+                    </div>
+                  </div>
+                  <span
+                    className={cn(
+                      "hidden rounded-full px-2.5 py-1 text-xs font-bold sm:inline-flex",
+                      fb.cls,
+                    )}
+                  >
+                    {fb.label}
+                  </span>
+                  <div className="text-right">
+                    <div className="font-display text-sand text-lg font-black tabular-nums leading-none">
+                      {cand.aiMatch}
+                    </div>
+                    <div className="text-faint text-[10px] font-semibold">AI MATCH</div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </Section>
+      )}
+
+      {/* ── Submissions recientes ───────────────────────────────────────── */}
+      {recentSubmissions.length > 0 && (
+        <Section title="Submissions recientes">
+          <div className="flex flex-col gap-2">
+            {recentSubmissions.map((s) => (
+              <Link
+                key={s.submissionId}
+                href={`/startup/shortlist/${s.challengeId}`}
+                className="border-line bg-card hover:border-line-2 flex items-center gap-4 rounded-2xl border p-3.5 transition-all hover:-translate-y-0.5"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="font-display truncate font-bold">
+                    {s.builderName}
+                    {s.builderHandle && (
+                      <span className="text-faint ml-1.5 font-mono text-xs font-normal">
+                        @{s.builderHandle}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-faint truncate text-xs">{s.challengeTitle}</div>
+                </div>
+                {s.score != null ? (
+                  <div className="text-right">
+                    <div className="font-display text-foreground text-sm font-black tabular-nums leading-none">
+                      {s.score}
+                    </div>
+                    <div className="text-faint text-[10px] font-semibold">SCORE</div>
+                  </div>
+                ) : (
+                  <span className="bg-panel-2 text-muted-foreground rounded-full px-2.5 py-1 text-xs font-bold">
+                    En cola
+                  </span>
+                )}
+              </Link>
+            ))}
+          </div>
+        </Section>
+      )}
+    </div>
+  );
+}
+
+function Section({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="flex flex-col gap-3">
+      <div>
+        <h2 className="font-display text-[15px] font-extrabold">{title}</h2>
+        {hint && <p className="text-faint text-xs">{hint}</p>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function PipelineTile({
+  value,
+  label,
+  sub,
+  accent = "default",
+}: {
+  value: number;
+  label: string;
+  sub: string;
+  accent?: "default" | "sand" | "sage";
+}) {
+  const color =
+    accent === "sand" ? "text-sand" : accent === "sage" ? "text-sage" : "";
+  return (
+    <div className="border-line-2 bg-ink-2 rounded-xl border p-4 text-center">
+      <b className={cn("font-display block text-[26px] tabular-nums", color)}>
+        {value}
+      </b>
+      <span className="text-foreground block text-[11px] font-bold">{label}</span>
+      <span className="text-faint text-[10px]">{sub}</span>
     </div>
   );
 }

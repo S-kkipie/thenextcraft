@@ -121,11 +121,13 @@ export const submit = mutation({
       updatedAt: now,
     });
 
+    // Feedback pendiente: el judge NO corre al shipear. Corre en batch cuando la
+    // startup FINALIZA (cierra) el reto → feedback line-level para todas.
     await ctx.db.insert("evaluations", {
       challengeId: args.challengeId,
       submissionId,
       status: "pending",
-      authorshipStatus: "pending",
+      feedbackStatus: "pending",
       updatedAt: now,
     });
     await ctx.db.insert("badges", {

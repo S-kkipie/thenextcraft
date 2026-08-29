@@ -694,8 +694,34 @@ export const complete = internalMutation({
           issues: args.result.findings.slice(0, 5).map((f) => f.title),
           rankedReview: args.result.summary,
           aiEvidence: `Veredicto: ${args.result.verdict}.`,
+          // Feedback line-level: findings completos (con evidencia archivo:línea)
+          // + recomendaciones. Los ve el builder (su submission) y la startup.
+          feedbackStatus: "ready",
+          findings: args.result.findings.map((f) => ({
+            title: f.title,
+            severity: f.severity,
+            dimension: f.dimension,
+            description: f.description,
+            evidence: f.evidence.map((e) => ({
+              path: e.path,
+              startLine: e.startLine,
+              endLine: e.endLine,
+              snippet: e.snippet,
+            })),
+          })),
+          recommendations: args.result.recommendations.map((r) => ({
+            priority: r.priority,
+            title: r.title,
+            description: r.description,
+          })),
           updatedAt: now,
         });
+        // Si ya no quedan reviews `generating` en el reto → pase comparativo.
+        await ctx.scheduler.runAfter(
+          0,
+          internal.evaluations.maybeGeneratePeerReferences,
+          { challengeId: ev.challengeId },
+        );
       }
     }
     return null;

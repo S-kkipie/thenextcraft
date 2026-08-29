@@ -11,7 +11,7 @@ import {
   ensureScore,
   fail,
 } from "./domain";
-import { authorshipStatusValidator, schema } from "./schema";
+import { schema } from "./schema";
 
 async function getEvaluation(
   ctx: MutationCtx,
@@ -130,18 +130,3 @@ export const failEvaluation = internalMutation({
   },
 });
 
-export const setAuthorshipStatus = internalMutation({
-  args: {
-    submissionId: v.id("submissions"),
-    authorshipStatus: authorshipStatusValidator,
-  },
-  returns: v.null(),
-  handler: async (ctx, args) => {
-    const { evaluation } = await getEvaluation(ctx, args.submissionId);
-    await ctx.db.patch("evaluations", evaluation._id, {
-      authorshipStatus: args.authorshipStatus,
-      updatedAt: Date.now(),
-    });
-    return null;
-  },
-});

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -28,6 +29,9 @@ export function PublishChallengeForm() {
   const create = useCreateChallenge();
   const publish = usePublishChallenge();
   const router = useRouter();
+  // Texto crudo del campo tech: preserva comas/espacios mientras escribes.
+  // El array parseado vive en el form; NO re-derivamos el input del array.
+  const [techRaw, setTechRaw] = useState("");
 
   const form = useForm<ChallengeInput>({
     resolver: zodResolver(challengeInput),
@@ -51,6 +55,7 @@ export function PublishChallengeForm() {
           .map((s) => s.trim())
           .filter(Boolean),
         reward: values.reward?.trim() || undefined,
+        tech: values.tech?.length ? values.tech : undefined,
       });
       await publish({ startupId: userId, challengeId: id });
       toast.success("Reto publicado");
@@ -193,15 +198,16 @@ export function PublishChallengeForm() {
                 <FormLabel>Tech (opcional)</FormLabel>
                 <FormControl>
                   <Input
-                    value={(field.value ?? []).join(", ")}
-                    onChange={(e) =>
+                    value={techRaw}
+                    onChange={(e) => {
+                      setTechRaw(e.target.value);
                       field.onChange(
                         e.target.value
                           .split(",")
                           .map((s) => s.trim())
                           .filter(Boolean),
-                      )
-                    }
+                      );
+                    }}
                     placeholder="Next.js, LLM, Data viz"
                   />
                 </FormControl>
