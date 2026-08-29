@@ -154,7 +154,24 @@ TanStack Table only if a screen truly needs sorting/pagination).
   `app/providers.tsx`, `app/layout.tsx`, root configs, `package.json`. Change these
   only when it's your assigned task; announce it.
 - Keep `main` green: `pnpm --filter web build` must pass before you push.
-- Never commit `.env.local` or `convex/_generated` (gitignored).
+- Never commit `.env.local` (gitignored).
+
+## Convex ownership (single owner)
+
+One teammate owns the Convex deployment (their account) and keeps `npx convex dev`
+running. Everyone else builds the frontend against the **committed** generated api —
+no Convex login required to build.
+
+- `packages/backend/convex/_generated` **IS committed** (it carries the typed `api`).
+  When you change `convex/schema.ts` or a `convex/<domain>.ts` function, the Convex
+  owner regenerates it (`convex dev` does this automatically) and commits it; pull
+  to get the new types.
+- To run the app, put the owner's dev-deployment URL in `apps/web/.env.local` as
+  `NEXT_PUBLIC_CONVEX_URL` (copy from `apps/web/.env.local.example`).
+- Frontend imports the api from `@thenextcraft/backend/api`; never reach into
+  `_generated` paths directly.
+- Non-owners may still WRITE `convex/<domain>.ts` functions (plain TS) — they just
+  can't deploy/generate; the owner regenerates on pull.
 
 ## Commands
 

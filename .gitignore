@@ -10,8 +10,8 @@ dist
 .env.local
 .env*.local
 
-# convex generated
-packages/backend/convex/_generated
+# convex: _generated IS committed (one Convex owner runs `convex dev`; the team
+# shares the typed api via git so nobody else needs a Convex login to build).
 .convex
 
 .DS_Store
