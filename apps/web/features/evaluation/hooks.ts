@@ -1,6 +1,6 @@
 "use client";
 
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useAction, useQuery } from "convex/react";
 import { api } from "@thenextcraft/backend/api";
 import type { Id } from "@thenextcraft/backend/dataModel";
 
@@ -22,11 +22,16 @@ export function useSubmission(submissionId: Id<"submissions"> | undefined) {
   );
 }
 
-export function useSetAuthorship() {
-  return useMutation(api.evaluations.setAuthorship);
+// El estado está intencionalmente acotado: la UI de la submission no necesita
+// exponer la actividad interna ni los metadatos del worker.
+export function useJudgeStatus(submissionId: Id<"submissions"> | undefined) {
+  return useQuery(
+    api.technicalJudge.statusForSubmission,
+    submissionId ? { submissionId } : "skip",
+  );
 }
 
-// Dispara el pipeline estático del juez (mock por ahora).
+// Encola el pipeline estático del juez.
 export function useRunJudge() {
   return useAction(api.evaluations.evaluate);
 }

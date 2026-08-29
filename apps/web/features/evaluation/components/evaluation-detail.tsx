@@ -1,32 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Id } from "@thenextcraft/backend/dataModel";
 import { Button } from "@/components/ui/button";
-import { ScoreBar, StatusPill, CraftBadge } from "@/components/craft";
+import { ScoreBar, StatusPill } from "@/components/craft";
 import {
   useEvaluation,
+  useJudgeStatus,
   useRunJudge,
-  useSetAuthorship,
   useSubmission,
 } from "@/features/evaluation/hooks";
-import type { AuthorshipStatus } from "@/features/evaluation/schema";
-
-// Copia por estado de autoría (viva humana). `pending` = inicial.
-const AUTHORSHIP_LABEL: Record<AuthorshipStatus, string> = {
-  pending: "Pendiente",
-  video: "Video enviado",
-  interview: "Entrevista agendada",
-  approved: "Autoría verificada",
-};
-// Estado de autoría → `status` del StatusPill del Kit (review=amber, open=sage).
-const AUTHORSHIP_STATUS: Record<AuthorshipStatus, "review" | "open"> = {
-  pending: "review",
-  video: "review",
-  interview: "review",
-  approved: "open",
-};
 
 export function EvaluationDetail({
   submissionId,
@@ -35,10 +19,40 @@ export function EvaluationDetail({
 }) {
   const view = useSubmission(submissionId);
   const evalResult = useEvaluation(submissionId);
+  const judgeStatus = useJudgeStatus(submissionId);
 
-  const setAuthorship = useSetAuthorship();
   const runJudge = useRunJudge();
-  const [running, setRunning] = useState(false);
+  const [startError, setStartError] = useState(false);
+  const hasStarted = useRef(false);
+  const evaluation = evalResult?.evaluation ?? null;
+  const scored =
+    evaluation && typeof evaluation.totalScore === "number" ? evaluation : null;
+
+  const startJudge = useCallback(async () => {
+    setStartError(false);
+    try {
+      await runJudge({ submissionId });
+    } catch {
+      setStartError(true);
+    }
+  }, [runJudge, submissionId]);
+
+  // Shipped submissions are judged automatically. The action only queues the
+  // work; the reactive status query below drives the visible progress until the
+  // evaluation is complete.
+  useEffect(() => {
+    if (
+      view === undefined ||
+      evalResult === undefined ||
+      scored ||
+      judgeStatus !== null ||
+      hasStarted.current
+    ) {
+      return;
+    }
+    hasStarted.current = true;
+    void startJudge();
+  }, [evalResult, judgeStatus, scored, startJudge, view]);
 
   // Loading: cualquiera de las dos consultas aún sin resolver.
   if (view === undefined || evalResult === undefined) {
@@ -54,23 +68,8 @@ export function EvaluationDetail({
   }
 
   const { challenge } = view;
-  // `ship` no siembra evaluación → la fila puede no existir todavía. Sin fila o
-  // sin total ⇒ aún no evaluado (se puede disparar el juez). `scored` narrowea
-  // la evaluación a no-nula para el render del resultado.
-  const evaluation = evalResult?.evaluation ?? null;
-  const scored =
-    evaluation && typeof evaluation.totalScore === "number" ? evaluation : null;
   const cohortSize = evalResult?.cohort;
   const rank = evalResult?.rank ?? undefined;
-
-  const handleRun = async () => {
-    setRunning(true);
-    try {
-      await runJudge({ submissionId });
-    } finally {
-      setRunning(false);
-    }
-  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -92,7 +91,7 @@ export function EvaluationDetail({
         {scored ? (
           <StatusPill status="review">Evaluado</StatusPill>
         ) : (
-          <StatusPill status="closed">En cola</StatusPill>
+          <StatusPill status="review">En evaluación</StatusPill>
         )}
       </div>
 
@@ -110,7 +109,11 @@ export function EvaluationDetail({
               security={scored.securityScore}
             />
           ) : (
-            <PendingScoreCard running={running} onRun={handleRun} />
+            <PendingScoreCard
+              status={judgeStatus}
+              startError={startError}
+              onRetry={startJudge}
+            />
           )}
 
           {scored && (
@@ -123,14 +126,6 @@ export function EvaluationDetail({
 
         {/* ── RIGHT sidebar ────────────────────────────────────── */}
         <aside className="flex flex-col gap-6">
-          {evaluation !== null && (
-            <AuthorshipCard
-              status={evaluation.authorshipStatus}
-              onSet={(status) =>
-                setAuthorship({ submissionId, authorshipStatus: status })
-              }
-            />
-          )}
           {scored && (
             <div className="rounded-xl border border-sage/30 bg-card px-5 py-4">
               <div className="flex items-start gap-2">
@@ -200,31 +195,98 @@ function ScoreCard({
 
 // ── Estado sin evaluar ──────────────────────────────────────────────────────
 function PendingScoreCard({
-  running,
-  onRun,
+  status,
+  startError,
+  onRetry,
 }: {
-  running: boolean;
-  onRun: () => void;
+  status: JudgeStatus | null | undefined;
+  startError: boolean;
+  onRetry: () => Promise<void>;
 }) {
+  const activeStage = status ? JUDGE_STAGES.findIndex((stage) => stage.statuses.includes(status)) : 0;
+  const failed = status === "failed" || startError;
+
   return (
-    <section className="rounded-xl border border-border bg-card p-6">
-      <h2 className="font-heading text-lg font-bold">Evaluación pendiente</h2>
-      <p className="mt-2 text-sm text-muted-foreground">
-        El AI Judge todavía no ha analizado esta submission. Es un análisis
-        estático del repo/link — nunca ejecuta tu código.
-      </p>
-      <div className="mt-4">
-        <Button
-          variant="craftSecondary"
-          onClick={onRun}
-          disabled={running}
-        >
-          {running ? "Analizando…" : "Ejecutar AI Judge"}
-        </Button>
+    <section className="rounded-xl border border-border bg-card p-6" aria-live="polite">
+      <div className="flex items-start gap-3">
+        {!failed && (
+          <span
+            aria-hidden="true"
+            className="mt-0.5 size-5 animate-spin rounded-full border-2 border-t-transparent border-sand"
+          />
+        )}
+        <div>
+          <h2 className="font-heading text-lg font-bold">
+            {failed ? "No pudimos iniciar la evaluación" : "Tu evaluación está en curso"}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {failed
+              ? "Comprueba tu conexión e inténtalo de nuevo."
+              : "El AI Judge está revisando tu solución. Te mostraremos el resultado aquí cuando esté listo."}
+          </p>
+        </div>
       </div>
+      {!failed && (
+        <ol className="mt-6 grid gap-3 sm:grid-cols-3">
+          {JUDGE_STAGES.map((stage, index) => {
+            const current = index === activeStage;
+            const complete = index < activeStage;
+            return (
+              <li key={stage.label} className="flex items-center gap-2 text-sm">
+                <span
+                  className={`grid size-5 shrink-0 place-items-center rounded-full border text-xs ${
+                    complete
+                      ? "border-sage bg-sage text-background"
+                      : current
+                        ? "border-sand text-sand"
+                        : "border-border text-faint"
+                  }`}
+                >
+                  {complete ? "✓" : current ? "•" : index + 1}
+                </span>
+                <span className={current || complete ? "text-foreground" : "text-muted-foreground"}>
+                  {stage.label}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      )}
+      {failed && (
+        <div className="mt-5">
+          <Button variant="craftSecondary" onClick={() => void onRetry()}>
+            Intentar de nuevo
+          </Button>
+        </div>
+      )}
+      <p className="mt-5 text-xs text-muted-foreground">
+        El análisis es estático: nunca ejecutamos tu código.
+      </p>
     </section>
   );
 }
+
+type JudgeStatus =
+  | "queued"
+  | "validating_repository"
+  | "reading_repository"
+  | "selecting_files"
+  | "reviewing_code"
+  | "finalizing"
+  | "completed"
+  | "failed";
+
+const JUDGE_STAGES: Array<{
+  label: string;
+  statuses: JudgeStatus[];
+}> = [
+  {
+    label: "Preparando revisión",
+    statuses: ["queued", "validating_repository", "reading_repository", "selecting_files"],
+  },
+  { label: "Analizando solución", statuses: ["reviewing_code"] },
+  { label: "Preparando resultado", statuses: ["finalizing", "completed"] },
+];
 
 // ── Lectura del juez ──────────────────────────────────────────────────────
 function JudgeReading({
@@ -269,61 +331,6 @@ function JudgeReading({
               <li className="text-muted-foreground">Nada por revisar.</li>
             )}
           </ul>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ── Prueba de autoría ─────────────────────────────────────────────────────
-function AuthorshipCard({
-  status,
-  onSet,
-}: {
-  status: AuthorshipStatus;
-  onSet: (status: "video" | "interview" | "approved") => void;
-}) {
-  const verified = status === "approved";
-  return (
-    <section className="rounded-xl border border-line-2 bg-panel-2 p-6">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="font-heading text-lg font-bold">Prueba de autoría</h2>
-        <StatusPill status={AUTHORSHIP_STATUS[status]}>
-          {AUTHORSHIP_LABEL[status]}
-        </StatusPill>
-      </div>
-      <p className="mb-4 text-sm text-muted-foreground">
-        El fit y la calidad ya pasaron. Ahora defiende tu autoría (humano):
-      </p>
-
-      <div className="flex flex-col gap-2.5">
-        <Button
-          variant="craftSecondary"
-          className="w-full"
-          aria-pressed={status === "video"}
-          onClick={() => onSet("video")}
-        >
-          🎥 Grabar video/audio
-        </Button>
-        <Button
-          variant="craftGhost"
-          className="w-full"
-          aria-pressed={status === "interview"}
-          onClick={() => onSet("interview")}
-        >
-          📅 Entrevista con la startup
-        </Button>
-      </div>
-
-      <div className="mt-4 rounded-lg bg-ink-2 p-4 text-center">
-        <CraftBadge
-          variant="auth"
-          className={verified ? undefined : "opacity-50"}
-        >
-          🧬 Autoría verificada
-        </CraftBadge>
-        <div className="mt-2 text-xs text-faint">
-          {verified ? "Conseguida" : "La meta al defender tu autoría"}
         </div>
       </div>
     </section>

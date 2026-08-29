@@ -14,10 +14,20 @@ export const evaluate = action({
     const submission = await ctx.runQuery(api.submissions.get, { submissionId });
     const repoUrl = submission?.repositoryUrl;
     if (!repoUrl) return null;
+    const challenge = await ctx.runQuery(api.challenges.get, {
+      challengeId: submission.challengeId,
+    });
     await ctx.runMutation(api.technicalJudge.start, {
       repoUrl,
       requestId: submissionId,
       submissionId,
+      challenge: challenge
+        ? {
+            title: challenge.title,
+            businessProblem: challenge.businessProblem,
+            successCriteria: challenge.successCriteria,
+          }
+        : undefined,
     });
     return null;
   },
