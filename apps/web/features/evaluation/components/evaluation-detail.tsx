@@ -48,6 +48,7 @@ export function EvaluationDetail({
   const limitations = scored?.limitations ?? [];
   const summary = scored?.summary ?? scored?.rankedReview ?? null;
   const verdict = scored?.verdict ?? null;
+  const competitiveNote = scored?.competitiveNote ?? null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -72,9 +73,9 @@ export function EvaluationDetail({
         )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         {/* ── LEFT ─────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-6">
+        <div className="flex min-w-0 flex-col gap-6">
           {scored ? (
             <ScoreCard
               total={scored.totalScore ?? 0}
@@ -91,6 +92,10 @@ export function EvaluationDetail({
 
           {scored && summary && (
             <VerdictCard verdict={verdict} summary={summary} />
+          )}
+
+          {competitiveNote && (
+            <CompetitiveNote note={competitiveNote} rank={rank} cohort={cohortSize} />
           )}
 
           {dimensionNotes.length > 0 && (
@@ -111,7 +116,7 @@ export function EvaluationDetail({
         </div>
 
         {/* ── RIGHT sidebar ────────────────────────────────────── */}
-        <aside className="flex flex-col gap-6">
+        <aside className="flex min-w-0 flex-col gap-6">
           {recommendations.length > 0 && (
             <RecommendationsCard recommendations={recommendations} />
           )}
@@ -412,6 +417,32 @@ function FeedbackFindings({
   );
 }
 
+// ── Por qué este puesto (comparativa global, clave para los que no ganaron) ──
+function CompetitiveNote({
+  note,
+  rank,
+  cohort,
+}: {
+  note: string;
+  rank?: number;
+  cohort?: number;
+}) {
+  return (
+    <section className="rounded-xl border border-sand/40 bg-sand/5 p-6">
+      <div className="mb-2 flex items-center gap-2">
+        <h2 className="font-heading text-lg font-bold">Por qué este puesto</h2>
+        {typeof rank === "number" && (
+          <span className="bg-sand/15 text-sand rounded-full px-2.5 py-0.5 text-xs font-bold tabular-nums">
+            #{rank}
+            {typeof cohort === "number" ? ` de ${cohort}` : ""}
+          </span>
+        )}
+      </div>
+      <p className="text-sm leading-relaxed text-muted-foreground">{note}</p>
+    </section>
+  );
+}
+
 // ── Peer references (comparativa con otras submissions del mismo reto) ──────
 function PeerReferences({
   references,
@@ -422,6 +453,7 @@ function PeerReferences({
     path: string;
     startLine: number;
     note: string;
+    snippet?: string;
   }[];
 }) {
   return (
@@ -430,7 +462,8 @@ function PeerReferences({
         Comparado con otras soluciones
       </h2>
       <p className="mb-5 text-xs text-muted-foreground">
-        Cómo otros builders del mismo reto resolvieron partes parecidas.
+        Cómo otros builders del mismo reto resolvieron partes parecidas — con su
+        código real.
       </p>
       <div className="flex flex-col gap-3">
         {references.map((r, i) => (
@@ -448,6 +481,11 @@ function PeerReferences({
                 {r.path}:{r.startLine}
               </span>
             </div>
+            {r.snippet && (
+              <pre className="mt-2.5 overflow-x-auto rounded-md border border-line-2 bg-background px-3 py-2 font-mono text-[12px] leading-relaxed">
+                <code>{r.snippet}</code>
+              </pre>
+            )}
             <p className="mt-2 text-sm text-muted-foreground">{r.note}</p>
           </div>
         ))}

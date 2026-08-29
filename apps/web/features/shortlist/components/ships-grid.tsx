@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import type { Id } from "@thenextcraft/backend/dataModel";
 
@@ -45,16 +46,18 @@ export function ShipsGrid({ challengeId }: { challengeId: Id<"challenges"> }) {
 
 function ShipCard({ ship }: { ship: Ship }) {
   const [imgFailed, setImgFailed] = useState(false);
-  // Preferir la demo deployada; si no hay, caer al repo (siempre existe).
-  const visitUrl = ship.demoUrl ?? ship.repositoryUrl;
   const shot = screenshotUrl(ship.demoUrl);
   const host = hostLabel(ship.demoUrl) ?? hostLabel(ship.repositoryUrl);
+  // La card lleva al feedback de la submission. Demo/repo van en botones aparte.
+  const openExternal = (url: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.open(url, "_blank", "noreferrer,noopener");
+  };
 
   return (
-    <a
-      href={visitUrl}
-      target="_blank"
-      rel="noreferrer noopener"
+    <Link
+      href={`/submissions/${ship.submissionId}`}
       className="group border-line bg-card hover:border-line-2 flex flex-col overflow-hidden rounded-2xl border transition-all hover:-translate-y-0.5"
     >
       {/* Preview */}
@@ -72,10 +75,10 @@ function ShipCard({ ship }: { ship: Ship }) {
           <PreviewFallback hasDemo={!!ship.demoUrl} host={host} />
         )}
 
-        {/* Overlay "Visitar" en hover */}
+        {/* Overlay "Ver feedback" en hover */}
         <div className="absolute inset-0 flex items-end justify-between bg-gradient-to-t from-black/55 via-transparent to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100">
           <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-black">
-            Visitar <PixelIcon name="link" size={11} />
+            Ver feedback <PixelIcon name="arrowRight" size={11} />
           </span>
         </div>
 
@@ -126,23 +129,27 @@ function ShipCard({ ship }: { ship: Ship }) {
           <span className="text-faint truncate font-mono text-[11px]">
             {host ?? "—"}
           </span>
-          <span
-            className="text-faint hover:text-foreground shrink-0 text-[11px] font-semibold underline-offset-2 hover:underline"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              window.open(
-                ship.repositoryUrl,
-                "_blank",
-                "noreferrer,noopener",
-              );
-            }}
-          >
-            Repo <PixelIcon name="github" size={11} />
-          </span>
+          <div className="flex shrink-0 items-center gap-3">
+            {ship.demoUrl && (
+              <button
+                type="button"
+                onClick={openExternal(ship.demoUrl)}
+                className="text-faint hover:text-foreground text-[11px] font-semibold underline-offset-2 hover:underline"
+              >
+                Demo <PixelIcon name="link" size={11} />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={openExternal(ship.repositoryUrl)}
+              className="text-faint hover:text-foreground text-[11px] font-semibold underline-offset-2 hover:underline"
+            >
+              Ver repo <PixelIcon name="github" size={11} />
+            </button>
+          </div>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }
 

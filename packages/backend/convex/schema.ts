@@ -76,6 +76,7 @@ export const peerReferenceValidator = v.object({
   path: v.string(),
   startLine: v.number(),
   note: v.string(), // qué hizo el peer y cómo se compara con esta submission
+  snippet: v.optional(v.string()), // código real del peer citado (prueba la comparación)
 });
 
 // El "porque sí/porque no" de cada dimensión: score + razonamiento del juez.
@@ -191,6 +192,9 @@ export const schema = defineSchema({
     findings: v.optional(v.array(feedbackFindingValidator)),
     recommendations: v.optional(v.array(feedbackRecommendationValidator)),
     peerReferences: v.optional(v.array(peerReferenceValidator)),
+    // Por qué esta submission quedó en este puesto vs las demás del reto
+    // (nombra peers). Clave para que los de menor score sepan por qué no ganaron.
+    competitiveNote: v.optional(v.string()),
     // El "porqué": veredicto global, razonamiento por dimensión, limitaciones.
     verdict: v.optional(v.string()),
     summary: v.optional(v.string()),

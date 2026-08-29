@@ -123,18 +123,23 @@ export const feedbackContext = internalQuery({
         submissionId: ev.submissionId,
         builderName: builder?.name ?? "Builder",
         builderHandle: builder?.githubHandle ?? null,
-        summary: ev.rankedReview ?? "",
-        score: ev.totalScore ?? null,
+        summary: ev.summary ?? ev.rankedReview ?? "",
+        score: ev.totalScore ?? 0,
+        // Incluimos snippet real → el pase comparativo puede CITAR código del
+        // peer (prueba que la comparación fue real, no genérica).
         findings: ev.findings.slice(0, 6).map((f) => ({
           title: f.title,
           dimension: f.dimension,
           severity: f.severity,
           path: f.evidence[0]?.path ?? "",
           startLine: f.evidence[0]?.startLine ?? 0,
+          snippet: (f.evidence[0]?.snippet ?? "").slice(0, 300),
         })),
       });
     }
-    return out;
+    // Rank por score desc → el modelo sabe quién ganó y quién no.
+    out.sort((a, b) => b.score - a.score);
+    return out.map((c, i) => ({ ...c, rank: i + 1, total: out.length }));
   },
 });
 
@@ -143,6 +148,15 @@ const peerOutputSchema = z.object({
     .array(
       z.object({
         submissionId: z.string(),
+        // Por qué quedó en este puesto vs las demás. Para el que NO ganó, di
+        // explícitamente qué le faltó frente al líder (nombrando al peer).
+        competitiveNote: z
+          .string()
+          .min(20)
+          .max(600)
+          .describe(
+            "Por qué esta submission quedó en su puesto frente a las demás del reto. Si no es la #1, nombra al/los peer(s) que la superaron y en qué (concreto). Español, ecuánime.",
+          ),
         references: z
           .array(
             z.object({
@@ -150,12 +164,18 @@ const peerOutputSchema = z.object({
               peerBuilderName: z.string(),
               path: z.string(),
               startLine: z.number().int().min(0),
+              snippet: z
+                .string()
+                .max(300)
+                .describe(
+                  "Fragmento REAL del código del peer citado (de los datos provistos). Prueba que la comparación fue real.",
+                ),
               note: z
                 .string()
                 .min(10)
                 .max(400)
                 .describe(
-                  "Qué hizo el peer y cómo se compara con ESTA submission. Español.",
+                  "Qué hizo el peer en ese código y cómo se compara con ESTA submission. Español.",
                 ),
             }),
           )
@@ -191,9 +211,9 @@ export const generatePeerReferences = internalAction({
           schema: peerOutputSchema,
         }),
         system:
-          "Comparas soluciones al MISMO reto técnico. Para cada submission, cita 1-3 peers cuyo enfoque en un archivo:línea concreto contrasta con el suyo (mejor, peor o alternativo). Sé específico y ecuánime, en español. Nunca cites una submission a sí misma. Usa solo los datos provistos; no inventes archivos ni líneas.",
+          "Comparas TODAS las soluciones al MISMO reto técnico (vienen rankeadas por score). Para CADA submission: (1) escribe competitiveNote diciendo por qué quedó en su puesto — si no es la #1, nombra al/los peer(s) que la superaron y en qué concreto; (2) cita 1-3 peers, cada uno con un fragmento REAL de su código (de los datos) y una nota de cómo contrasta con ESTA submission. Sé específico y ecuánime, en español. Nunca cites una submission a sí misma. Usa solo los datos provistos (paths, líneas y snippets dados); no inventes código.",
         prompt: JSON.stringify({
-          task: "Genera peer references comparativas por submission.",
+          task: "Genera competitiveNote + peer references por submission. Las submissions vienen con rank (1 = mejor score).",
           submissions: context,
         }),
         timeout: 120_000,
@@ -212,9 +232,11 @@ export const generatePeerReferences = internalAction({
         path: r.path,
         startLine: r.startLine,
         note: r.note,
+        snippet: r.snippet || undefined,
       }));
       await ctx.runMutation(internal.evaluations.savePeerReferences, {
         submissionId: row.submissionId as Id<"submissions">,
+        competitiveNote: row.competitiveNote,
         references,
       });
     }
@@ -328,10 +350,11 @@ export const backfillFromReviews = internalMutation({
 export const savePeerReferences = internalMutation({
   args: {
     submissionId: v.id("submissions"),
+    competitiveNote: v.optional(v.string()),
     references: v.array(peerReferenceValidator),
   },
   returns: v.null(),
-  handler: async (ctx, { submissionId, references }) => {
+  handler: async (ctx, { submissionId, competitiveNote, references }) => {
     const ev = await ctx.db
       .query("evaluations")
       .withIndex("by_submissionId", (q) => q.eq("submissionId", submissionId))
@@ -339,6 +362,7 @@ export const savePeerReferences = internalMutation({
     if (!ev) return null;
     await ctx.db.patch("evaluations", ev._id, {
       peerReferences: references,
+      competitiveNote,
       updatedAt: Date.now(),
     });
     return null;
