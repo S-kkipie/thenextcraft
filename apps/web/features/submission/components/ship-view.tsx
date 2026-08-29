@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import { CopilotKit } from "@copilotkit/react-core";
@@ -28,8 +28,16 @@ Responde en español, breve y accionable.`;
 // mismatch de hidratación del abierto/cerrado). Estilada con copilot-theme.css.
 export function ShipView({ challengeId }: { challengeId: Id<"challenges"> }) {
   const challenge = useQuery(api.challenges.get, { challengeId });
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // "¿ya hidraté?" sin efecto: useSyncExternalStore devuelve el snapshot del
+  // servidor (false) en SSR y el del cliente (true) tras hidratar. El
+  // useEffect+setState que había hacía exactamente esto, pero con un render
+  // en cascada — y lo prohíbe react-hooks/set-state-in-effect, que dejaba
+  // `pnpm lint` en rojo.
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   return (
     <CopilotKit runtimeUrl="/api/copilotkit">
