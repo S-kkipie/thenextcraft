@@ -1,0 +1,49 @@
+/* Brand the CopilotKit UI with The Next Ship's phosphor palette + Plex Mono.
+   Vars are set on the CopilotKit root elements so they cascade regardless of
+   whether the window renders inline or via a portal. Values reference the app
+   design tokens (globals.css) so a reskin flows through automatically. */
+.copilotKitButton,
+.copilotKitWindow,
+.copilotKitSidebar,
+.copilotKitSidebarContentWrapper {
+  --copilot-kit-primary-color: var(--sage); /* #4af07e fósforo */
+  --copilot-kit-contrast-color: var(--background); /* texto oscuro sobre fósforo */
+  --copilot-kit-background-color: var(--card); /* panel */
+  --copilot-kit-secondary-color: var(--panel-2); /* burbujas / header */
+  --copilot-kit-secondary-contrast-color: var(--foreground);
+  --copilot-kit-separator-color: var(--border); /* line */
+  --copilot-kit-muted-color: var(--muted-foreground);
+  --copilot-kit-input-background-color: var(--panel-2);
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+/* Window: our line + radius, softer craft shadow. */
+.copilotKitWindow {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* Launcher button: phosphor with a subtle glow, matching focus rings. */
+.copilotKitButton {
+  border: 1px solid var(--sand-edge);
+  box-shadow: 0 10px 34px -10px color-mix(in srgb, var(--sage) 65%, transparent);
+}
+
+/* Header + input surfaces read as panels, not the default flat white. */
+.copilotKitHeader {
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--border);
+  color: var(--foreground);
+}
+.copilotKitInput {
+  background: var(--panel-2);
+  border-top: 1px solid var(--border);
+}
+
+/* Attribution: keep but make it faint so it doesn't fight the brand. */
+.copilotKitWindow a[href*="copilotkit"],
+.copilotKitPoweredBy {
+  color: var(--faint) !important;
+  opacity: 0.6;
+}

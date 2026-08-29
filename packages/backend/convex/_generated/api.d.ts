@@ -20,6 +20,7 @@ import type * as leaderboard from "../leaderboard.js";
 import type * as opportunities from "../opportunities.js";
 import type * as rankings from "../rankings.js";
 import type * as seed from "../seed.js";
+import type * as seedLive from "../seedLive.js";
 import type * as shortlist from "../shortlist.js";
 import type * as startup from "../startup.js";
 import type * as submissions from "../submissions.js";
@@ -46,6 +47,7 @@ declare const fullApi: ApiFromModules<{
   opportunities: typeof opportunities;
   rankings: typeof rankings;
   seed: typeof seed;
+  seedLive: typeof seedLive;
   shortlist: typeof shortlist;
   startup: typeof startup;
   submissions: typeof submissions;
