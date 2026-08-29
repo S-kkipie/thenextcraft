@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { hostLabel, screenshotUrl } from "@/lib/preview";
 import { useChallengeShips } from "@/features/shortlist/hooks";
+import { PixelIcon } from "@/components/craft/pixel-icon";
 
 type Ship = NonNullable<ReturnType<typeof useChallengeShips>>[number];
 
@@ -74,7 +75,7 @@ function ShipCard({ ship }: { ship: Ship }) {
         {/* Overlay "Visitar" en hover */}
         <div className="absolute inset-0 flex items-end justify-between bg-gradient-to-t from-black/55 via-transparent to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100">
           <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-black">
-            Visitar ↗
+            Visitar <PixelIcon name="link" size={11} />
           </span>
         </div>
 
@@ -137,7 +138,7 @@ function ShipCard({ ship }: { ship: Ship }) {
               );
             }}
           >
-            Repo ↗
+            Repo <PixelIcon name="github" size={11} />
           </span>
         </div>
       </div>
@@ -160,7 +161,11 @@ function PreviewFallback({
       )}
     >
       <div className="text-center">
-        <div className="text-3xl">{hasDemo ? "🖼️" : "📦"}</div>
+        <PixelIcon
+            name={hasDemo ? "screen" : "card"}
+            size={30}
+            className="text-[var(--faint)]"
+          />
         <div className="text-faint mt-1.5 max-w-[200px] truncate px-4 font-mono text-[11px]">
           {host ?? (hasDemo ? "preview no disponible" : "sin demo deployada")}
         </div>
